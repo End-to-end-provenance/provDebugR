@@ -7,8 +7,10 @@ debug.init <- function(input.data) {
   file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
 
   if (file.ext == "R" || file.ext == "Rmd") {
-    ddg.run(input.data)
-    prov.parse(ddg.json(), isFile = F)
+    # OPENISSUE currently not supported due to RDataTracker JSON limitations
+    #ddg.run(input.data)
+    print("passing of scripts is currently not supported due to RDataTracker JSON limitations")
+    #prov.parse(ddg.json(), isFile = F)
   } else if (file.ext == "json") {
     prov.parse(input.data)
   } else {
