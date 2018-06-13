@@ -1,0 +1,345 @@
+{
+	"prefix": {
+		"prov": "http://www.w3.org/ns/prov#",
+		"rdt": "http://rdatatracker.org/"
+	},
+
+	"activity" : {
+		// procedure nodes
+		"p1": {
+			"rdt:name": "test1.R",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": 0.073,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"p2": {
+			"rdt:name": "x <- \"Testing\"",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 0.074,
+			"rdt:scriptNum": 0,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 1,
+			"rdt:endCol": 14
+		},
+		"p3": {
+			"rdt:name": "print(x)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 0.079,
+			"rdt:scriptNum": 0,
+			"rdt:startLine": 3,
+			"rdt:startCol": 1,
+			"rdt:endLine": 3,
+			"rdt:endCol": 8
+		},
+		"p4": {
+			"rdt:name": "test2.R",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": 0.093,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"p5": {
+			"rdt:name": "print(\"this is test2\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 0.095,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 1,
+			"rdt:endCol": 22
+		},
+		"p6": {
+			"rdt:name": "test2.R",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": 0.099,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"p7": {
+			"rdt:name": "source(\"test2.R\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 0.102,
+			"rdt:scriptNum": 0,
+			"rdt:startLine": 5,
+			"rdt:startCol": 1,
+			"rdt:endLine": 5,
+			"rdt:endCol": 17
+		},
+		"p8": {
+			"rdt:name": "test3.R",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": 0.123,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"p9": {
+			"rdt:name": "print(\"This is test3\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 0.125,
+			"rdt:scriptNum": 2,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 1,
+			"rdt:endCol": 22
+		},
+		"p10": {
+			"rdt:name": "test3.R",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": 0.127,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"p11": {
+			"rdt:name": "source(\"test3.R\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 0.13,
+			"rdt:scriptNum": 0,
+			"rdt:startLine": 6,
+			"rdt:startCol": 1,
+			"rdt:endLine": 6,
+			"rdt:endCol": 17
+		},
+		"p12": {
+			"rdt:name": "test1.R",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": 0.14,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		}
+	},
+
+	"entity" : {
+		// data nodes
+		"d1": {
+			"rdt:name": "x",
+			"rdt:value": "\"Testing\"",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:MD5hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"d2": {
+			"rdt:name": "test2.R",
+			"rdt:value": "data/2-test2.R",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:MD5hash": "3a7c328d2d20c235f68b9080cb983f11",
+			"rdt:timestamp": "2018-05-29T10.07.10EDT",
+			"rdt:location": "/Users/Wonsil/Documents/Harvard Forest/test2.R"
+		},
+		"d3": {
+			"rdt:name": "test3.R",
+			"rdt:value": "data/3-test3.R",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:MD5hash": "b3145f4d73c86087f5bf717b2f5cddf2",
+			"rdt:timestamp": "2018-05-29T10.07.10EDT",
+			"rdt:location": "/Users/Wonsil/Documents/Harvard Forest/test3.R"
+		},
+
+		// environment
+		"environment": {
+			"rdt:name": "environment",
+			"rdt:architecture": "x86_64",
+			"rdt:operatingSystem": "unix",
+			"rdt:language": "R",
+			"rdt:rVersion": "R version 3.5.0 (2018-04-23)",
+			"rdt:script": "/Users/Wonsil/Documents/Harvard Forest/test1.R",
+			"rdt:scriptTimeStamp": "2018-05-29T10.07.06EDT",
+			"rdt:sourcedScripts": [
+				"test2.R",
+				"test3.R"
+			],
+			"rdt:sourcedScriptTimeStamps": [
+				"2018-05-29T10.06.30EDT",
+				"2018-05-29T10.06.36EDT"
+			],
+			"rdt:workingDirectory": "/Users/Wonsil/Documents/Harvard Forest",
+			"rdt:ddgDirectory": "./test1_ddg",
+			"rdt:ddgTimeStamp": "2018-05-29T10.07.10EDT",
+			"rdt:rdatatrackerVersion": "2.27.0",
+			"rdt:hashAlgorithm": "md5"
+		},
+
+		// library nodes - prov collections
+		"l1": {
+			"name": "base",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l2": {
+			"name": "datasets",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l3": {
+			"name": "EnviR",
+			"version": "0.0.0.9000",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l4": {
+			"name": "graphics",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l5": {
+			"name": "grDevices",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l6": {
+			"name": "jsonlite",
+			"version": "1.5",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l7": {
+			"name": "methods",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l8": {
+			"name": "RDataTracker",
+			"version": "2.27.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l9": {
+			"name": "stats",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"l10": {
+			"name": "utils",
+			"version": "3.5.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		}
+	},
+
+	"wasInformedBy" : {
+		// procedure-to-procedure edges
+		"pp1": {
+			"prov:informant": "rdt:p1",
+			"prov:informed": "rdt:p2"
+		},
+		"pp2": {
+			"prov:informant": "rdt:p2",
+			"prov:informed": "rdt:p3"
+		},
+		"pp3": {
+			"prov:informant": "rdt:p3",
+			"prov:informed": "rdt:p4"
+		},
+		"pp4": {
+			"prov:informant": "rdt:p4",
+			"prov:informed": "rdt:p5"
+		},
+		"pp5": {
+			"prov:informant": "rdt:p5",
+			"prov:informed": "rdt:p6"
+		},
+		"pp6": {
+			"prov:informant": "rdt:p6",
+			"prov:informed": "rdt:p7"
+		},
+		"pp7": {
+			"prov:informant": "rdt:p7",
+			"prov:informed": "rdt:p8"
+		},
+		"pp8": {
+			"prov:informant": "rdt:p8",
+			"prov:informed": "rdt:p9"
+		},
+		"pp9": {
+			"prov:informant": "rdt:p9",
+			"prov:informed": "rdt:p10"
+		},
+		"pp10": {
+			"prov:informant": "rdt:p10",
+			"prov:informed": "rdt:p11"
+		},
+		"pp11": {
+			"prov:informant": "rdt:p11",
+			"prov:informed": "rdt:p12"
+		}
+	},
+
+	"wasGeneratedBy" : {
+		// procedure-to-data edges
+		"pd1": {
+			"prov:activity": "rdt:p2",
+			"prov:entity": "rdt:d1"
+		}
+	},
+
+	"used" : {
+		// data-to-procedure edges
+		"dp1": {
+			"prov:entity": "rdt:d1",
+			"prov:activity": "rdt:p3"
+		},
+		"dp2": {
+			"prov:entity": "rdt:d2",
+			"prov:activity": "rdt:p7"
+		},
+		"dp3": {
+			"prov:entity": "rdt:d3",
+			"prov:activity": "rdt:p11"
+		}
+	}
+}
