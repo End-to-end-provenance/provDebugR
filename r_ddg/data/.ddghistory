@@ -1,0 +1,39 @@
+debug.init <- function(input.data) {
+strsplit(input.data, "\\.")
+}
+debug.init("filename.csv")
+debug.init("filename.csv")
+debug.init <- function(input.data) {
+file.parts <- strsplit(input.data, "\\.")
+file.ext <- file.parts[[length(file.parts)]]
+if (file.ext == "R" || file.ext == "Rmd") {
+print("R File")
+} else if (file.ext == "json") {
+print("json File")
+}
+}
+debug.init("t.R")
+input.data <- "t.R"
+file.parts <- strsplit(input.data, "\\.")
+file.parts[1]
+file.parts[1][1]
+file.parts[[1]]
+file.parts[[1]][[1]]
+file.parts <- strsplit(input.data, "\\.")
+file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
+library(RDataTracker)
+library(provParseR)
+library(provGraphR)
+debug.init <- function(input.data) {
+file.parts <- strsplit(input.data, "\\.")
+file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
+if (file.ext == "R" || file.ext == "Rmd") {
+ddg.run(input.data)
+} else if (file.ext == "json") {
+print("json File")
+} else {
+stop("Please enter a valid script or prov.json name")
+}
+}
+debug.init("r.R")
+##-ddg-- Wed Jun 13 09:37:45 2018 ------##
