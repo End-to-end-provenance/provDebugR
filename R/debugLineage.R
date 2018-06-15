@@ -13,6 +13,8 @@ debug.lineage <- function(..., forward = F) {
   #names(pos.vars) <- pos.vars
 
   # Make sure all the results passed by the user are valid
+  # this produces a list of logicals, where TRUES
+  #correspond to valid inputs
   pos.args <- lapply(args, function(arg, pos.vars){
     if(arg %in% pos.vars) {
       T
@@ -21,6 +23,8 @@ debug.lineage <- function(..., forward = F) {
     }
   }, pos.vars = pos.vars)
 
+  # Any non-valid inputs will be removed as the list is subset
+  # by logicals, TRUE corresponding to valid inputs
   args <- args[unlist(pos.args)]
 
   # If they did not provide any results themselve, list them out for them
@@ -30,8 +34,8 @@ debug.lineage <- function(..., forward = F) {
   } else {
     ls <- lapply(args, grab.lineage, pos.vars = pos.vars, forward = forward)
     names(ls) <- args
+    return(ls)
   }
-
 }
 
 grab.lineage <- function(result, pos.vars, forward) {
@@ -48,16 +52,62 @@ grab.lineage <- function(result, pos.vars, forward) {
     node.label <- head(n=1,data.nodes[data.nodes$name == result, ])$label
   }
 
-  # Grab the nodes that have connections to the chosen node form the adj graph
+  # The assignment statement is inclusive when going backward, but not
+  # forward. Therefore, it should be grabbed from the lineage separately
+  if(forward) {
+    # This code finds assignemnt state by running backwards lineage
+    # But having to run backwards AND forwards for one variable is no bueno
+    # Possibly grabbing first procedure node from edges may be better,
+    # more testing required for now
+    # assignemnt <- get.spine(node.label, FALSE)
+    # assign.state <- assignemnt[grep("p[[:digit:]]", assignemnt)][[1]]
+    proc.data.edges <- get.proc.data()
+    edges <- proc.data.edges[proc.data.edges$entity == node.label, ]
+    assign.state <- NA
+    if(nrow(edges) > 0){
+      assign.state <- edges$activity[[1]]
+    }
+  }
+
+  # Grab the nodes that have connections to the chosen node from the adj graph
   spine <- get.spine(node.label, forward)
 
+  # If moving forward the procedure node that contains the assignment
+  # statement should be placed at the front of the spine to keep the order accurate
+  if(forward && !is.na(assign.state)) {
+    spine <- append(spine, assign.state, 0)
+  }
+
+  # Pull the lines from the proc nodes that are referenced
+  # in the spine, each is stored as a row
   lines <- lapply(spine[grep("p[[:digit:]]", spine)], function(proc.node){
     list(proc.nodes[proc.nodes$label == proc.node, ]$startLine,
          proc.nodes[proc.nodes$label == proc.node, ]$name)
   })
 
-  df <- data.frame(do.call(rbind, lines), stringsAsFactors = F)
-  df <- df[seq(dim(df)[1], 1), ]
+  # Since each line is stored as a row and the wanted result is a
+  # data frame, the columns need to be extracted so they can
+  # be covnerted to a data frame. Find how many columns there
+  # are so mapply can index through the rows the correct amount of times
+  col.length <- 1:length(lines[[1]])
+
+  # Grab each column as a list from the rows
+  # then extract the values so they're a vector
+  # when those columns are returned as a list of vectors
+  # create a data frame from it
+  df <- data.frame(lapply(col.length, function(x) {
+    col <- mapply(`[`, lines, x)
+    return(mapply(`[`, col, 1))
+  }), stringsAsFactors = F)
+
+  # The colnames are automatically assigned to
+  # not descriptive values, replace them with
+  # descriptive values
   colnames(df) <- c("line", "code")
-  df
+
+  # Order of the columns so the lines go
+  # from descending to ascending, if going backward
+  # This keeps the results from always following
+  # the flow of control
+  df[with(df, order(line)), ]
 }

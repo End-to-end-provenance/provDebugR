@@ -3,7 +3,7 @@ library(provParseR)
 library(provGraphR)
 
 debug.env <- new.env(parent = emptyenv())
-debug.env$hasGraph = FALSE
+debug.env$has.graph = FALSE
 
 debug.init <- function(input.data) {
   file.parts <- strsplit(input.data, "\\.")
@@ -22,5 +22,5 @@ debug.init <- function(input.data) {
 debug.prov <- function(input.prov, isFile = T) {
   prov.parse(input.prov, isFile = isFile)
   create.graph()
-  debug.env$hasGraph = TRUE
+  debug.env$has.graph = TRUE
 }
