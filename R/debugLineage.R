@@ -17,7 +17,7 @@ debug.lineage <- function(..., forward = F) {
   #correspond to valid inputs
   pos.args <- lapply(args, function(arg, pos.vars){
     if(arg %in% pos.vars) {
-      T
+      return(TRUE)
     } else {
       warning(paste(arg, " is not a possible result"))
     }
@@ -100,14 +100,14 @@ grab.lineage <- function(result, pos.vars, forward) {
     return(mapply(`[`, col, 1))
   }), stringsAsFactors = F)
 
-  # The colnames are automatically assigned to
-  # not descriptive values, replace them with
+  # The colnames are automatically assigned and
+  # are not descriptive values, replace them with
   # descriptive values
   colnames(df) <- c("line", "code")
 
-  # Order of the columns so the lines go
-  # from descending to ascending, if going backward
-  # This keeps the results from always following
+  # Order the "lines" column to ascending
+  # This ensures the results
+  always following
   # the flow of control
   df[with(df, order(line)), ]
 }
