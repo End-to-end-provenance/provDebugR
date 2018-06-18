@@ -106,8 +106,7 @@ grab.lineage <- function(result, pos.vars, forward) {
   colnames(df) <- c("line", "code")
 
   # Order the "lines" column to ascending
-  # This ensures the results
-  always following
+  # This ensures the results always follow
   # the flow of control
   df[with(df, order(line)), ]
 }
