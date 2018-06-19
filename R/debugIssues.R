@@ -11,10 +11,10 @@ debug.error.trace <- function(stack.overflow = F) {
 }
 
 # This function operates similarily to debug.lineage; however,
-# it uses just the warning messages. The debug.lineage function 
+# it uses just the warning messages. The whole debug.lineage function 
 # cannot be reused here as it relies on variables having unique
 # names. warnings do not have unique names and there can be multiple
-# warnings unlike error messages
+# warnings unlike error messages. 
 debug.warning.trace <- function(..., stack.overflow = F) {
   args <- list(...)
   
