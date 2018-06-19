@@ -10,7 +10,6 @@ debug.lineage <- function(..., forward = F) {
   # Collect possible results the user could ask for
   pos.vars <- get.data.nodes()
   pos.vars <- as.list(unique(pos.vars$name))
-  #names(pos.vars) <- pos.vars
 
   # Make sure all the results passed by the user are valid
   # this produces a list of logicals, where TRUES
@@ -20,6 +19,7 @@ debug.lineage <- function(..., forward = F) {
       return(TRUE)
     } else {
       warning(paste(arg, " is not a possible result"))
+      return(FALSE)
     }
   }, pos.vars = pos.vars)
 
@@ -55,12 +55,8 @@ grab.lineage <- function(result, pos.vars, forward) {
   # The assignment statement is inclusive when going backward, but not
   # forward. Therefore, it should be grabbed from the lineage separately
   if(forward) {
-    # This code finds assignemnt state by running backwards lineage
-    # But having to run backwards AND forwards for one variable is no bueno
-    # Possibly grabbing first procedure node from edges may be better,
-    # more testing required for now
-    # assignemnt <- get.spine(node.label, FALSE)
-    # assign.state <- assignemnt[grep("p[[:digit:]]", assignemnt)][[1]]
+    # This code finds assignemnt statement grabbing first procedure node
+    # The first procedure node with the variable in it, is where it is first assigned
     proc.data.edges <- get.proc.data()
     edges <- proc.data.edges[proc.data.edges$entity == node.label, ]
     assign.state <- NA
