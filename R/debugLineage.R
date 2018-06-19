@@ -32,13 +32,13 @@ debug.lineage <- function(..., forward = F) {
     print("Possible results:")
     print(pos.vars)
   } else {
-    ls <- lapply(args, grab.lineage, forward = forward)
+    ls <- lapply(args, .grab.lineage, forward = forward)
     names(ls) <- args
     return(ls)
   }
 }
 
-grab.lineage <- function(result, forward) {
+.grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables
   data.nodes <- get.data.nodes()
   proc.nodes <- get.proc.nodes()
