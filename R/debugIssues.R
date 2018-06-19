@@ -26,6 +26,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   # Grab all the warning rows from the provenance 
   pos.vars <- get.data.nodes()
   pos.vars <- pos.vars[pos.vars$name == "warning.msg", ]
+  row.names(pos.vars) <- 1:nrow(pos.vars)
   
   node.labels <- as.list(pos.vars$label)
   
@@ -51,40 +52,21 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   # by logicals, TRUE corresponding to valid inputs
   args <- args[unlist(pos.args)]
   
-  
-  
-  if(stack.overflow) {
-    warning("stack overflow functionality is currently not supported")
+  if(length(args) == 0) {
+    cat("Possible results: \n")
+    print(pos.vars$value)
+    cat("Pass the corresponding index value to the function for info on that warning")
+  } else {
+    proc.nodes <- get.proc.nodes()
+    
+    dfs <- lapply(args, function(arg){
+      .process.label(pos.vars[arg, ]$label, proc.nodes, forward = F)
+    })
+    if(stack.overflow) {
+      warning("stack overflow functionality is currently not supported")
+    }
+    return(dfs)
   }
-  
-  
 }
 
-.process.label <- function(label) {
-  # Grab the nodes that have connections to the chosen node from the adj graph
-  spine <- get.spine(label)
-  
-  # Pull the lines from the proc nodes that are referenced
-  # in the spine, each is stored as a row
-  lines <- lapply(spine[grep("p[[:digit:]]", spine)], function(proc.node) {
-    list(proc.nodes[proc.nodes$label == proc.node, ]$startLine,
-         proc.nodes[proc.nodes$label == proc.node, ]$name)
-  })
-  
-  # Since each line is stored as a row and the wanted result is a
-  # data frame, the columns need to be extracted so they can
-  # be covnerted to a data frame. Find how many columns there
-  # are so mapply can index through the rows the correct amount of times
-  col.length <- 1:length(lines[[1]])
-  
-  # Grab each column as a list from the rows
-  # then extract the values so they're a vector
-  # when those columns are returned as a list of vectors
-  # create a data frame from it
-  df <- data.frame(lapply(col.length, function(x) {
-    col <- mapply(`[`, lines, x)
-    return(mapply(`[`, col, 1))
-  }), stringsAsFactors = F)
-  
-  
-}
+
