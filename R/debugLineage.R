@@ -83,7 +83,7 @@ grab.lineage <- function(result, pos.vars, forward) {
 
   # Since each line is stored as a row and the wanted result is a
   # data frame, the columns need to be extracted so they can
-  # be covnerted to a data frame. Find how many columns there
+  # be covnverted to a data frame. Find how many columns there
   # are so mapply can index through the rows the correct amount of times
   col.length <- 1:length(lines[[1]])
 
