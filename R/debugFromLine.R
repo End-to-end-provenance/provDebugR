@@ -10,7 +10,7 @@ debug.from.line <- function(..., state = F) {
   if (length(args) < 1) {
     # show the state of all variables at the end of execution
     state = TRUE # what if user sets state to false?
-  } else if (length(args) = 1) {
+  } else if (length(args) == 1) {
 
   }
 
