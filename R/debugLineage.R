@@ -32,13 +32,13 @@ debug.lineage <- function(..., forward = F) {
     print("Possible results:")
     print(pos.vars)
   } else {
-    ls <- lapply(args, grab.lineage, pos.vars = pos.vars, forward = forward)
+    ls <- lapply(args, .grab.lineage, forward = forward)
     names(ls) <- args
     return(ls)
   }
 }
 
-grab.lineage <- function(result, pos.vars, forward) {
+.grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables
   data.nodes <- get.data.nodes()
   proc.nodes <- get.proc.nodes()
@@ -65,8 +65,14 @@ grab.lineage <- function(result, pos.vars, forward) {
     }
   }
 
+  .process.label(node.label, proc.nodes, forward, assign.state = assign.state)
+}
+
+# This function uses the spine of connected nodes to return the data frame
+# This function is also used by debug.warning.trace()
+.process.label <- function(label, proc.nodes, forward, assign.state = NA) {
   # Grab the nodes that have connections to the chosen node from the adj graph
-  spine <- get.spine(node.label, forward)
+  spine <- get.spine(label, forward)
 
   # If moving forward the procedure node that contains the assignment
   # statement should be placed at the front of the spine to keep the order accurate
@@ -76,8 +82,9 @@ grab.lineage <- function(result, pos.vars, forward) {
 
   # Pull the lines from the proc nodes that are referenced
   # in the spine, each is stored as a row
-  lines <- lapply(spine[grep("p[[:digit:]]", spine)], function(proc.node){
-    list(proc.nodes[proc.nodes$label == proc.node, ]$startLine,
+  lines <- lapply(spine[grep("p[[:digit:]]", spine)], function(proc.node) {
+    list(proc.nodes[proc.nodes$label == proc.node, ]$scriptNum,
+         proc.nodes[proc.nodes$label == proc.node, ]$startLine,
          proc.nodes[proc.nodes$label == proc.node, ]$name)
   })
 
@@ -99,7 +106,7 @@ grab.lineage <- function(result, pos.vars, forward) {
   # The colnames are automatically assigned and
   # are not descriptive values, replace them with
   # descriptive values
-  colnames(df) <- c("line", "code")
+  colnames(df) <- c("script", "line", "code")
 
   # Order the "lines" column to ascending
   # This ensures the results always follow
