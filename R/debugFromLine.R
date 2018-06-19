@@ -31,7 +31,7 @@ grab.line <- function(lineNumber, state) {
     script <- proc.nodes[proc.nodes$startLine == lineNumber, "scriptNum"]
     script <- script[!is.na(script)]
 
-    # Val
+    # Valw
     proc.data.edges <- get.proc.data()
     entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
     val <- data.nodes[data.nodes$label == entity, "value"]
