@@ -40,50 +40,55 @@ debug.from.line <- function(..., state = F) {
 
   if (!state) {
     # doesn't account for multiple vars on one line
-    ## multiple scripts
     ## multiple references
 
     # Nodes (possible to have more than one)
     nodes <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
     nodes <- nodes[!is.na(nodes)]
 
+    # Create row for each variable on the line, then rbind into a data frame
     line.df <- NULL
-    line.df <- lapply(nodes, function(node) { # create row for each variable on the line, then rbind
+    line.df <- lapply(nodes, function(node) {
 
-      # Script
-      script <- proc.nodes[proc.nodes$startLine == lineNumber, "scriptNum"]
-      script <- script[!is.na(script)]
-
-      # Val
       proc.data.edges <- get.proc.data()
+
       entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
-      val <- data.nodes[data.nodes$label == entity, "value"]
 
-      # Var
-      var <- data.nodes[data.nodes$label == entity, "name"]
+      val <- var <- type <- NULL
+      if (length(entity) == 0) {
+        val <- var <- type <- NA #give some info (code? --> new column?)
+      } else {
+        # Var
+        var <- data.nodes[data.nodes$label == entity, "name"]
 
-      # Type
-      type <- NULL
-      val.type <- fromJSON(data.nodes[data.nodes$label == entity, "valType"])
-      if (val.type$container == "vector") {
-        type <- val.type$type
-        if (type == "numeric") {
-          type <- typeof(as.numeric(val))
+        # Val
+        val <- data.nodes[data.nodes$label == entity, "value"]
+
+        # Type
+        val.type <- fromJSON(data.nodes[data.nodes$label == entity, "valType"])
+        if (val.type$container == "vector") {
+          type <- val.type$type
+          if (type == "numeric") {
+            type <- typeof(as.numeric(val))
+          }
+          # Need to account for other types
+        } else if (val.type$container == "data_frame") {
+          type <- paste("Data Frame:", val.type$dimension[1], "x", val.type$dimension[2])
         }
-      } else if (val.type$container == "data_frame") {
-        type <- cat("Data Frame", val.type$dimension, sep = ", ")
       }
 
-      #line.row <- cbind(var, val, type, script)
-      line.row <- c(var, val, type, script)
-      line.df <- rbind(line.df, line.row)
+      # Script
+      script <- proc.nodes[proc.nodes$label == node, "scriptNum"]
 
-      #line.df <- as.data.frame(cbind(var, val, type, script))
+      line.row <- c(var, val, type, script)
+      line.df <- cbind(line.df, line.row) ## cbind or rbind?
     })
 
     line.df <- as.data.frame(line.df)
-    #colnames(line.df) <- c("var", "val", "type", "script")
-    #rownames(line.df) <- c(1:length(nodes))
+    rownames(line.df) <- c("var", "val", "type", "script")
+    colnames(line.df) <- c(1:length(nodes))
+    line.df <- t(line.df)
+    return(line.df)
 
   } else {
     return(NULL)
