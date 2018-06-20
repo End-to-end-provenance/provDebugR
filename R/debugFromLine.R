@@ -21,7 +21,12 @@ grab.line <- function(lineNumber, state) {
   data.nodes <- get.data.nodes()
   proc.nodes <- get.proc.nodes()
 
-  if (!state) { #doesn't account for multiple vars on one line (for example multiple scripts)
+  if (!state) {
+
+    # doesn't account for multiple vars on one line
+    ## multiple scripts
+    ## multiple references
+    # should check if line number is valid entry
 
     # Node
     node <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
@@ -52,15 +57,10 @@ grab.line <- function(lineNumber, state) {
     }
 
     line.reference <- as.data.frame(cbind(var, val, type, script))
+    return(line.reference)
 
   } else {
-
+    return(NULL)
   }
 
-
-
 }
-
-# df[df$label == "p11", "startLine"]
-proc.nodes[proc.nodes$label == lineNumber, "startLine"]
-
