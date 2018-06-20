@@ -112,5 +112,5 @@ debug.lineage <- function(..., forward = F) {
   # This ensures the results always follow
   # the flow of control
   df[with(df, order(line)), ]
-  rownames(df) <- 1:nrow(df)
+  #rownames(df) <- 1:nrow(df)
 }
