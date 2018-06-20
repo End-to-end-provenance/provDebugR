@@ -14,6 +14,30 @@ debug.from.line <- function(..., state = F) {
 
   }
 
+  # Check if line number is valid entry
+  pos.line <- proc.nodes[, "startLine"]
+  pos.line <- pos.line[!is.na(pos.line)]
+  pos.line <- as.list(unique(pos.line)) # do I want a list?
+
+  pos.args <- lapply(args, function(arg, pos.line) {
+    if (arg %in% pos.line) {
+      return(TRUE)
+    } else {
+      warning(paste(arg, " is not a possible line"))
+      return(FALSE)
+    }
+  }, pos.line = pos.line)
+
+  args <- args[unlist(pos.args)]
+
+  if (length(args) == 0) {
+    # show list of all variables at end of execution
+  } else {
+    ls <- lapply(args, .grab.line, state)
+    name(ls) <- args
+    return(ls)
+  }
+
 }
 
 .grab.line <- function(lineNumber, state) {
@@ -26,7 +50,7 @@ debug.from.line <- function(..., state = F) {
     # doesn't account for multiple vars on one line
     ## multiple scripts
     ## multiple references
-    # should check if line number is valid entry
+
 
     # Node
     node <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
@@ -36,7 +60,7 @@ debug.from.line <- function(..., state = F) {
     script <- proc.nodes[proc.nodes$startLine == lineNumber, "scriptNum"]
     script <- script[!is.na(script)]
 
-    # Valw
+    # Val
     proc.data.edges <- get.proc.data()
     entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
     val <- data.nodes[data.nodes$label == entity, "value"]
