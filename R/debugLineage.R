@@ -29,8 +29,8 @@ debug.lineage <- function(..., forward = F) {
 
   # If they did not provide any results themselve, list them out for them
   if(length(args) == 0) {
-    print("Possible results:")
-    print(pos.vars)
+    cat("Possible results:\n")
+    print(unlist(pos.vars))
   } else {
     ret.val <- lapply(args, .grab.lineage, forward = forward)
     names(ret.val) <- args
