@@ -33,6 +33,9 @@ expect_equal(length(dl.dfs), 2)
 
 context("Debug Warnings and Errors")
 debug.error <- debug.error.trace()
+expect_match(class(debug.error),"data.frame")
+expect_equal(debug.error$line[2], 24)
 
 debug.warn <- debug.warning.trace(1,2)
+expect_equal(debug.warn[[2]]$line, 22)
 

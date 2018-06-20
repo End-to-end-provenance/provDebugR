@@ -1,3 +1,5 @@
+# This function is a simple wrapper around the data.lineage function to show
+# how an error was produced
 debug.error.trace <- function(stack.overflow = F) {
   # This function is useless unless the adj.graph exists
   if(!debug.env$has.graph) {
@@ -7,6 +9,7 @@ debug.error.trace <- function(stack.overflow = F) {
   if(stack.overflow) {
     warning("stack overflow functionality is currently not supported")
   }
+
   debug.lineage("error.msg")$error.msg
 }
 
@@ -52,19 +55,26 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   # by logicals, TRUE corresponding to valid inputs
   args <- args[unlist(pos.args)]
 
+  # If they did not pass any arguments to the function
+  # then print the possible arguments they can input
   if(length(args) == 0) {
     cat("Possible results: \n")
     print(pos.vars$value)
     cat("Pass the corresponding index value to the function for info on that warning")
   } else {
+    # The procedure nodes are used in the .proccess.label fucntion
+    # to find script and line numbers and code
     proc.nodes <- get.proc.nodes()
 
+    # Each of the chosen warning message needs to be processed,
     dfs <- lapply(args, function(arg){
       .process.label(pos.vars[arg, ]$label, proc.nodes, forward = F)
     })
+
     if(stack.overflow) {
       warning("stack overflow functionality is currently not supported")
     }
+
     return(dfs)
   }
 }

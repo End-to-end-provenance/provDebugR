@@ -65,6 +65,7 @@ debug.lineage <- function(..., forward = F) {
     }
   }
 
+  # Use the label helper function to produce a data frame of lineage to return
   .process.label(node.label, proc.nodes, forward, assign.state = assign.state)
 }
 
