@@ -7,17 +7,10 @@ debug.from.line <- function(..., state = F) {
     stop("debug.init must be run first")
   }
 
-  if (length(args) < 1) {
-    # show the state of all variables at the end of execution
-    state = TRUE # what if user sets state to false?
-  } else if (length(args) == 1) {
-
-  }
-
   # Check if line number is valid entry
   pos.line <- proc.nodes[, "startLine"]
   pos.line <- pos.line[!is.na(pos.line)]
-  pos.line <- as.list(unique(pos.line)) # do I want a list?
+  #pos.line <- as.list(unique(pos.line)) # do I want a list?
 
   pos.args <- lapply(args, function(arg, pos.line) {
     if (arg %in% pos.line) {
@@ -33,12 +26,12 @@ debug.from.line <- function(..., state = F) {
   if (length(args) == 0) {
     # show list of all variables at end of execution
   } else {
-    ls <- lapply(args, .grab.line, state)
-    name(ls) <- args
-    return(ls)
+    ret.val <- lapply(args, .grab.line, state)
+    names(ret.val) <- args
+    return(ret.val)
   }
-
 }
+
 
 .grab.line <- function(lineNumber, state) {
 
@@ -46,45 +39,58 @@ debug.from.line <- function(..., state = F) {
   proc.nodes <- get.proc.nodes()
 
   if (!state) {
-
     # doesn't account for multiple vars on one line
-    ## multiple scripts
     ## multiple references
 
+    # Nodes (possible to have more than one)
+    nodes <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
+    nodes <- nodes[!is.na(nodes)]
 
-    # Node
-    node <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
-    node <- node[!is.na(node)]
+    # Create row for each variable on the line, then rbind into a data frame
+    line.df <- NULL
+    line.df <- lapply(nodes, function(node) {
 
-    # Script
-    script <- proc.nodes[proc.nodes$startLine == lineNumber, "scriptNum"]
-    script <- script[!is.na(script)]
+      proc.data.edges <- get.proc.data()
 
-    # Val
-    proc.data.edges <- get.proc.data()
-    entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
-    val <- data.nodes[data.nodes$label == entity, "value"]
+      entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
 
-    # Var
-    var <- data.nodes[data.nodes$label == entity, "name"]
+      val <- var <- type <- NULL
+      if (length(entity) == 0) {
+        val <- var <- type <- NA #give some info (code? --> new column?)
+      } else {
+        # Var
+        var <- data.nodes[data.nodes$label == entity, "name"]
 
-    # Type
-    type <- NULL
-    val.type <- fromJSON(data.nodes[data.nodes$label == entity, "valType"])
-    if (val.type$container == "vector") {
-      type <- val.type$type
-      if (type == "numeric") {
-        type <- typeof(as.numeric(val))
+        # Val
+        val <- data.nodes[data.nodes$label == entity, "value"]
+
+        # Type
+        val.type <- fromJSON(data.nodes[data.nodes$label == entity, "valType"])
+        if (val.type$container == "vector") {
+          type <- val.type$type
+          if (type == "numeric") {
+            type <- typeof(as.numeric(val))
+          }
+          # Need to account for other types
+        } else if (val.type$container == "data_frame") {
+          type <- paste("Data Frame:", val.type$dimension[1], "x", val.type$dimension[2])
+        }
       }
-    } else if (val.type$container == "data_frame") {
-      type <- cat("Data Frame", val.type$dimension, sep = ", ")
-    }
 
-    line.reference <- as.data.frame(cbind(var, val, type, script))
-    return(line.reference)
+      # Script
+      script <- proc.nodes[proc.nodes$label == node, "scriptNum"]
+
+      line.row <- c(var, val, type, script)
+      line.df <- cbind(line.df, line.row) ## cbind or rbind?
+    })
+
+    line.df <- as.data.frame(line.df)
+    rownames(line.df) <- c("var", "val", "type", "script")
+    colnames(line.df) <- c(1:length(nodes))
+    line.df <- t(line.df)
+    return(line.df)
 
   } else {
     return(NULL)
   }
-
 }
