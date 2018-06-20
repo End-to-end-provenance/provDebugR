@@ -32,9 +32,9 @@ debug.lineage <- function(..., forward = F) {
     print("Possible results:")
     print(pos.vars)
   } else {
-    ls <- lapply(args, .grab.lineage, forward = forward)
-    names(ls) <- args
-    return(ls)
+    ret.val <- lapply(args, .grab.lineage, forward = forward)
+    names(ret.val) <- args
+    return(ret.val)
   }
 }
 
