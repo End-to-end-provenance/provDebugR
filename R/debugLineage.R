@@ -111,7 +111,7 @@ debug.lineage <- function(..., forward = F) {
   # Order the "lines" column to ascending
   # This ensures the results always follow
   # the flow of control
-  df[with(df, order(line)), ]
+  df <- df[with(df, order(line)), ]
   rownames(df) <- 1:nrow(df)
   return(df)
 }
