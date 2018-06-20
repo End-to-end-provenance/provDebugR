@@ -14,14 +14,14 @@ debug.lineage <- function(..., forward = F) {
   # Make sure all the results passed by the user are valid
   # this produces a list of logicals, where TRUES
   #correspond to valid inputs
-  pos.args <- lapply(args, function(arg, pos.vars){
+  pos.args <- lapply(args, function(arg){
     if(arg %in% pos.vars) {
       return(TRUE)
     } else {
       warning(paste(arg, " is not a possible result"))
       return(FALSE)
     }
-  }, pos.vars = pos.vars)
+  })
 
   # Any non-valid inputs will be removed as the list is subset
   # by logicals, TRUE corresponding to valid inputs
@@ -112,4 +112,5 @@ debug.lineage <- function(..., forward = F) {
   # This ensures the results always follow
   # the flow of control
   df[with(df, order(line)), ]
+  row.names(df) <- 1:nrow(df)
 }
