@@ -2,10 +2,11 @@ library(RDataTracker)
 library(provParseR)
 library(provGraphR)
 library(provDebugR)
+library(igraph)
 
 # Loading test data
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
-debug.init(test.data)
+debug.prov(test.data)
 
 # context("R or Rmd input")
 # R script not working
@@ -17,5 +18,24 @@ expect_match(typeof(envi.df$value), "character")
 
 context("Graph")
 s <- get.spine("p11")
-expect_match(class(s), "character")
-expect_equal(length(s), 2)
+expect_equal(length(s), 5)
+expect_match(s[3], "p6")
+
+context("Debugging Lineage")
+dl.df <- debug.lineage("x")
+expect_match(dl.df$x$code[1], "y <- 2")
+expect_equal(dl.df$x$line[1], 3)
+dl.df <- debug.lineage("y", forward = T)
+expect_match(dl.df$y$code[1], "y <- 2")
+expect_match(dl.df$y$code[6], "x <- b \\+ y")
+dl.dfs <- debug.lineage("x", "y")
+expect_equal(length(dl.dfs), 2)
+
+context("Debug Warnings and Errors")
+debug.error <- debug.error.trace()
+expect_match(class(debug.error),"data.frame")
+expect_equal(debug.error$line[2], 24)
+
+debug.warn <- debug.warning.trace(1,2)
+expect_equal(debug.warn[[2]]$line, 22)
+

@@ -16,11 +16,11 @@ debug.init <- function(input.data) {
   } else {
     warning("Please enter a valid script or prov.json name")
   }
-  debug.prov(ddg.json(), isFile = F)
+  debug.prov(ddg.json(), is.file = F)
 }
 
-debug.prov <- function(input.prov, isFile = T) {
-  prov.parse(input.prov, isFile = isFile)
+debug.prov <- function(input.prov, is.file = T) {
+  prov.parse(input.prov, isFile = is.file)
   create.graph()
   debug.env$has.graph = TRUE
 }
