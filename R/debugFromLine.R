@@ -16,7 +16,7 @@ debug.from.line <- function(..., state = F) {
 
 }
 
-grab.line <- function(lineNumber, state) {
+.grab.line <- function(lineNumber, state) {
 
   data.nodes <- get.data.nodes()
   proc.nodes <- get.proc.nodes()
