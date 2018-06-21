@@ -109,3 +109,7 @@ debug.from.line <- function(..., state = F) {
     # return(NULL)
   }
 }
+
+.process.node <- function(nodes) {
+
+}
