@@ -101,15 +101,59 @@ debug.from.line <- function(..., state = F) {
     # Extract data entity from procedure activity via procedure-to-data edges
     proc.data.edges <- get.proc.data()
     entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
-
+    # why not using startLine at all?
     rname <- rownames(data.nodes[data.nodes$label == entity, ])
     nodes <- data.nodes["1":rname, "label"]
 
+    '''
+    line.df <- NULL
+    line.df <- as.data.fram(lapply(nodes, .process.nodes(node)))
+    rownames(line.df) <- c("var", "val", "type", "script")
+    colnames(line.df) <- c(1:length(nodes))
+    line.df <- t(line.df)
+    return(line.df)
+    '''
+
     # generalize lapply function from !state
-    # return(NULL)
+    return(NULL)
   }
 }
 
-.process.node <- function(nodes) {
+'''
+.process.node <- function(node) {
 
+  # Extract data entity from procedure activity via procedure-to-data edges
+  proc.data.edges <- get.proc.data()
+  entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
+
+  val <- var <- type <- NULL
+  if (length(entity) == 0) {
+    val <- var <- type <- NA #give some info (code? --> new column?)
+  } else {
+    # Var
+    var <- data.nodes[data.nodes$label == entity, "name"]
+
+    # Val
+    val <- data.nodes[data.nodes$label == entity, "value"]
+
+    # Type
+    val.type <- fromJSON(data.nodes[data.nodes$label == entity, "valType"])
+    if (val.type$container == "vector") {
+      type <- val.type$type
+      if (type == "numeric") {
+        type <- typeof(as.numeric(val))
+      }
+      # Need to account for other types
+    } else if (val.type$container == "data_frame") {
+      type <- paste("Data Frame:", val.type$dimension[1], "x", val.type$dimension[2])
+    }
+  }
+
+  # Script
+  script <- proc.nodes[proc.nodes$label == node, "scriptNum"]
+
+  line.row <- c(var, val, type, script)
+  line.df <- cbind(line.df, line.row)
+  #return(line.row)
 }
+'''
