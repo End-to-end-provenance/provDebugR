@@ -10,7 +10,6 @@ debug.from.line <- function(..., state = F) {
   # Check if line number is valid entry
   pos.line <- proc.nodes[, "startLine"]
   pos.line <- pos.line[!is.na(pos.line)]
-  #pos.line <- as.list(unique(pos.line)) # do I want a list?
 
   pos.args <- lapply(args, function(arg, pos.line) {
     if (arg %in% pos.line) {
@@ -23,6 +22,8 @@ debug.from.line <- function(..., state = F) {
 
   args <- args[unlist(pos.args)]
 
+  # If parameter is blank, show state of all variables at end of execution
+  # Otherwise, call helper function .grab.line over each line input
   if (length(args) == 0) {
     # show list of all variables at end of execution
   } else {
@@ -35,23 +36,33 @@ debug.from.line <- function(..., state = F) {
 
 .grab.line <- function(lineNumber, state) {
 
+  # Data nodes have var, val, and type
   data.nodes <- get.data.nodes()
+  # Procedure nodes have start line and script number
   proc.nodes <- get.proc.nodes()
 
   if (!state) {
     # doesn't account for multiple vars on one line
-    ## multiple references
+    ## multiple references : data to procedure edges
 
     # Nodes (possible to have more than one)
     nodes <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
     nodes <- nodes[!is.na(nodes)]
 
+    # Add to list of nodes those that are referenced on the line
+    ref.nodes <- NULL
+    ref.nodes <- lapply(nodes, function(node) {
+      ref.entity <- data.proc.edges[data.proc.edges$activity == node, "entity"]
+      ref.node <- proc.data.edges[proc.data.edges$entity == ref.entity, "activity"]
+    })
+    nodes <- c(nodes, ref.nodes)
+
     # Create row for each variable on the line, then rbind into a data frame
     line.df <- NULL
     line.df <- lapply(nodes, function(node) {
 
+      # Extract data entity from procedure activity via procedure-to-data edges
       proc.data.edges <- get.proc.data()
-
       entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
 
       val <- var <- type <- NULL
