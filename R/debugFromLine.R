@@ -33,7 +33,6 @@ debug.from.line <- function(..., state = F) {
   }
 }
 
-
 .grab.line <- function(lineNumber, state) {
 
   # Data nodes have var, val, and type
@@ -42,9 +41,6 @@ debug.from.line <- function(..., state = F) {
   proc.nodes <- get.proc.nodes()
 
   if (!state) {
-    # doesn't account for multiple vars on one line
-    ## multiple references : data to procedure edges
-
     # Nodes (possible to have more than one)
     nodes <- proc.nodes[proc.nodes$startLine == lineNumber, "label"]
     nodes <- nodes[!is.na(nodes)]
@@ -102,6 +98,18 @@ debug.from.line <- function(..., state = F) {
     return(line.df)
 
   } else {
-    return(NULL)
+    # Extract data entity from procedure activity via procedure-to-data edges
+    proc.data.edges <- get.proc.data()
+    entity <- proc.data.edges[proc.data.edges$activity == node, "entity"]
+
+    rname <- rownames(data.nodes[data.nodes$label == entity, ])
+    nodes <- data.nodes["1":rname, "label"]
+
+    # generalize lapply function from !state
+    # return(NULL)
   }
+}
+
+.process.node <- function(nodes) {
+
 }
