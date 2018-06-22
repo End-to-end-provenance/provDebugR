@@ -25,6 +25,9 @@ debug.from.line <- function(..., state = F) {
 
   # Procedure nodes have start line
   proc.nodes <- get.proc.nodes()
+  ### NOTE: can I subset proc.nodes to only have rows with type operation?
+  ### proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+  ### NA values are getting in the way
 
   # Check if line number is valid entry
   pos.line <- proc.nodes[, "startLine"]
@@ -44,7 +47,13 @@ debug.from.line <- function(..., state = F) {
   # If parameter is blank, show state of all variables at end of execution
   # Otherwise, call helper function .grab.line over each line input
   if (length(args) == 0) {
-    # show list of all variables at end of execution
+    #max.node <- proc.nodes[proc.nodes$startLine == max(pos.line), "label"]
+    #max.node <- max.node[!is.na(max.node)]
+    #ret.val <- .process.node(max.node) # wouldn't work if multiple scripts have same max line
+    print("State of all variables at end of execution")
+    max.line <- max(pos.line)
+    ret.val <- .grab.line(max.line, state = T)
+    return(ret.val)
   } else {
     ret.val <- lapply(args, .grab.line, state)
     names(ret.val) <- args
@@ -167,7 +176,6 @@ debug.from.line <- function(..., state = F) {
 
       line.row <- c(var, val, type)
       line.df <- cbind(line.df, line.row) ## cbind or rbind?
-
     })
 
     line.df <- as.data.frame(line.df)
@@ -176,4 +184,9 @@ debug.from.line <- function(..., state = F) {
     line.df <- t(line.df)
     return(line.df)
   }
+}
+
+
+.process.node <- function(node) {
+  # should create for generalizing
 }
