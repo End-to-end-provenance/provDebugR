@@ -50,8 +50,6 @@ debug.from.line <- function(..., state = F) {
   # If parameter is blank, show state of all variables at end of execution
   # Otherwise, call helper function .grab.line over each line input
   if (length(args) == 0) {
-    #max.node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == max(pos.line), "label"]
-    #ret.val <- .process.node(max.node) # wouldn't work if multiple scripts have same max line
     print("State of all variables at end of execution:")
     ret.val <- .grab.line(max(pos.line), state = T)
     return(ret.val)
@@ -64,12 +62,12 @@ debug.from.line <- function(..., state = F) {
 
 .grab.line <- function(lineNumber, state) {
 
-  if (!state) {
-    # Nodes (possible to have more than one)
+  .debug.env$line.df <- data.frame()
+
+  if (!state) { # REFERENCE
     nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "label"]
 
     # Add to list of nodes those that are referenced on the line
-    ref.nodes <- NULL
     ref.nodes <- lapply(nodes, function(node) {
       ref.entity <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$activity == node, "entity"]
       ref.node <- NA
@@ -78,53 +76,18 @@ debug.from.line <- function(..., state = F) {
       }
       return(ref.node)
     })
-
     nodes <- c(nodes, ref.nodes)
+    nodes <- nodes[!is.na(nodes)]
 
     # Create row for each variable on the line, then rbind into a data frame
-    line.df <- NULL
-    line.df <- lapply(nodes, function(node) {
+    lapply(nodes, .process.node)
 
-      # Extract data entity from procedure activity via procedure-to-data edges
-      entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+    colnames(.debug.env$line.df) <- c("var", "val", "type", "script")
+    rownames(.debug.env$line.df) <- c(1:length(nodes))
 
-      val <- var <- type <- NULL
-      if (length(entity) == 0) {
-        val <- var <- type <- NA # give some info (code? --> new column?)
-      } else {
-        # Var
-        var <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "name"]
+    return(.debug.env$line.df)
 
-        # Val
-        val <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "value"]
-
-        # Type
-        val.type <- fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, "valType"])
-        if (val.type$container == "vector") {
-          type <- val.type$type
-          if (type == "numeric") {
-            type <- typeof(as.numeric(val))
-          }
-          # Need to account for other types
-        } else if (val.type$container == "data_frame") {
-          type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
-        }
-      }
-
-      # Script
-      script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
-
-      line.row <- c(var, val, type, script)
-      line.df <- cbind(line.df, line.row) ## cbind or rbind?
-    })
-
-    line.df <- as.data.frame(line.df)
-    rownames(line.df) <- c("var", "val", "type", "script")
-    colnames(line.df) <- c(1:length(nodes))
-    line.df <- t(line.df)
-    return(line.df)
-
-  } else {
+  } else { # STATE
     node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "label"]
 
     # Extract data entity from procedure activity via procedure-to-data edges
@@ -136,7 +99,6 @@ debug.from.line <- function(..., state = F) {
 
     line.df <- NULL
     line.df <- lapply(nodes, function(node) {
-
       val <- var <- type <- NULL
       if (length(node) == 0) {
         val <- var <- type <- NA # give some info (code? --> new column?)
@@ -164,14 +126,43 @@ debug.from.line <- function(..., state = F) {
       line.df <- cbind(line.df, line.row) ## cbind or rbind?
     })
 
-    line.df <- as.data.frame(line.df)
-    rownames(line.df) <- c("var", "val", "type")
-    colnames(line.df) <- c(1:length(nodes))
-    line.df <- t(line.df)
+    line.df <- t(as.data.frame(line.df))
+    colnames(line.df) <- c("var", "val", "type")
+    rownames(line.df) <- c(1:length(nodes))
     return(line.df)
   }
 }
 
 .process.node <- function(node) {
-  # should create for generalizing
+  # Extract data entity from procedure activity via procedure-to-data edges
+  entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+
+  val <- var <- type <- NULL
+  if (length(entity) == 0) {
+    val <- var <- type <- NA # give some info (code? --> new column?)
+  } else {
+    # Var
+    var <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "name"]
+
+    # Val
+    val <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "value"]
+
+    # Type
+    val.type <- fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, "valType"])
+    if (val.type$container == "vector") {
+      type <- val.type$type
+      if (type == "numeric") {
+        type <- typeof(as.numeric(val))
+      }
+      # Need to account for other types
+    } else if (val.type$container == "data_frame") {
+      type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
+    }
+  }
+
+  # Script
+  script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
+
+  line.row <- c(var, val, type, script)
+  .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE) ## cbind or rbind?
 }
