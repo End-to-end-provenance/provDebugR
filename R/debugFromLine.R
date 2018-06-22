@@ -1,3 +1,6 @@
+# This file is a part of provDebugR
+# Contact: Orenna Brand <o.brand@columbia.edu>
+
 debug.from.line <- function(..., state = F) {
   # Collect the arguments passed to the function
   args <- list(...)
