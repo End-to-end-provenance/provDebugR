@@ -1,13 +1,14 @@
+# These environment will be used throughout the package as a way to communicate between functions
 .debug.env <- new.env(parent = emptyenv())
 .debug.env$has.graph = FALSE
 
 # One of these two follwing function must be run before anything else
 
-#' Initialization functions
+#'Initialization functions
 #'
-#' Intialize the package by running RDataTracker on a script
-#' and/or parsing the resulting provenance into a useable format
-#' Debug.init or debug.prov must be run before anything else
+#'Intialize the package by running RDataTracker on a script
+#'and/or parsing the resulting provenance into a useable format
+#'Debug.init or debug.prov must be run before anything else
 #'
 #'@param input.data A path to an R script
 #'@return There is no return value
@@ -38,14 +39,14 @@ debug.init <- function(input.data) {
 
 }
 
-#' @rdname debug.init
-#' @export
-#' @param input.prov A prov.json compliant file from the system or a string from memory
-#' @param is.file Logical stating whether or not input.prov needs to be read in from the system or not
-#' @examples
-#' \dontrun{
-#' debug.prov("prov.json")
-#' }
+#'@rdname debug.init
+#'@export
+#'@param input.prov A prov.json compliant file from the system or a string from memory
+#'@param is.file Logical stating whether or not input.prov needs to be read in from the system or not
+#'@examples
+#'\dontrun{
+#'debug.prov("prov.json")
+#'}
 debug.prov <- function(input.prov, is.file = T) {
   prov.parse(input.prov, isFile = is.file)
   create.graph()
