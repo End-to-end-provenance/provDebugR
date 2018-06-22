@@ -16,7 +16,14 @@ debug.init <- function(input.data) {
   file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
 
   if (file.ext == "R" || file.ext == "Rmd") {
-    ddg.run(input.data)
+    try.result = tryCatch({
+      ddg.run(input.data)
+    }, error = function(error_condition) {
+      cat("This script had an error, to learn more run: \n debug.error.trace() \n")
+    }, finally={
+      cat("RDataTracker is finished running \n")
+    })
+
   } else {
     warning("Please enter a valid R script")
   }
