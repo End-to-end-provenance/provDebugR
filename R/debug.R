@@ -22,6 +22,7 @@ debug.init <- function(input.data) {
     warning("Please enter a valid R script")
   }
   debug.prov(ddg.json(), is.file = F)
+  debug.env$has.graph = TRUE
 }
 
 # This function parses the json passed by the user or debug.init
