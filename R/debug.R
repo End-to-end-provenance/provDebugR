@@ -1,13 +1,10 @@
-library(RDataTracker)
-library(provParseR)
-library(provGraphR)
-
 .debug.env <- new.env(parent = emptyenv())
 .debug.env$has.graph = FALSE
 
 # One of these two follwing function must be run before anything else
 
-
+#' Initialization functions
+#'
 #' Intialize the package by running RDataTracker on a script
 #' and/or parsing the resulting provenance into a useable format
 #' Debug.init or debug.prov must be run before anything else

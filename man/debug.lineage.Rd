@@ -2,8 +2,7 @@
 % Please edit documentation in R/debugLineage.R
 \name{debug.lineage}
 \alias{debug.lineage}
-\title{This function will return either the lines that led up to a variable's creation
-or the other variables that the chosen variable was used to create}
+\title{Lineage of variables}
 \usage{
 debug.lineage(..., forward = F)
 }
@@ -21,4 +20,12 @@ of the variables. The names of the list will correspond to the variable passed
 \description{
 This function will return either the lines that led up to a variable's creation
 or the other variables that the chosen variable was used to create
+}
+\examples{
+\dontrun{
+debug.lineage("x")
+l <- c("x", "y", "foo", "bar")
+debug.lineage(l)
+debug.lineage(l, "z")
+}
 }

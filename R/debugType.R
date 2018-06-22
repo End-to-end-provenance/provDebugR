@@ -1,3 +1,23 @@
+#' Type changes
+#'
+#' This function show how a variable's type has changed throughout
+#' execution of a script
+#'
+#'@param ... Variables to find the type for. Can be single elements or vectors/lists.
+#'@param just.logical Determines whether or not to display only if the variable has changed
+#'or what the actual values were throughout execution
+#'@return Returns one of two things. If no parameters were passed to the function
+#'then a vector of possible variables will be returned. If variables were passed to the
+#'function then a list of data frames is returned. Each data frame corresponds to one
+#'of the variables. The names of the list will correspond to the variable passed
+#'@export
+#'@examples
+#'\dontrun{
+#'debug.variable.type("x")
+#'l <- c("x", "y", "foo", "bar")
+#'debug.variable.type(l)
+#'debug.variable.type(l, "z", just.logical = T)
+#'}
 debug.variable.type <- function(..., just.logical = F) {
   # Collect the arguments passed to the function
   args <- list(...)
@@ -48,6 +68,22 @@ debug.variable.type <- function(..., just.logical = F) {
     return(unlist(pos.vars))
   } else {
     ret.val <- lapply(args, .grab.instances)
+
+    # If the user wants to know only if the variables have changed replace the
+    # data frame with a list of logicals corresponding to if there was a change
+    # or not based off the data returned from before
+    if(just.logical) {
+      ret.val <- lapply(ret.val, function(df) {
+        return.value <- FALSE
+        # If there is more than a single unique value in the column
+        # that means there were at least two types
+        if(length(unique(df$type)) > 1) {
+          return.value <- TRUE
+        }
+        return(return.value)
+      })
+    }
+
     names(ret.val) <- args
     return(ret.val)
   }

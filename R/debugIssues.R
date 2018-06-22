@@ -1,5 +1,21 @@
 # This function is a simple wrapper around the data.lineage function to show
 # how an error was produced
+
+#'Warnings and errors
+#'
+#'This function will trace the lineage of an error message, returning the lines
+#'that led up to a script stopping
+#'
+#'@name debug.error.trace
+#'@param stack.overflow *NOT CURRENTLY SUPPORTED* Determines whether or not the
+#'error message should be searched for automatically on stack overflow
+#'@return Debug.error: Returns a data frame with all the lines that led to an error's creation
+#'@export
+#'@examples
+#'\dontrun{
+#'debug.error.trace()
+#'debug.error.trace(stack.overflow = T)
+#'}
 debug.error.trace <- function(stack.overflow = F) {
   # This function is useless unless the adj.graph exists
   if(!.debug.env$has.graph) {
@@ -27,6 +43,24 @@ debug.error.trace <- function(stack.overflow = F) {
 # cannot be reused here as it relies on variables having unique
 # names. warnings do not have unique names and there can be multiple
 # warnings unlike error messages.
+
+#' This function shows the lineage of the warning messages in a script
+#'
+#'@rdname debug.error.trace
+#'@param ... A number representing the error message the function should return.
+#'To see the possibilities call the function with no argument passed
+#'@return Debug.warning: Returns one of two things. If no parameters were passed to the function
+#'then a list of possible warnings will be returned. The number next to the warning
+#'is the number that should be passed to grab that lineage. If variables were passed to the
+#'function then a list of data frames is returned. Each data frame corresponds to one
+#'of the warnings.
+#'@export
+#'@examples
+#'\dontrun{
+#'debug.warning.trace() # returns a list of possible warnings
+#'debug.warning.trace(1, 4) # returns warnings 1 and 4
+#'debug.warning.trace(1:4, 7) # returns warnings 1 through 4 and 7
+#'}
 debug.warning.trace <- function(..., stack.overflow = F) {
   args <- list(...)
 

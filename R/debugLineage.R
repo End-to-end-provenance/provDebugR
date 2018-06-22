@@ -1,3 +1,5 @@
+#' Lineage of variables
+#'
 #' This function will return either the lines that led up to a variable's creation
 #' or the other variables that the chosen variable was used to create
 #'
@@ -7,6 +9,14 @@
 #'then a vector of possible variables will be returned. If variables were passed to the
 #'function then a list of data frames is returned. Each data frame corresponds to one
 #'of the variables. The names of the list will correspond to the variable passed
+#'@export
+#'@examples
+#'\dontrun{
+#'debug.lineage("x")
+#'l <- c("x", "y", "foo", "bar")
+#'debug.lineage(l)
+#'debug.lineage(l, "z")
+#'}
 debug.lineage <- function(..., forward = F) {
   # Collect the arguments passed to the function
   args <- list(...)
