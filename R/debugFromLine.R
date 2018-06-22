@@ -2,6 +2,14 @@ debug.from.line <- function(..., state = F) {
   # Collect the arguments passed to the function
   args <- list(...)
 
+  flat.args <- list()
+
+  lapply(args, function(arg){
+    flat.args <<- append(flat.args, arg)
+  })
+
+  args <- flat.args
+
   # This function is useless unless the adj.graph exists
   if(!debug.env$has.graph) {
     stop("debug.init must be run first")
@@ -86,7 +94,7 @@ debug.from.line <- function(..., state = F) {
           }
           # Need to account for other types
         } else if (val.type$container == "data_frame") {
-          type <- paste("Data Frame:", val.type$dimension[1], "x", val.type$dimension[2])
+          type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
         }
       }
 
