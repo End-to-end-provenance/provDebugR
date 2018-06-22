@@ -1,7 +1,7 @@
-#' Lineage of variables
+#'Lineage of variables
 #'
-#' This function will return either the lines that led up to a variable's creation
-#' or the other variables that the chosen variable was used to create
+#'This function will return either the lines that led up to a variable's creation
+#'or the other variables that the chosen variable was used to create
 #'
 #'@param ... Variables to find the lineage for. Can be single elements or vectors/lists.
 #'@param forward Determines whether to look for lineage forward in the script or backward

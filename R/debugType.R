@@ -1,7 +1,7 @@
-#' Type changes
+#'Type changes
 #'
-#' This function show how a variable's type has changed throughout
-#' execution of a script
+#'This function show how a variable's type has changed throughout
+#'execution of a script
 #'
 #'@param ... Variables to find the type for. Can be single elements or vectors/lists.
 #'@param just.logical Determines whether or not to display only if the variable has changed
