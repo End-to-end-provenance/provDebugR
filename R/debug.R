@@ -18,12 +18,13 @@ debug.init <- function(input.data) {
   if (file.ext == "R" || file.ext == "Rmd") {
     try.result = tryCatch({
       ddg.run(input.data)
+    }, warning = function(warning_condition) {
+      warning("This script had warnings, to learn more run: \ndebug.warning.trace() \n")
     }, error = function(error_condition) {
-      cat("This script had an error, to learn more run: \n debug.error.trace() \n")
+      warning("This script had an error, to learn more run: \ndebug.error.trace() \n")
     }, finally={
       cat("RDataTracker is finished running \n")
     })
-
   } else {
     warning("Please enter a valid R script")
   }
