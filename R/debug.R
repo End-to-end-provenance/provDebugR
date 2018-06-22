@@ -16,8 +16,7 @@ debug.init <- function(input.data) {
   file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
 
   if (file.ext == "R" || file.ext == "Rmd") {
-    # OPENISSUE currently not supported due to RDataTracker JSON limitations
-    # ddg.run(input.data)
+    ddg.run(input.data)
     stop("passing of scripts is currently not supported due to RDataTracker JSON limitations")
   } else {
     warning("Please enter a valid R script")
