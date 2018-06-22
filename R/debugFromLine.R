@@ -97,45 +97,24 @@ debug.from.line <- function(..., state = F) {
     rname <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
     nodes <- .debug.env$data.nodes["1":rname, "label"]
 
-    line.df <- NULL
-    line.df <- lapply(nodes, function(node) {
-      val <- var <- type <- NULL
-      if (length(node) == 0) {
-        val <- var <- type <- NA # give some info (code? --> new column?)
-      } else {
-        # Var
-        var <- .debug.env$data.nodes[.debug.env$data.nodes$label == node, "name"]
+    lapply(nodes, .process.node)
 
-        # Val
-        val <- .debug.env$data.nodes[.debug.env$data.nodes$label == node, "value"]
+    colnames(.debug.env$line.df) <- c("var", "val", "type", "script")
+    rownames(.debug.env$line.df) <- c(1:length(nodes))
 
-        # Type
-        val.type <- fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == node, "valType"])
-        if (val.type$container == "vector") {
-          type <- val.type$type
-          if (type == "numeric") {
-            type <- typeof(as.numeric(val))
-          }
-          # Need to account for other types
-        } else if (val.type$container == "data_frame") {
-          type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
-        }
-      }
-
-      line.row <- c(var, val, type)
-      line.df <- cbind(line.df, line.row) ## cbind or rbind?
-    })
-
-    line.df <- t(as.data.frame(line.df))
-    colnames(line.df) <- c("var", "val", "type")
-    rownames(line.df) <- c(1:length(nodes))
-    return(line.df)
+    return(.debug.env$line.df)
   }
 }
 
 .process.node <- function(node) {
   # Extract data entity from procedure activity via procedure-to-data edges
-  entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+  if (grepl("p", node)) {
+    entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+    script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
+  } else if (grepl("d", node)) {
+    entity <- node
+    script <- 0
+  }
 
   val <- var <- type <- NULL
   if (length(entity) == 0) {
@@ -159,9 +138,6 @@ debug.from.line <- function(..., state = F) {
       type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
     }
   }
-
-  # Script
-  script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
 
   line.row <- c(var, val, type, script)
   .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE) ## cbind or rbind?
