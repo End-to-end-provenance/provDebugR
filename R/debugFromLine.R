@@ -5,8 +5,13 @@ debug.from.line <- function(..., state = F) {
   # Collect the arguments passed to the function
   args <- list(...)
 
+  # In case they also entered a list as an argument
+  # the list should be extracted so that we're left with
+  # only single elements
   flat.args <- list()
 
+  # Extract everything and append it to the temp list
+  # appending will be able to unnest any passed lists
   lapply(args, function(arg){
     flat.args <<- append(flat.args, arg)
   })
@@ -17,6 +22,11 @@ debug.from.line <- function(..., state = F) {
   if(!debug.env$has.graph) {
     stop("debug.init must be run first")
   }
+
+  # Data nodes have var, val, and type
+  data.nodes <- get.data.nodes()
+  # Procedure nodes have start line and script number
+  proc.nodes <- get.proc.nodes()
 
   # Check if line number is valid entry
   pos.line <- proc.nodes[, "startLine"]
@@ -46,10 +56,10 @@ debug.from.line <- function(..., state = F) {
 
 .grab.line <- function(lineNumber, state) {
 
-  # Data nodes have var, val, and type
-  data.nodes <- get.data.nodes()
-  # Procedure nodes have start line and script number
   proc.nodes <- get.proc.nodes()
+  data.nodes <- get.data.nodes()
+  data.proc.edges <- get.data.proc()
+  proc.data.edges <- get.proc.data()
 
   if (!state) {
     # Nodes (possible to have more than one)
@@ -68,7 +78,6 @@ debug.from.line <- function(..., state = F) {
     })
     nodes <- c(nodes, ref.nodes)
     nodes <- nodes[!is.na(nodes)]
-
 
     # Create row for each variable on the line, then rbind into a data frame
     line.df <- NULL
