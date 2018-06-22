@@ -16,12 +16,18 @@ debug.init <- function(input.data) {
   file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
 
   if (file.ext == "R" || file.ext == "Rmd") {
-    ddg.run(input.data)
-    stop("passing of scripts is currently not supported due to RDataTracker JSON limitations")
+    try.result = tryCatch({
+      ddg.run(input.data)
+    }, error = function(error_condition) {
+      cat("This script had an error, to learn more run: \ndebug.error.trace() \n")
+    }, finally={
+      cat("RDataTracker is finished running \n")
+    })
   } else {
     warning("Please enter a valid R script")
   }
   debug.prov(ddg.json(), is.file = F)
+
 }
 
 # This function parses the json passed by the user or debug.init
