@@ -10,7 +10,16 @@ debug.error.trace <- function(stack.overflow = F) {
     warning("stack overflow functionality is currently not supported")
   }
 
-  debug.lineage("error.msg")$error.msg
+  data.nodes <- get.data.nodes()
+
+  message <- data.nodes[data.nodes$name == "error.msg", ]$value
+  if(length(message) > 0){
+    cat(paste("Error: ", message, "\n", sep = ""))
+
+    return(debug.lineage("error.msg")$error.msg)
+  } else {
+    cat("There were no errors in this script")
+  }
 }
 
 # This function operates similarily to debug.lineage; however,
@@ -20,6 +29,19 @@ debug.error.trace <- function(stack.overflow = F) {
 # warnings unlike error messages.
 debug.warning.trace <- function(..., stack.overflow = F) {
   args <- list(...)
+
+  # In case they also entered a list as an argument
+  # the list should be extracted so that we're left with
+  # only single elements
+  flat.args <- list()
+
+  # Extract everything and append it to the temp list
+  # appending will be able to unnest any passed lists
+  lapply(args, function(arg){
+    flat.args <<- append(flat.args, arg)
+  })
+
+  args <- flat.args
 
   # This function is useless unless the adj.graph exists
   if(!debug.env$has.graph) {
