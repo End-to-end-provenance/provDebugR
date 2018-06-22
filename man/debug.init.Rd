@@ -3,9 +3,7 @@
 \name{debug.init}
 \alias{debug.init}
 \alias{debug.prov}
-\title{Intialize the package by running RDataTracker on a script
-and/or parsing the resulting provenance into a useable format
-Debug.init or debug.prov must be run before anything else}
+\title{Initialization functions}
 \usage{
 debug.init(input.data)
 
