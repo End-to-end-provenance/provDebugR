@@ -1,3 +1,12 @@
+#' This function will return either the lines that led up to a variable's creation
+#' or the other variables that the chosen variable was used to create
+#'
+#'@param ... Variables to find the lineage for. Can be single elements or vectors/lists.
+#'@param forward Determines whether to look for lineage forward in the script or backward
+#'@return Returns one of two things. If no parameters were passed to the function
+#'then a vector of possible variables will be returned. If variables were passed to the
+#'function then a list of data frames is returned. Each data frame corresponds to one
+#'of the variables. The names of the list will correspond to the variable passed
 debug.lineage <- function(..., forward = F) {
   # Collect the arguments passed to the function
   args <- list(...)
@@ -16,7 +25,7 @@ debug.lineage <- function(..., forward = F) {
   args <- flat.args
 
   # This function is useless unless the adj.graph exists
-  if(!debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
@@ -50,6 +59,7 @@ debug.lineage <- function(..., forward = F) {
     return(ret.val)
   }
 }
+
 
 .grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables

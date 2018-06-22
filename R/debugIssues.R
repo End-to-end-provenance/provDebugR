@@ -2,7 +2,7 @@
 # how an error was produced
 debug.error.trace <- function(stack.overflow = F) {
   # This function is useless unless the adj.graph exists
-  if(!debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
@@ -44,7 +44,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   args <- flat.args
 
   # This function is useless unless the adj.graph exists
-  if(!debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 

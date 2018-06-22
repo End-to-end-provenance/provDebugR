@@ -16,7 +16,7 @@ debug.variable.type <- function(..., just.logical = F) {
   args <- flat.args
 
   # This function is useless unless the adj.graph exists
-  if(!debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
