@@ -1,5 +1,23 @@
-# This file is a part of provDebugR
-# Contact: Orenna Brand <o.brand@columbia.edu>
+#' State of variables given lines
+#'
+#' This function will either return all references to variables on
+#' a given line, or the state of all variables up to that point in
+#' execution.
+#'
+#' @param ... Line(s) to examine. Can be single lines or vectors/lines.
+#' @param state if If FALSE, returns the refereneces to variables on
+#' inputed line(s). If TRUE, returns the state of all variables up to
+#' that point in execution.
+#' @return A list of one data frame per line, containing information about
+#' the variables on that line. If no parameters were passed, returns a
+#' data frame containing the state of all variables at the end of execution.
+#' @export
+#' @examples
+#' \dontrun{
+#' debug.from.line(4, state = F)
+#' debug.from.line(4, 5:8, 10, state = T)
+#' debug.from.line()
+#' }
 
 debug.from.line <- function(..., state = F) {
   # Collect the arguments passed to the function
@@ -133,12 +151,12 @@ debug.from.line <- function(..., state = F) {
       if (type == "numeric") {
         type <- typeof(as.numeric(val))
       }
-      # Need to account for other types
+      # Need to account for other valTypes
     } else if (val.type$container == "data_frame") {
       type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
     }
   }
 
   line.row <- c(var, val, type, script)
-  .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE) ## cbind or rbind?
+  .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
 }

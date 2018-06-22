@@ -17,4 +17,4 @@ LazyData: true
 Imports: jsonlite, RDataTracker, provParseR, provGraphR, igraph
 Suggests: 
     testthat
-RoxygenNote: 6.0.1
+RoxygenNote: 6.0.1.9000
