@@ -23,7 +23,8 @@
 #'debug.init("test.R")
 #'}
 debug.init <- function(input.data) {
-
+  def.warn <- options()$warn
+  options(warn = 1)
   # Extract what the file type is to make sure that it is an R file
   file.parts <- strsplit(input.data, "\\.")
   file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
@@ -39,9 +40,8 @@ debug.init <- function(input.data) {
   } else {
     warning("Please enter a valid R script")
   }
-  flush.console()
+  options(warn = def.warn)
   debug.prov(ddg.json(), is.file = F)
-
 }
 
 #'@rdname debug.init
