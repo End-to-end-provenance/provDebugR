@@ -1,11 +1,18 @@
 # provDebugR
 
-A debugging tool that leverages provenance to provide handy information about R scripts to assist in writng them.
+A debugging tool that leverages provenance to provide handy information about R scripts to assist in writing them.
 
 # Installation
-Install from GitHub:
+Devtools is needed for installation:
 ```{r}
-# install.packages("devtools")
+install.packages("devtools")
+```
+Installation with dependencies (copy and paste):
+```{r}
+install.packages(igraph)
+devtools::install_github("ProvTools/provParseR")
+devtools::install_github("jwons/provGraphR")
+devtools::install_github("End-to-end-provenance/RDataTracker", ref = "development")
 devtools::install_github("jwons/provDebugR")
 ```
 Once installed, load the package:
