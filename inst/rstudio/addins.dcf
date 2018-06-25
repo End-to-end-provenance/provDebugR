@@ -1,0 +1,4 @@
+Name: Run w/ Debugging
+Description: Runs the active script with debugging options 
+Binding: run.script.addin
+Interactive: false
