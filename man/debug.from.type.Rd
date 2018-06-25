@@ -21,7 +21,7 @@ of the lines where the inputted variable is that type.
 }
 \examples{
 \dontrun{
-debug.from.type(..., ...)
-...
+debug.from.type("x", "numeric")
+debug.from.type("df1", "character")
 }
 }

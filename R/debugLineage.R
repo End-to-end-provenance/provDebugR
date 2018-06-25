@@ -80,9 +80,9 @@ debug.lineage <- function(..., forward = F) {
   # it's going either forward or backward grab the end
   node.label <- NULL
   if(!forward) {
-    node.label <- tail(n=1,data.nodes[data.nodes$name == result, ])$label
+    node.label <- utils::tail(n=1,data.nodes[data.nodes$name == result, ])$label
   } else {
-    node.label <- head(n=1,data.nodes[data.nodes$name == result, ])$label
+    node.label <- utils::head(n=1,data.nodes[data.nodes$name == result, ])$label
   }
 
   # The assignment statement is inclusive when going backward, but not
