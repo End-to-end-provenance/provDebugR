@@ -1,9 +1,3 @@
-library(RDataTracker)
-library(provParseR)
-library(provGraphR)
-library(provDebugR)
-library(igraph)
-
 # Loading test data
 context("Initialize Debugger")
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
