@@ -28,6 +28,8 @@ of the warnings.
 \description{
 This function will trace the lineage of an error message, returning the lines
 that led up to a script stopping
+
+This function shows the lineage of the warning messages in a script
 }
 \examples{
 \dontrun{
