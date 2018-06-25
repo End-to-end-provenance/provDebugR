@@ -151,9 +151,8 @@ debug.from.line <- function(..., state = F) {
       if (type == "numeric") {
         type <- typeof(as.numeric(val))
       }
-      # Need to account for other valTypes
-    } else if (val.type$container == "data_frame") {
-      type <- paste("data frame:", val.type$dimension[1], "x", val.type$dimension[2])
+    } else if (val.type$container == "data_frame" || val.type$container == "matrix" || val.type$container == "array") {
+      type <- paste(val.type$container, paste(val.type$dimension, collapse = "x"))
     }
   }
 
