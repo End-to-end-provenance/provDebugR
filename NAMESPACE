@@ -2,8 +2,13 @@
 
 export(debug.error.trace)
 export(debug.from.line)
+export(debug.from.type)
 export(debug.init)
 export(debug.lineage)
 export(debug.prov)
 export(debug.variable.type)
 export(debug.warning.trace)
+import(RDataTracker)
+import(igraph)
+import(provGraphR)
+import(provParseR)

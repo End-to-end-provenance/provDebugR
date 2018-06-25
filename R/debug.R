@@ -13,6 +13,10 @@
 #'@param input.data A path to an R script
 #'@return There is no return value
 #'@name debug.init
+#'@import RDataTracker
+#'@import provParseR
+#'@import provGraphR
+#'@import igraph
 #'@export
 #'@examples
 #'\dontrun{
