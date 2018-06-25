@@ -50,4 +50,5 @@ expect_equal(length(var.type), length(var.type.results))
 expect_match(var.type[[1]]$line[1], "1")
 expect_match(var.type[[1]]$line[2], "10")
 
-context("Debug ")
+context("Debug From Line")
+from.lines <- debug.from.line()

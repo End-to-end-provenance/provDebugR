@@ -145,7 +145,7 @@ debug.from.line <- function(..., state = F) {
     val <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "value"]
 
     # Type
-    val.type <- fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, "valType"])
+    val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, "valType"])
     if (val.type$container == "vector") {
       type <- val.type$type
       if (type == "numeric") {
