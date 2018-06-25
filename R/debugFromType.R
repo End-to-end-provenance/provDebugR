@@ -10,8 +10,8 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' debug.from.type(..., ...)
-#' ...
+#' debug.from.type("x", "numeric")
+#' debug.from.type("df1", "character")
 #' }
 
 
@@ -27,6 +27,8 @@ debug.from.type <- function(var, type) {
   # Extract type information
   var.types <- data.nodes[data.nodes$name == var, "valType"]
   var.types <- lapply(var.types, jsonlite::fromJSON)
+  # "numeric" %in% unlist(var.type)
+  # account for container or type?
 
   is.type.match <- function(var.type) {
     var.type <- unlist(var.type)
