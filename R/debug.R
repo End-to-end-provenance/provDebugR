@@ -32,13 +32,14 @@ debug.init <- function(input.data) {
     try.result = tryCatch({
       ddg.run(input.data)
     }, error = function(error_condition) {
-      cat("This script had an error, to learn more run: \ndebug.error.trace() \n")
+      cat(paste("\nThis script had an error:\n", error_condition, "\nTo learn more run: \ndebug.error.trace() \n\n"))
     }, finally={
       cat("RDataTracker is finished running \n")
     })
   } else {
     warning("Please enter a valid R script")
   }
+  flush.console()
   debug.prov(ddg.json(), is.file = F)
 
 }
@@ -47,6 +48,10 @@ debug.init <- function(input.data) {
 #'@export
 #'@param input.prov A prov.json compliant file from the system or a string from memory
 #'@param is.file Logical stating whether or not input.prov needs to be read in from the system or not
+#'@import RDataTracker
+#'@import provParseR
+#'@import provGraphR
+#'@import igraph
 #'@examples
 #'\dontrun{
 #'debug.prov("prov.json")
