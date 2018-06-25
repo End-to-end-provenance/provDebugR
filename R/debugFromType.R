@@ -16,13 +16,15 @@
 
 
 debug.from.type <- function(var, type) {
-  # if either parameter is left blank, return an error message
-
+  # Load data from parser
   data.nodes <- get.data.nodes()
   proc.nodes <- get.proc.nodes()
   proc.data <- get.proc.data()
 
+  # Find variable entities
   labels <- data.nodes[data.nodes$name == var, "label"]
+
+  # Extract type information
   var.types <- data.nodes[data.nodes$name == var, "valType"]
   var.types <- lapply(var.types, jsonlite::fromJSON)
 
@@ -35,9 +37,11 @@ debug.from.type <- function(var, type) {
     }
   }
 
+  # Remove instances of the variable that are the wrong type
   type.logicals <- unlist(lapply(var.types, is.type.match))
   labels <- labels[type.logicals]
 
+  # Create a list of rows
   label.rows <- lapply(labels, function(label) {
     # Get line number and code from corresponding procedure node
     proc.node <- proc.data[proc.data$entity == label, "activity"]
@@ -47,6 +51,7 @@ debug.from.type <- function(var, type) {
     label.row <- c(line, name)
   })
 
+  # Create data frame
   label.df <- as.data.frame(do.call(rbind, label.rows), stringsAsFactors = F)
   colnames(label.df) <- c("line", "code")
 
