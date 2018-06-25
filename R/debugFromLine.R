@@ -111,9 +111,13 @@ debug.from.line <- function(..., state = F) {
     # Extract data entity from procedure activity via procedure-to-data edges
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
 
-    # why not using startLine at all?
     rname <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
     nodes <- .debug.env$data.nodes["1":rname, "label"]
+
+    # Account for duplicates by removing all but the tail
+    node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
+    temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
+    nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
 
     lapply(nodes, .process.node)
 
