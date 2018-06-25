@@ -3,7 +3,7 @@ run.script.addin <- function(input.path = NA) {
     input.path <- rstudioapi::getActiveDocumentContext()$path
   }
   if(input.path == "") {
-    cat("No input path specified, make sure your cursor is within your script not the console")
+    cat("No input path specified, make sure your cursor is within your script not the console\n")
   } else {
     debug.init(input.path)
   }
