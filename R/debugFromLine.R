@@ -37,7 +37,7 @@ debug.from.line <- function(..., state = F) {
   args <- flat.args
 
   # This function is useless unless the adj.graph exists
-  if(!.debug.env$has.graph) {
+  if(!provDebugR:::.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
@@ -47,10 +47,21 @@ debug.from.line <- function(..., state = F) {
   .debug.env$proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
 
   # Get data nodes (and thus var, val, and type) from parser
-  # Get edges that describe connections between nodes
-  .debug.env$data.nodes <- get.data.nodes()
+  # Subset file-type nodes to get rid of those with no corresponding procedure
+  data.nodes <- get.data.nodes()
+  delete.these <- data.nodes[data.nodes$type == "File", "label"]
+  .debug.env$data.nodes <- data.nodes[data.nodes$type != "File", ]
+
+  # Get proc-data edges
   .debug.env$proc.data.edges <- get.proc.data()
+
+  # Get data-proc edges
+  # Subset file-type nodes
   .debug.env$data.proc.edges <- get.data.proc()
+  rm.file <- function(delete.this) {
+    .debug.env$data.proc.edges <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$entity != delete.this, ]
+  }
+  lapply(delete.these, rm.file)
 
   # Check if line number is valid entry
   pos.line <- .debug.env$proc.nodes[, "startLine"]
@@ -100,7 +111,7 @@ debug.from.line <- function(..., state = F) {
     # Create row for each variable on the line, then rbind into a data frame
     lapply(nodes, .process.node)
 
-    colnames(.debug.env$line.df) <- c("var", "val", "type", "script")
+    colnames(.debug.env$line.df) <- c("var/code", "val", "type", "script")
     rownames(.debug.env$line.df) <- c(1:length(nodes))
 
     return(.debug.env$line.df)
@@ -121,7 +132,7 @@ debug.from.line <- function(..., state = F) {
 
     lapply(nodes, .process.node)
 
-    colnames(.debug.env$line.df) <- c("var", "val", "type", "script")
+    colnames(.debug.env$line.df) <- c("var/code", "val", "type", "script")
     rownames(.debug.env$line.df) <- c(1:length(nodes))
 
     return(.debug.env$line.df)
@@ -131,6 +142,7 @@ debug.from.line <- function(..., state = F) {
 .process.node <- function(node) {
   # Extract data entity from procedure activity via procedure-to-data edges
   if (grepl("p", node)) {
+    # entity will be character(0) if there's no corresponding data node
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
     script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
   } else if (grepl("d", node)) {
@@ -140,7 +152,8 @@ debug.from.line <- function(..., state = F) {
 
   val <- var <- type <- NULL
   if (length(entity) == 0) {
-    val <- var <- type <- NA # give some info (code? --> new column?)
+    val <- type <- NA # give some info (code? --> new column?)
+    var <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "name"]
   } else {
     # Var
     var <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "name"]
