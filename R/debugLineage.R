@@ -41,6 +41,7 @@ debug.lineage <- function(..., forward = F) {
 
   # Collect possible results the user could ask for
   pos.vars <- get.data.nodes()
+  pos.vars <- pos.vars[pos.vars$type == "Data" | pos.vars$type == "Snapshot", ]
   pos.vars <- as.list(unique(pos.vars$name))
 
   # Make sure all the results passed by the user are valid
