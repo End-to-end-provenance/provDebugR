@@ -86,7 +86,8 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   pos.vars <- get.data.nodes()
   pos.vars <- pos.vars[pos.vars$name == "warning.msg", ]
   if(nrow(pos.vars) == 0){
-    stop("There were no warnings in this script!")
+    cat("There were no warnings in this script!")
+    return()
   }
   row.names(pos.vars) <- 1:nrow(pos.vars)
 
