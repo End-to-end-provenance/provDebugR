@@ -105,7 +105,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
       if(arg %in% num.results) {
         return(TRUE)
       } else {
-        cat(paste(arg, "is not a possible result"))
+        cat(paste(arg, "is not a possible result\n"))
         return(FALSE)
       }
     })
