@@ -51,7 +51,7 @@ debug.lineage <- function(..., forward = F) {
     if(arg %in% pos.vars) {
       return(TRUE)
     } else {
-      warning(paste(arg, " is not a possible result"))
+      cat(paste(arg, " is not a possible result\n"))
       return(FALSE)
     }
   })
