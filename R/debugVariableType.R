@@ -53,7 +53,7 @@ debug.variable.type <- function(..., just.logical = F) {
     if(arg %in% pos.vars) {
       return(TRUE)
     } else {
-      cat(paste(arg, " is not a possible result\n"))
+      cat(paste(arg, "is not a possible result\n"))
       return(FALSE)
     }
   })
