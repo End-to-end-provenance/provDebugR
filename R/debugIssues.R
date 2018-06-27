@@ -85,6 +85,9 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   # Grab all the warning rows from the provenance
   pos.vars <- get.data.nodes()
   pos.vars <- pos.vars[pos.vars$name == "warning.msg", ]
+  if(nrow(pos.vars) == 0){
+    stop("There were no warnings in this script!")
+  }
   row.names(pos.vars) <- 1:nrow(pos.vars)
 
   node.labels <- as.list(pos.vars$label)
@@ -113,7 +116,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
 
   # If they did not pass any arguments to the function
   # then print the possible arguments they can input
-  if(length(args) == 0) {
+  if (length(args) == 0) {
     cat("Possible results: \n")
     print(pos.vars$value)
     cat("Pass the corresponding index value to the function for info on that warning")
