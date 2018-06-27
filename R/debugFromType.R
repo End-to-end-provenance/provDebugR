@@ -27,12 +27,11 @@ debug.from.type <- function(var, type) {
   # Extract type information
   var.types <- data.nodes[data.nodes$name == var, "valType"]
   var.types <- lapply(var.types, jsonlite::fromJSON)
-  # "numeric" %in% unlist(var.type)
-  # account for container or type?
 
   is.type.match <- function(var.type) {
-    var.type <- unlist(var.type)
-    if (var.type["type"] == type) {
+    #var.type <- unlist(var.type)
+    #if (var.type["type"] == type) {
+    if (type %in% unlist(var.type)) { # account for container or type?
       return(TRUE)
     } else {
       return(FALSE)
@@ -43,19 +42,23 @@ debug.from.type <- function(var, type) {
   type.logicals <- unlist(lapply(var.types, is.type.match))
   labels <- labels[type.logicals]
 
-  # Create a list of rows
-  label.rows <- lapply(labels, function(label) {
+  if (length(labels) == 0) {
+    print("There are no instances of this variable as this type")
+  } else {
+    # Create a list of rows
+    label.rows <- lapply(labels, function(label) {
     # Get line number and code from corresponding procedure node
-    proc.node <- proc.data[proc.data$entity == label, "activity"]
-    line <- proc.nodes[proc.nodes$label == proc.node, "startLine"]
-    name <- proc.nodes[proc.nodes$label == proc.node, "name"]
+      proc.node <- proc.data[proc.data$entity == label, "activity"]
+      line <- proc.nodes[proc.nodes$label == proc.node, "startLine"]
+      name <- proc.nodes[proc.nodes$label == proc.node, "name"]
 
-    label.row <- c(line, name)
-  })
+      label.row <- c(line, name)
+    })
 
-  # Create data frame
-  label.df <- as.data.frame(do.call(rbind, label.rows), stringsAsFactors = F)
-  colnames(label.df) <- c("line", "code")
+    # Create data frame
+    label.df <- as.data.frame(do.call(rbind, label.rows), stringsAsFactors = F)
+    colnames(label.df) <- c("line", "code")
 
-  return(label.df)
+    return(label.df)
+  }
 }
