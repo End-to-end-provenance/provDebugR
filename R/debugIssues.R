@@ -105,7 +105,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
       if(arg %in% num.results) {
         return(TRUE)
       } else {
-        warning(paste(arg, " is not a possible result"))
+        cat(paste(arg, "is not a possible result"))
         return(FALSE)
       }
     })
@@ -119,7 +119,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
     if (length(args) == 0) {
       cat("Possible results: \n")
       print(pos.vars$value)
-      cat("Pass the corresponding index value to the function for info on that warning")
+      cat("Pass the corresponding index value to the function for info on that warning\n")
     } else {
       # The procedure nodes are used in the .proccess.label fucntion
       # to find script and line numbers and code
