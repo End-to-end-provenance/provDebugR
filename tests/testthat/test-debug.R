@@ -1,9 +1,3 @@
-library(RDataTracker)
-library(provParseR)
-library(provGraphR)
-library(provDebugR)
-library(igraph)
-
 # Loading test data
 context("Initialize Debugger")
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
@@ -52,3 +46,8 @@ expect_match(var.type[[1]]$line[2], "10")
 
 context("Debug From Line")
 from.lines <- debug.from.line()
+expect_match(from.lines$var[[3]], "z")
+expect_match(from.lines$type[[8]], "data_frame 4x3")
+from.lines <- debug.from.line(1, 2:5, 8)
+expect_equal(length(from.lines), 6)
+expect_match(from.lines$`5`$type, "double")
