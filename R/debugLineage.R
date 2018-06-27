@@ -41,6 +41,7 @@ debug.lineage <- function(..., forward = F) {
 
   # Collect possible results the user could ask for
   pos.vars <- get.data.nodes()
+  pos.vars <- pos.vars[pos.vars$type == "Data" | pos.vars$type == "Snapshot" |  pos.vars$name == "error.msg", ]
   pos.vars <- as.list(unique(pos.vars$name))
 
   # Make sure all the results passed by the user are valid
@@ -50,7 +51,7 @@ debug.lineage <- function(..., forward = F) {
     if(arg %in% pos.vars) {
       return(TRUE)
     } else {
-      warning(paste(arg, " is not a possible result"))
+      cat(paste(arg, " is not a possible result\n"))
       return(FALSE)
     }
   })
