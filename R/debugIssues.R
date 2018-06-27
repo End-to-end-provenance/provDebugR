@@ -34,7 +34,7 @@ debug.error.trace <- function(stack.overflow = F) {
 
     return(debug.lineage("error.msg")$error.msg)
   } else {
-    cat("There were no errors in this script")
+    cat("There were no errors in this script!")
   }
 }
 
