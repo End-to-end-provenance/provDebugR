@@ -62,7 +62,7 @@ debug.variable.type <- function(..., just.logical = F) {
   # by logicals, TRUE corresponding to valid inputs
   args <- args[unlist(pos.args)]
 
-  # If they did not provide any results themselve, list them out for them
+  # If they did not provide any results themselves, list them out for them
   if(length(args) == 0) {
     cat("Possible results:\n")
     return(unlist(pos.vars))
