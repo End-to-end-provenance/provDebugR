@@ -14,8 +14,8 @@
 #' debug.from.type("df1", "character")
 #' }
 
-
 debug.from.type <- function(var, type) {
+
   # Load data from parser
   data.nodes <- get.data.nodes()
   proc.nodes <- get.proc.nodes()
@@ -29,9 +29,7 @@ debug.from.type <- function(var, type) {
   var.types <- lapply(var.types, jsonlite::fromJSON)
 
   is.type.match <- function(var.type) {
-    #var.type <- unlist(var.type)
-    #if (var.type["type"] == type) {
-    if (type %in% unlist(var.type)) { # account for container or type?
+    if (type %in% unlist(var.type)) {
       return(TRUE)
     } else {
       return(FALSE)
@@ -40,7 +38,7 @@ debug.from.type <- function(var, type) {
 
   # Remove instances of the variable that are the wrong type
   type.logicals <- unlist(lapply(var.types, is.type.match))
-  labels <- labels[type.logicals]
+  labels <- labels[type.logicals] # Filter
 
   if (length(labels) == 0) {
     print("There are no instances of this variable as this type")

@@ -22,26 +22,7 @@
 debug.from.line <- function(..., state = F) {
 
   # Collect the arguments passed to the function
-  args <- list(...)
-
-  # In case they also entered a list as an argument
-  # the list should be extracted so that we're left with
-  # only single elements
-  flat.args <- list()
-
-  # Extract everything and append it to the temp list
-  # Appending will be able to unnest any passed lists
-  lapply(args, function(arg){
-    flat.args <<- append(flat.args, arg)
-  })
-
-  args <- flat.args
-
-  # Check if the adj.graph exists
-  # Can't use this function without it
-  if(!.debug.env$has.graph) {
-    stop("debug.init must be run first")
-  }
+  args <- .flatten.args(...)
 
   # Get procedure nodes (and thus startLine and scriptNum) from parser
   # Subset operation-type nodes to get rid of NA values
@@ -107,7 +88,7 @@ debug.from.line <- function(..., state = F) {
     ref.nodes <- lapply(nodes, function(node) {
       ref.entity <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$activity == node, "entity"]
       ref.node <- NA
-      if (!length(ref.entity) == 0) {
+      if (length(ref.entity) != 0) {
         ref.node <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$entity == ref.entity, "activity"]
       }
       return(ref.node)
@@ -174,7 +155,7 @@ debug.from.line <- function(..., state = F) {
     script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
   } else if (grepl("d", node)) {
     entity <- node
-    script <- 0
+    script <- 0 # NA, could omit column upon return
   }
 
   # Initialize variables to be returned
@@ -202,9 +183,7 @@ debug.from.line <- function(..., state = F) {
       if (type == "numeric") {
         type <- typeof(as.numeric(val))
       }
-    } else if (val.type$container == "data_frame"
-               || val.type$container == "matrix"
-               || val.type$container == "array") {
+    } else {
       type <- paste(val.type$container, paste(val.type$dimension, collapse = "x"))
     }
   }
