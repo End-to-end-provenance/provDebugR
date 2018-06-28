@@ -37,7 +37,7 @@ debug.from.line <- function(..., state = F) {
   args <- flat.args
 
   # This function is useless unless the adj.graph exists
-  if(!provDebugR:::.debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
@@ -57,11 +57,8 @@ debug.from.line <- function(..., state = F) {
 
   # Get data-proc edges
   # Subset file-type nodes
-  .debug.env$data.proc.edges <- get.data.proc()
-  rm.file <- function(delete.this) {
-    .debug.env$data.proc.edges <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$entity != delete.this, ]
-  }
-  lapply(delete.these, rm.file)
+  data.proc.edges <- get.data.proc()
+  .debug.env$data.proc.edges <- data.proc.edges[data.proc.edges$entity != delete.these, ]
 
   # Check if line number is valid entry
   pos.line <- .debug.env$proc.nodes[, "startLine"]
@@ -122,8 +119,17 @@ debug.from.line <- function(..., state = F) {
     # Extract data entity from procedure activity via procedure-to-data edges
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
 
+    if (length(entity) == 0) { # a while loop would be nice here
+      # get next viable node (preceding line number with a proc node)
+      pos.lines <- sort(.debug.env$proc.nodes$startLine, decreasing = FALSE)
+      index <- which(pos.lines == lineNumber)
+      new.line <- pos.lines[index - 1]
+      node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == new.line, "label"]
+      entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+    }
+
     rname <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
-    nodes <- .debug.env$data.nodes["1":rname, "label"]
+    nodes <- .debug.env$data.nodes["1":rname[1], "label"]
 
     # Account for duplicates by removing all but the tail
     node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
