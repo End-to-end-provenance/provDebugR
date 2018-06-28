@@ -58,7 +58,7 @@ debug.from.line <- function(..., state = F) {
   # Get data-proc edges
   # Subset file-type nodes
   data.proc.edges <- get.data.proc()
-  .debug.env$data.proc.edges <- data.proc.edges[data.proc.edges$entity != delete.these, ]
+  .debug.env$data.proc.edges <- data.proc.edges[!(data.proc.edges$entity %in% delete.these), ]
 
   # Check if line number is valid entry
   pos.line <- .debug.env$proc.nodes[, "startLine"]
