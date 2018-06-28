@@ -12,32 +12,15 @@
 #'@export
 #'@examples
 #'\dontrun{
+#'
 #'debug.lineage("x")
 #'l <- c("x", "y", "foo", "bar")
 #'debug.lineage(l)
 #'debug.lineage(l, "z")
 #'}
 debug.lineage <- function(..., forward = F) {
-  # Collect the arguments passed to the function
-  args <- list(...)
 
-  # In case they also entered a list as an argument
-  # the list should be extracted so that we're left with
-  # only single elements
-  flat.args <- list()
-
-  # Extract everything and append it to the temp list
-  # appending will be able to unnest any passed lists
-  lapply(args, function(arg){
-    flat.args <<- append(flat.args, arg)
-  })
-
-  args <- flat.args
-
-  # This function is useless unless the adj.graph exists
-  if(!.debug.env$has.graph) {
-    stop("debug.init must be run first")
-  }
+  args <- .flatten.args(...)
 
   # Collect possible results the user could ask for
   pos.vars <- get.data.nodes()

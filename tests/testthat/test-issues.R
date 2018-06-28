@@ -3,7 +3,7 @@ context("Debugging Warning and Error Tracing")
 library(provDebugR)
 
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
-debug.prov(test.data)
+debug.init(test.data)
 
 test_that("scripts with no errors/warnings will throw an error", {
   warning.results <- capture.output(debug.warning.trace())
@@ -13,13 +13,13 @@ test_that("scripts with no errors/warnings will throw an error", {
 })
 
 test.data <- system.file("testdata", "testErrors.json", package = "provDebugR")
-debug.prov(test.data)
+debug.init(test.data)
 
 test_that("possible results can be grabbed", {
   warning.results <- capture.output(debug.warning.trace())
-  expect_equal(length(warning.results), 4)
-  expect_match(warning.results[[2]] ,
-               "[1] \"In  eval(annot, environ, NULL) :  this is a test\"     ", fixed = T)
+  expect_equal(length(warning.results), 6)
+  expect_match(warning.results[[3]] ,
+               "1      In  eval(annot, environ, NULL) :  this is a test", fixed = T)
 })
 
 test_that("all variables can be queried", {

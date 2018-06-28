@@ -19,26 +19,8 @@
 #'debug.variable.type(l, "z", just.logical = T)
 #'}
 debug.variable.type <- function(..., just.logical = F) {
-  # Collect the arguments passed to the function
-  args <- list(...)
 
-  # In case they also entered a list as an argument
-  # the list should be extracted so that we're left with
-  # only single elements
-  flat.args <- list()
-
-  # Extract everything and append it to the temp list
-  # appending will be able to unnest any passed lists
-  lapply(args, function(arg){
-    flat.args <<- append(flat.args, arg)
-  })
-
-  args <- flat.args
-
-  # This function is useless unless the adj.graph exists
-  if(!.debug.env$has.graph) {
-    stop("debug.init must be run first")
-  }
+  args <- .flatten.args(...)
 
   # Collect possible results the user could ask for
   # Remove any rows that aren't variables

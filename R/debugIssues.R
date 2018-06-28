@@ -66,25 +66,8 @@ debug.error.trace <- function(stack.overflow = F) {
 #'debug.warning.trace(1:4, 7) # returns warnings 1 through 4 and 7
 #'}
 debug.warning.trace <- function(..., stack.overflow = F) {
-  args <- list(...)
 
-  # In case they also entered a list as an argument
-  # the list should be extracted so that we're left with
-  # only single elements
-  flat.args <- list()
-
-  # Extract everything and append it to the temp list
-  # appending will be able to unnest any passed lists
-  lapply(args, function(arg){
-    flat.args <<- append(flat.args, arg)
-  })
-
-  args <- flat.args
-
-  # This function is useless unless the adj.graph exists
-  if(!.debug.env$has.graph) {
-    stop("debug.init must be run first")
-  }
+  args <- .flatten.args(...)
 
   # Grab all the warning rows from the provenance
   pos.vars <- get.data.nodes()
@@ -122,8 +105,10 @@ debug.warning.trace <- function(..., stack.overflow = F) {
     # then print the possible arguments they can input
     if (length(args) == 0) {
       cat("Possible results: \n")
-      print(pos.vars$value)
-      cat("Pass the corresponding index value to the function for info on that warning\n")
+      results.df <- as.data.frame(pos.vars$value)
+      colnames(results.df) <- NULL
+      print(results.df)
+      cat("\nPass the corresponding numeric value to the function for info on that warning\n")
     } else {
       # The procedure nodes are used in the .proccess.label fucntion
       # to find script and line numbers and code
