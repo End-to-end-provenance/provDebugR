@@ -38,7 +38,7 @@ debug.from.type <- function(var, type) {
 
   # Remove instances of the variable that are the wrong type
   type.logicals <- unlist(lapply(var.types, is.type.match))
-  labels <- labels[type.logicals] # Filter
+  labels <- labels[type.logicals]
 
   if (length(labels) == 0) {
     print("There are no instances of this variable as this type")
