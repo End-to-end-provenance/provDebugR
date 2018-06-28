@@ -2,33 +2,28 @@
 % Please edit documentation in R/debug.R
 \name{debug.init}
 \alias{debug.init}
-\alias{debug.prov}
 \title{Initialization functions}
 \usage{
-debug.init(input.data)
-
-debug.prov(input.prov, is.file = T)
+debug.init(input.data = NA)
 }
 \arguments{
-\item{input.data}{A path to an R script}
-
-\item{input.prov}{A prov.json compliant file from the system or a string from memory}
-
-\item{is.file}{Logical stating whether or not input.prov needs to be read in from the system or not}
+\item{input.data}{A path to an R script, a prov.json file,
+provenance from memory, or nothing.}
 }
 \value{
-There is no return value
+nothing
 }
 \description{
 Intialize the package by running RDataTracker on a script
-and/or parsing the resulting provenance into a useable format
-Debug.init or debug.prov must be run before anything else
+and/or parsing provenance into a useable format.
+Debug.init must be run before anything else
 }
 \examples{
 \dontrun{
+debug.init() # if there RDataTracker has already run and
+there is provenance in memory
 debug.init("test.R")
-}
-\dontrun{
-debug.prov("prov.json")
+debug.init("prov.json")
+debug.init(ddg.json()) # ddg.json is an RDataTracker function
 }
 }

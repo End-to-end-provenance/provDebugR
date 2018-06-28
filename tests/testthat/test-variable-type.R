@@ -3,7 +3,7 @@ context("Debugging Variable Type")
 library(provDebugR)
 
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
-debug.prov(test.data)
+debug.init(test.data)
 
 test_that("the correct types are being returned", {
   variable.results <- debug.variable.type()
