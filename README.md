@@ -9,7 +9,7 @@ install.packages("devtools")
 ```
 Installation with dependencies (copy and paste):
 ```{r}
-install.packages(igraph)
+install.packages("igraph")
 devtools::install_github("ProvTools/provParseR")
 devtools::install_github("jwons/provGraphR")
 devtools::install_github("End-to-end-provenance/RDataTracker", ref = "development")
