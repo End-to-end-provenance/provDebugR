@@ -26,9 +26,13 @@ debug.error.trace <- function(stack.overflow = F) {
     warning("stack overflow functionality is currently not supported")
   }
 
+  # Since the user only wants to know about an error msg
+  # and there can only be one we can grab the message to
+  # print to the user and if it doesn't exist then we can
+  # return gracefully after telling them
   data.nodes <- get.data.nodes()
-
   message <- data.nodes[data.nodes$name == "error.msg", ]$value
+
   if(length(message) > 0){
     cat(paste("Error: ", message, "\n", sep = ""))
 

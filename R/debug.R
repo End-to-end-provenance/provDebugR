@@ -23,12 +23,18 @@
 #'debug.init("test.R")
 #'}
 debug.init <- function(input.data) {
+  # If the warn option is not set to 1 the warnings in a user's script
+  # will not appear until after the script it is
+  # AND another command is run in the console
   def.warn <- options()$warn
   options(warn = 1)
+
   # Extract what the file type is to make sure that it is an R file
   file.parts <- strsplit(input.data, "\\.")
   file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
 
+  # Run the script and if it error'd let the user know
+  # and let them know how to find lineage of the error
   if (file.ext == "R" || file.ext == "Rmd") {
     try.result = tryCatch({
       ddg.run(input.data)
@@ -40,6 +46,7 @@ debug.init <- function(input.data) {
   } else {
     warning("Please enter a valid R script")
   }
+  # Set the warning options back to whatever the user origianlly had
   options(warn = def.warn)
   debug.prov(ddg.json(), is.file = F)
 }
