@@ -202,11 +202,15 @@ debug.from.line <- function(..., state = F) {
       if (type == "numeric") {
         type <- typeof(as.numeric(val))
       }
-    } else if (val.type$container == "data_frame" || val.type$container == "matrix" || val.type$container == "array") {
+    } else if (val.type$container == "data_frame"
+               || val.type$container == "matrix"
+               || val.type$container == "array") {
       type <- paste(val.type$container, paste(val.type$dimension, collapse = "x"))
     }
   }
 
+  # Combine all info into a row
+  # Append that row to the data frame in the environment
   line.row <- c(var, val, type, script)
   .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
 }
