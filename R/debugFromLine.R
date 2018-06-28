@@ -37,7 +37,7 @@ debug.from.line <- function(..., state = F) {
   args <- flat.args
 
   # This function is useless unless the adj.graph exists
-  if(!provDebugR:::.debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
