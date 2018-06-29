@@ -182,7 +182,7 @@ debug.from.line <- function(..., state = F) {
   if (length(entity) == 0) {
 
     # For state, val and type don't exist
-    val <- type <- NA # give some info (code? --> new column?)
+    val <- type <- NA
 
     # Set var to the code on the line (name in proc.nodes)
     var <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "name"]
