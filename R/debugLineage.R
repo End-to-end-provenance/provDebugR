@@ -12,7 +12,7 @@
 #'@export
 #'@examples
 #'\dontrun{
-#'
+#'debug.init("example.R")
 #'debug.lineage("x")
 #'l <- c("x", "y", "foo", "bar")
 #'debug.lineage(l)
@@ -55,6 +55,16 @@ debug.lineage <- function(..., forward = F) {
 }
 
 
+#' This helper function is used to find the labels of each
+#' result the user passed. The labels are then processed in
+#' another helper function which returns a data frame.
+#' @name grab.lineage
+#' @param result A character that corresponds to a variable name
+#' @param forward A logical determining whether or not to search forward
+#'
+#' @return A data frame that contains the lineage of a variable.
+#' Each row is a line from the script with corresponding metadata,
+#' script #, line #, etc.
 .grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables
   data.nodes <- get.data.nodes()
@@ -86,8 +96,20 @@ debug.lineage <- function(..., forward = F) {
   .process.label(node.label, proc.nodes, forward, assign.state = assign.state)
 }
 
-# This function uses the spine of connected nodes to return the data frame
-# This function is also used by debug.warning.trace()
+#' This function uses the spine of connected nodes to return the data frame
+#' This function is also used by debug.warning.trace()
+#'
+#' @param label A character corresponding to a node name in the prov
+#' @param proc.nodes Data frame with the prov porcedure nodes
+#' @param forward A logical determining whether or not to search forward
+#' @param assign.state A possibly NULL character used if lineage is going forward.
+#' It has the label for the assignment statement for the chosen variable.
+#'
+#' @return A data frame that contains the lineage of a variable.
+#' Each row is a line from the script with corresponding metadata,
+#' script #, line #, etc.
+#'
+#' @name process.label
 .process.label <- function(label, proc.nodes, forward, assign.state = NA) {
   # Grab the nodes that have connections to the chosen node from the adj graph
   spine <- get.spine(label, forward)

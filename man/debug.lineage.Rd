@@ -23,7 +23,7 @@ or the other variables that the chosen variable was used to create
 }
 \examples{
 \dontrun{
-
+debug.init("example.R")
 debug.lineage("x")
 l <- c("x", "y", "foo", "bar")
 debug.lineage(l)

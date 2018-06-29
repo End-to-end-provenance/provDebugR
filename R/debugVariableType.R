@@ -13,6 +13,7 @@
 #'@export
 #'@examples
 #'\dontrun{
+#'debug.init("example.R")
 #'debug.variable.type("x")
 #'l <- c("x", "y", "foo", "bar")
 #'debug.variable.type(l)
@@ -71,6 +72,16 @@ debug.variable.type <- function(..., just.logical = F) {
   }
 }
 
+#' This helper function takes a variable name and finds each
+#' instance of it in a script and what type it was. Optionally
+#' the user can request a list that states whether or not the
+#' variable changed type.
+#'
+#' @param result A character that corresponds to a variable
+#'
+#' @return A data frame that has each assignment statmenent of result as a row
+#'
+#' @name grab.instances
 .grab.instances <- function(result) {
   # The data nodes have all the information on the variables
   data.nodes <- get.data.nodes()
