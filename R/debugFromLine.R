@@ -127,7 +127,7 @@ debug.from.line <- function(..., state = F) {
 
     # If no corresponding entity (data node) exists, get next viable node
     # from the preceding line number. This accounts for source() calls to files.
-    if (length(entity) == 0) { # a while loop would be nice here
+    while (length(entity) == 0) {
       pos.lines <- sort(.debug.env$proc.nodes$startLine, decreasing = FALSE)
       index <- which(pos.lines == lineNumber)
       new.line <- pos.lines[index - 1]
