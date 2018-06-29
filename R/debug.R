@@ -69,25 +69,20 @@ debug.init <- function(input.data = NA) {
   .debug.env$has.graph = TRUE
 }
 
+#' This helper function is used in almost all functions of the interface
+#' to make sure only a list of un-nested elements
+#'
+#' @param ... A list (possibly of lists) that the user input as arguments
+#' to one of the functions
+#'
+#' @return A list of unnested elements
+#'
+#' @name flatten.args
 .flatten.args <- function(...) {
   # This function is useless unless the adj.graph exists
   if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
 
-  # Collect the arguments passed to the function
-  args <- list(...)
-
-  # In case they also entered a list as an argument
-  # the list should be extracted so that we're left with
-  # only single elements
-  flat.args <- list()
-
-  # Extract everything and append it to the temp list
-  # appending will be able to unnest any passed lists
-  lapply(args, function(arg){
-    flat.args <<- append(flat.args, arg)
-  })
-
-  args <- flat.args
+  args <- unlist(list(...))
 }

@@ -24,6 +24,7 @@ execution of a script
 }
 \examples{
 \dontrun{
+debug.init("example.R")
 debug.variable.type("x")
 l <- c("x", "y", "foo", "bar")
 debug.variable.type(l)

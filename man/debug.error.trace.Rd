@@ -33,10 +33,12 @@ This function shows the lineage of the warning messages in a script
 }
 \examples{
 \dontrun{
+debug.init("example.R")
 debug.error.trace()
-debug.error.trace(stack.overflow = T)
+debug.error.trace(stack.overflow = T) # Not currently supported
 }
 \dontrun{
+debug.init("example.R")
 debug.warning.trace() # returns a list of possible warnings
 debug.warning.trace(1, 4) # returns warnings 1 and 4
 debug.warning.trace(1:4, 7) # returns warnings 1 through 4 and 7
