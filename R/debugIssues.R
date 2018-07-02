@@ -165,13 +165,33 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   }
 }
 
+#' Process error message strings
+#'
+#' This function removes *most* local information about a
+#' script by removing all characters between quotes (single or
+#' double, inclusive)
+#'
+#' @param error.message a character vector to be cleaned
+#' @name process.error
+#' @return character
 .process.error <- function(error.message) {
+
   split <- strsplit(error.message, ":")[[1]]
 
+  # Error messages from the prov.json will
+  #typically have an uneeded prefix followed
+  # by a colon ":"
   if(length(split) > 1) {
     error.message <- split[-1]
   }
+
+  # This complicated mess of regex i=actually checks for 4 things (all inclusive):
+  # Matches to characters surronded by quotes "dog"
+  # Matches to characters surronded by escaped quotes \"dog\"
+  # Matches to characters surronded by single quotes 'dog'
+  # Matches to characters surronded by escaped quotes \'dog\'
   exp <- "\\\"[^\"\r]*\\\"|\"[^\"\r]*\"|\'[^\"\r]*\'|\\\'[^\"\r]*\\\'"
+
   gsub(exp, "", error.message, perl = T)
 }
 
