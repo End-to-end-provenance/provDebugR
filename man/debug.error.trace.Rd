@@ -10,7 +10,7 @@ debug.error.trace(stack.overflow = F)
 debug.warning.trace(..., stack.overflow = F)
 }
 \arguments{
-\item{stack.overflow}{*NOT CURRENTLY SUPPORTED* Determines whether or not the
+\item{stack.overflow}{Determines whether or not the
 error message should be searched for automatically on stack overflow}
 
 \item{...}{A number representing the error message the function should return.

@@ -7,7 +7,7 @@
 #'that led up to a script stopping
 #'
 #'@name debug.error.trace
-#'@param stack.overflow *NOT CURRENTLY SUPPORTED* Determines whether or not the
+#'@param stack.overflow Determines whether or not the
 #'error message should be searched for automatically on stack overflow
 #'@return Debug.error: Returns a data frame with all the lines that led to an error's creation
 #'@export
@@ -23,10 +23,6 @@ debug.error.trace <- function(stack.overflow = F) {
     stop("debug.init must be run first")
   }
 
-  if(stack.overflow) {
-    warning("stack overflow functionality is currently not supported")
-  }
-
   # Since the user only wants to know about an error msg
   # and there can only be one we can grab the message to
   # print to the user and if it doesn't exist then we can
@@ -35,7 +31,45 @@ debug.error.trace <- function(stack.overflow = F) {
   message <- data.nodes[data.nodes$name == "error.msg", ]$value
 
   if(length(message) > 0){
-    cat(paste("Error: ", message, "\n", sep = ""))
+    cat(paste("Your Error: ", message, "\n", sep = ""))
+
+    if(stack.overflow) {
+
+      # The error message should be stripped of information that is
+      # unique to this script and be more generalized
+      error.message <- .process.error(message)
+
+      # Query the Stack Exchange API for similar results
+      result <- .debug.search(error.message)
+
+      # Grab the titles and links to the questions
+      pos.urls <- head(result$items)[, c("title", "link")]
+
+      # This serves as a "menu" of sorts since it will print the row number
+      # of each title
+      print(pos.urls[, "title"])
+
+      # They can either choose none or an index that will be matched to a row
+      cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
+      chosen.result <- readline()
+
+      if(!chosen.result == "q") {
+
+        chosen.result <- as.integer(chosen.result)
+
+        # The input needs to be an integer so it can be used to
+        # index into the rows of the data frame
+        if(is.na(chosen.result)){
+          stop("Invalid Input")
+        } else if (chosen.result > 6 || chosen.result < 1) {
+          stop ('Choose an option between 1 - 6')
+        }
+
+        # Open up the requested link in the default web browser
+        browseURL(pos.urls[chosen.result ,]$link)
+        cat("\nCode that led to error message:\n")
+      }
+    }
 
     return(debug.lineage("error.msg")$error.msg)
   } else {
@@ -74,6 +108,7 @@ debug.warning.trace <- function(..., stack.overflow = F) {
   # Grab all the warning rows from the provenance
   pos.vars <- get.data.nodes()
   pos.vars <- pos.vars[pos.vars$name == "warning.msg", ]
+
   if(nrow(pos.vars) == 0){
     cat("There were no warnings in this script!")
   } else {
@@ -128,6 +163,16 @@ debug.warning.trace <- function(..., stack.overflow = F) {
       return(dfs)
     }
   }
+}
+
+.process.error <- function(error.message) {
+  split <- strsplit(error.message, ":")[[1]]
+
+  if(length(split) > 1) {
+    error.message <- split[-1]
+  }
+  exp <- "\\\"[^\"\r]*\\\"|\"[^\"\r]*\"|\'[^\"\r]*\'|\\\'[^\"\r]*\\\'"
+  gsub(exp, "", error.message, perl = T)
 }
 
 
