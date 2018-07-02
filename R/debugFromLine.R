@@ -5,7 +5,7 @@
 #' execution.
 #'
 #' @param ... Line(s) to examine. Can be single lines or vectors/lines.
-#' @param state if If FALSE, returns the refereneces to variables on
+#' @param state If FALSE, returns the refereneces to variables on
 #' inputed line(s). If TRUE, returns the state of all variables up to
 #' that point in execution.
 #' @return A list of one data frame per line, containing information about
@@ -72,6 +72,18 @@ debug.from.line <- function(..., state = F) {
   }
 }
 
+# This helper function is used to find all procedure or data nodes
+# on each line that the user has passed. The nodes are then processed
+# in another helper function which modifies the data frame line.df
+#' @name grab.line
+#' @param lineNumber A numeric corresponding to the line that the
+#' user wants to examine
+#' @param state Determines if the variable references on that line
+#' will be examined or the state of all variables up to that line's
+#' execution
+#'
+#' @return A data frame in the debug environemnt, which contains the
+#' columns var/code, val, type, and script. Each row is a variable.
 .grab.line <- function(lineNumber, state) {
 
   # Clear line.df for subsequent function calls
@@ -115,7 +127,7 @@ debug.from.line <- function(..., state = F) {
 
     # If no corresponding entity (data node) exists, get next viable node
     # from the preceding line number. This accounts for source() calls to files.
-    if (length(entity) == 0) { # a while loop would be nice here
+    while (length(entity) == 0) {
       pos.lines <- sort(.debug.env$proc.nodes$startLine, decreasing = FALSE)
       index <- which(pos.lines == lineNumber)
       new.line <- pos.lines[index - 1]
@@ -144,6 +156,13 @@ debug.from.line <- function(..., state = F) {
   }
 }
 
+# This helper function is used to find information about the node
+# passed to it. A row with the information is created and appended
+# to a data frame in the debug environment.
+#' @name process.node
+#' @param node A character corresponding to a node name in the prov
+#'
+#' @return Nothing
 .process.node <- function(node) {
 
   # Extract data entity from procedure activity via procedure-to-data edges
@@ -163,7 +182,7 @@ debug.from.line <- function(..., state = F) {
   if (length(entity) == 0) {
 
     # For state, val and type don't exist
-    val <- type <- NA # give some info (code? --> new column?)
+    val <- type <- NA
 
     # Set var to the code on the line (name in proc.nodes)
     var <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "name"]
