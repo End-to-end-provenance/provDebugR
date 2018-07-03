@@ -9,7 +9,7 @@ debug.from.line(..., state = F)
 \arguments{
 \item{...}{Line(s) to examine. Can be single lines or vectors/lines.}
 
-\item{state}{if If FALSE, returns the refereneces to variables on
+\item{state}{If FALSE, returns the refereneces to variables on
 inputed line(s). If TRUE, returns the state of all variables up to
 that point in execution.}
 }
