@@ -32,13 +32,22 @@ debug.init <- function(input.data = NA) {
   options(warn = 1)
 
   # Extract what the file type is to make sure that it is an R file
-  file.parts <- strsplit(input.data, "\\.")
-  file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
-
+  if(!is.na(input.data)){
+    file.parts <- strsplit(input.data, "\\.")
+    file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
+  }
 
   # Run the script and if it error'd let the user know
   # and let them know how to find lineage of the error
-  if (file.ext == "r" || file.ext == "rmd") {
+  if (is.na(input.data)) {
+    tryCatch({
+      .debug.prov(ddg.json(), is.file = F)
+    }, warning = function(warning.message) {
+      cat("\nNo provenance in memory\n")
+    }, error = function(error.message) {
+      cat("\nNo provenance in memory\n")
+    })
+  } else if (file.ext == "r" || file.ext == "rmd") {
     try.result = tryCatch({
       ddg.run(input.data)
     }, error = function(error_condition) {
@@ -46,8 +55,6 @@ debug.init <- function(input.data = NA) {
     }, finally={
       cat("RDataTracker is finished running \n")
     })
-    .debug.prov(ddg.json(), is.file = F)
-  } else if (is.na(input.data)) {
     .debug.prov(ddg.json(), is.file = F)
   } else if (file.ext == "json") {
     .debug.prov(input.data)
