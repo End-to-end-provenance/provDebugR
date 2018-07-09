@@ -72,10 +72,12 @@ debug.from.line <- function(..., state = F) {
   }
 }
 
-# This helper function is used to find all procedure or data nodes
-# on each line that the user has passed. The nodes are then processed
-# in another helper function which modifies the data frame line.df
-#' @name grab.line
+#' This helper function is used to find all procedure or data nodes
+#' on each line that the user has passed. The nodes are then processed
+#' in another helper function which modifies the data frame line.df
+#'
+#'
+#'  @name grab.line
 #' @param lineNumber A numeric corresponding to the line that the
 #' user wants to examine
 #' @param state Determines if the variable references on that line
@@ -156,9 +158,9 @@ debug.from.line <- function(..., state = F) {
   }
 }
 
-# This helper function is used to find information about the node
-# passed to it. A row with the information is created and appended
-# to a data frame in the debug environment.
+#' This helper function is used to find information about the node
+#' passed to it. A row with the information is created and appended
+#' to a data frame in the debug environment.
 #' @name process.node
 #' @param node A character corresponding to a node name in the prov
 #'
