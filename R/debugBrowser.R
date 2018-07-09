@@ -13,7 +13,7 @@
 #' debug.browser()
 #' }
 debug.browser <- function() {
-  if(!provDebugR:::.debug.env$has.graph) {
+  if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
   
@@ -67,7 +67,7 @@ debug.browser <- function() {
       #transfer environment
       if(!is.na(var.env$vars[1])){
         lapply(var.env$vars, function(var){
-          assign(var, get(var, envir = var.env), envir = .GlobalEnv)
+          #assign(var, get(var, envir = var.env), envir = .GlobalEnv)
         })
       } else {
         cat("Environment empty, nothing to move\n")
@@ -105,7 +105,6 @@ debug.browser <- function() {
 #' of "execution"
 #' @param lines A vector of line numbers corresponding to lines of the script that had code
 #' @param proc.nodes The procedure nodes, used for extracting the code on a line
-#'
 #' @return nothing
 #'
 .change.line <- function(var.env, lines, proc.nodes) {
@@ -132,7 +131,7 @@ debug.browser <- function() {
           if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
             assign(row["var/code"][[1]], "SNAPSHOT" , envir = var.env)
           } else {
-            assign(row["var/code"][[1]], as(row["val"][[1]],row["type"][[1]]) , envir = var.env)
+            assign(row["var/code"][[1]], methods::as(row["val"][[1]],row["type"][[1]]) , envir = var.env)
           }
         }
       })
@@ -146,7 +145,7 @@ debug.browser <- function() {
 #' @name clear.environment
 #'
 #' @param var.env The environment to be cleared
-#'
+#' 
 #' @return nothing
 #'
 .clear.environment <- function(var.env) {
