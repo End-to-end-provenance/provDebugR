@@ -52,7 +52,7 @@ debug.from.line <- function(..., state = F) {
     if (arg %in% pos.line) {
       return(TRUE)
     } else {
-      warning(paste(arg, " is not a possible line"))
+      cat(arg, "is not a possible line", sep = " "))
       return(FALSE)
     }
   }, pos.line = pos.line)
