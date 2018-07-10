@@ -77,7 +77,7 @@ debug.from.line <- function(..., state = F) {
 #' in another helper function which modifies the data frame line.df
 #'
 #'
-#'  @name grab.line
+#' @name grab.line
 #' @param lineNumber A numeric corresponding to the line that the
 #' user wants to examine
 #' @param state Determines if the variable references on that line
