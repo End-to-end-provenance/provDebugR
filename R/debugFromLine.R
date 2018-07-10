@@ -203,7 +203,7 @@ debug.from.line <- function(..., state = F) {
     container <- val.type$container
     
     # JSON formatted so that we can put a list in a single element of a data frame
-    dim <- paste("{[", paste(val.type$dimension, collapse = ","), "]}")
+    dim <- paste(val.type$dimension, collapse = ",")
     # type <- unlist(lapply(val.type$type, function(t) {
     #   if (t == "numeric") {
     #     return(typeof(as.numeric(t)))
@@ -212,7 +212,9 @@ debug.from.line <- function(..., state = F) {
     #   }
     # }))
     # types <- paste("{[", paste(type, collapse = ","), "]}")
-    type <- paste("{[", paste(val.type$type, collapse = ","), "]}")
+    type <- paste("{ \"type\" : [",
+                  paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
+                  , "]}")
   }
 
   # Combine all info into a row

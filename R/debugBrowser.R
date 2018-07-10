@@ -141,19 +141,35 @@ debug.browser <- function() {
       line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T)[[1]]
       #store the name of all variables for printing out at a user's input
       var.env$vars <- line.df$`var/code`
+      
+      load.env <- new.env()
       # Assign each variable and it's value to the created environment
       apply(line.df, 1, function(row){
         if(!is.na(row["val"][[1]])){
           if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
-            # if(.debug.env$has.folder){
-            #   
-            # }
-            assign(row["var/code"][[1]], "SNAPSHOT" , envir = var.env)
+            if(!is.na(.debug.env$ddg.folder)) {
+              file.parts <- strsplit(row["val"][[1]], "\\.")
+              file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
+              file.name <- file.parts[[1]][1]
+              if(file.ext == "txt") {
+                var.name <- load(paste(.debug.env$ddg.folder,
+                                       "/", file.name,
+                                       ".RObject", sep = ""),
+                                 envir = load.env)
+                assign(row["var/code"][[1]], get(var.name, load.env), envir = var.env)
+              } else {
+                assign(row["var/code"][[1]], "SNAPSHOT" , envir = var.env)
+              }
+            } else {
+              assign(row["var/code"][[1]], "SNAPSHOT" , envir = var.env)
+            }
           } else {
-            assign(row["var/code"][[1]], methods::as(row["val"][[1]],row["type"][[1]]) , envir = var.env)
+            type <- jsonlite::fromJSON(row["type"])$type
+            assign(row["var/code"][[1]], methods::as(row["val"][[1]], type), envir = var.env)
           }
         }
       })
+      rm(list=ls(load.env), envir = load.env)
     }
   }
 }

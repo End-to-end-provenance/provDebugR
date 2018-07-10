@@ -45,9 +45,9 @@ debug.init <- function(input.data = NA) {
   
   if(!dir.exists(ddg.folder)) {
     ddg.folder <- NA
-    .debug.env$has.folder <- FALSE
+    .debug.env$ddg.folder <- NA
   } else {
-    .debug.env$has.folder <- TRUE
+    .debug.env$ddg.folder <- ddg.folder
   }
   
   # Run the script and if it error'd let the user know
