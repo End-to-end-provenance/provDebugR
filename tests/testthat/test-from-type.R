@@ -11,6 +11,6 @@ test_that("the correct types are being returned", {
 })
 
 test_that("wrong arguments can be ignored", {
-  type.results <- debug.from.type("y", "numeric")
+  type.results <- debug.from.type("y", "double")
   expect_match(class(type.results), "character")
 })
