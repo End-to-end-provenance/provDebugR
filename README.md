@@ -34,7 +34,6 @@ Once either debug.prov or debug.init is run the rest of the functions can be use
 
 ```{r}
 debug.init(input.data)
-debug.prov(input.prov, is.file = F)
 debug.variable.type(..., just.logical = F)
 debug.from.type(variable, type)
 debug.from.line(..., state = F) 
