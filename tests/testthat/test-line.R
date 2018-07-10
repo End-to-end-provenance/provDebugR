@@ -15,7 +15,7 @@ test_that("the correct types are being returned", {
 
 test_that("possible results can be grabbed", {
   line.results <- debug.from.line()
-  expect_equal(ncol(line.results), 4)
+  expect_equal(ncol(line.results), 6)
   expect_equal(nrow(line.results), 10)
   expect_match(line.results[1, 1], "a")
   expect_match(line.results[10, 1], "warning.trace")
@@ -26,7 +26,7 @@ test_that("all possible lines can be queried", {
   line.results <- debug.from.line(pos.lines, state = F)
   expect_equal(length(line.results), 17)
   expect_match(line.results$'12'$'val', "a test")
-  expect_match(line.results$'7'$'type', "double")
+  expect_match(line.results$'7'$'type'[1], "{[ numeric ]}", fixed = T)
 })
 
 test_that("various assignments can be provided", {
