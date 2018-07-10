@@ -114,7 +114,7 @@ debug.from.line <- function(..., state = F) {
     lapply(nodes, .process.node)
 
     # Name columns and rows
-    colnames(.debug.env$line.df) <- c("var/code", "val", "type", "script")
+    colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
     rownames(.debug.env$line.df) <- c(1:length(nodes))
 
     return(.debug.env$line.df)
@@ -151,7 +151,7 @@ debug.from.line <- function(..., state = F) {
     lapply(nodes, .process.node)
 
     # Name columns and rows
-    colnames(.debug.env$line.df) <- c("var/code", "val", "type", "script")
+    colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
     rownames(.debug.env$line.df) <- c(1:length(nodes))
 
     return(.debug.env$line.df)
@@ -199,18 +199,24 @@ debug.from.line <- function(..., state = F) {
 
     # Type is string parsed from entity valType
     val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, "valType"])
-    if (val.type$container == "vector") {
-      type <- val.type$type
-      if (type == "numeric") {
-        type <- typeof(as.numeric(val))
-      }
-    } else {
-      type <- paste(val.type$container, paste(val.type$dimension, collapse = "x"))
-    }
+    
+    container <- val.type$container
+    
+    # JSON formatted so that we can put a list in a single element of a data frame
+    dim <- paste("{[", paste(val.type$dimension, collapse = ","), "]}")
+    # type <- unlist(lapply(val.type$type, function(t) {
+    #   if (t == "numeric") {
+    #     return(typeof(as.numeric(t)))
+    #   } else {
+    #     return(t)
+    #   }
+    # }))
+    # types <- paste("{[", paste(type, collapse = ","), "]}")
+    type <- paste("{[", paste(val.type$type, collapse = ","), "]}")
   }
 
   # Combine all info into a row
   # Append that row to the data frame in the environment
-  line.row <- c(var, val, type, script)
+  line.row <- c(var, val, container, dim, type, script)
   .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
 }
