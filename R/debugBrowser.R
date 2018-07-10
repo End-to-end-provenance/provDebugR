@@ -42,28 +42,32 @@ debug.browser <- function() {
   # This is used to determine which variables to print to the screen
   # if their name is input instead of being passed to the interpreter
   var.env$vars <- NA
+  
+  # This loop is the "interactive console" of the program
+  # it will repeatedly prompt for an input until the user quits
+  # It operates similarly to the R browser() function
   while(TRUE) {
     input <- readline(prompt = "Debug> ")
     
-    if (input == "Q") {
+    if (input == "Q") { # Quits the program
       print("Quitting")
       break
-    } else if(input == "ls") {
+    } else if(input == "ls") { # lists variables present in "execution"
       print(var.env$vars)
-    } else if (input == "n")  {
+    } else if (input == "n")  { # advances a line
       var.env$lineIndex <- var.env$lineIndex + 1
       
       .change.line(var.env, lines, proc.nodes)
-    } else if (input == "c") {
+    } else if (input == "c") { # moves to the end of the script
       # Continue until the "end" of execution
       var.env$lineIndex <- length(lines)
       
       .change.line(var.env, lines, proc.nodes)
-    } else if (input == "b") {
+    } else if (input == "b") { # moves back a line
       var.env$lineIndex <- var.env$lineIndex - 1
       
       .change.line(var.env, lines, proc.nodes)
-    } else if (input == "mv") {
+    } else if (input == "mv") { # moves environment over to the global environment
       #transfer environment
       if(!is.na(var.env$vars[1])){
         lapply(var.env$vars, function(var){
@@ -73,7 +77,7 @@ debug.browser <- function() {
         cat("Environment empty, nothing to move\n")
       }
       
-    } else if (input == "help") {
+    } else if (input == "help") { # print information 
       cat(paste("This is a post-mortem debugger for R \n", 
                 "n - Move forward one line\n",
                 "b - Move Backward one line\n",
@@ -82,9 +86,9 @@ debug.browser <- function() {
                 "help - brings up this dialouge\n",
                 "Q - quits the debugger\n"
                 ))
-    } else if(input %in% var.env$vars){
+    } else if(input %in% var.env$vars){ # if they supplied a variable in script, print value
       print(get(input, envir = var.env))
-    } else {
+    } else { # pass their code to interpreter 
       tryCatch({
         source(exprs = parse(text = input))
       }, error = function(error.message) {
@@ -108,24 +112,35 @@ debug.browser <- function() {
 #' @return nothing
 #'
 .change.line <- function(var.env, lines, proc.nodes) {
+  # if they choose to go past the amount of lines for execution
+  # set it to the end and print they've reached the end
   if(var.env$lineIndex > length(lines)) {
     print("End of Script")
     var.env$lineIndex <- length(lines) + 1
+  # If they've gone before executions starts, print they have reached the beginning 
   } else if (var.env$lineIndex < 1) {
     print("Start of Script")
     var.env$lineIndex <- 0
   } else {
+    # The environment will likely have variables from past line of execution 
+    # clear it but keep the index of lines
     .clear.environment(var.env)
 
+    # Print the line number they are on as well as 
+    # the line of code 
     cat(paste(lines[var.env$lineIndex],
               ": ",
               proc.nodes[var.env$lineIndex, ]$name,
               "\n",
               sep=""))
     
+    # if they are past the first line, set the environment to be 
+    # where execution was at before their current line was executed
     if(var.env$lineIndex > 1) {
       line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T)[[1]]
+      #store the name of all variables for printing out at a user's input
       var.env$vars <- line.df$`var/code`
+      # Assign each variable and it's value to the created environment
       apply(line.df, 1, function(row){
         if(!is.na(row["val"][[1]])){
           if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
