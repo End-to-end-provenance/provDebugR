@@ -25,7 +25,7 @@ test_that("all possible lines can be queried", {
   pos.lines <- unique(sort(get.proc.nodes()$startLine))
   line.results <- debug.from.line(pos.lines, state = F)
   expect_equal(length(line.results), 17)
-  expect_match(line.results$'12'$'val', "a match")
+  expect_match(line.results$'12'$'val', "a test")
   expect_match(line.results$'7'$'type', "double")
 })
 
