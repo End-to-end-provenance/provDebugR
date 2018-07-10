@@ -181,7 +181,7 @@ debug.from.line <- function(..., state = F) {
 
   # Initialize variables to be returned
   val <- var <- type <- NULL
-  if (length(entity) == 0) {
+  if ((length(entity) == 0) || !(entity %in% .debug.env$data.nodes)) {
 
     # For state, val and type don't exist
     val <- type <- NA
