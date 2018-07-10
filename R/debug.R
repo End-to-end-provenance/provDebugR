@@ -32,11 +32,24 @@ debug.init <- function(input.data = NA) {
   options(warn = 1)
 
   # Extract what the file type is to make sure that it is an R file
+  # Also grab the name of the file (minus extension) for locating ddg folder
   if(!is.na(input.data)){
-    file.parts <- strsplit(input.data, "\\.")
+    file <- gsub("^.*[/\\]", "", input.data)
+    file.parts <- strsplit(file, "\\.")
     file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
+    file.name <- file.parts[[1]][1]
+    file.path <- gsub("([^/]+$)", "", input.data)
   }
-
+  
+  ddg.folder <- paste(file.path, file.name, "_ddg", sep ="")
+  
+  if(!dir.exists(ddg.folder)) {
+    ddg.folder <- NA
+    .debug.env$has.folder <- FALSE
+  } else {
+    .debug.env$has.folder <- TRUE
+  }
+  
   # Run the script and if it error'd let the user know
   # and let them know how to find lineage of the error
   if (is.na(input.data)) {
@@ -51,7 +64,9 @@ debug.init <- function(input.data = NA) {
     try.result = tryCatch({
       ddg.run(input.data)
     }, error = function(error_condition) {
-      cat(paste("\nThis script had an error:\n", error_condition, "\nTo learn more run: \ndebug.error.trace() \n\n"))
+      cat(paste("\nThis script had an error:\n",
+                error_condition,
+                "\nTo learn more run: \ndebug.error.trace() \n\n"))
     }, finally={
       cat("RDataTracker is finished running \n")
     })

@@ -71,7 +71,7 @@ debug.browser <- function() {
       #transfer environment
       if(!is.na(var.env$vars[1])){
         lapply(var.env$vars, function(var){
-          #assign(var, get(var, envir = var.env), envir = .GlobalEnv)
+          assign(var, get(var, envir = var.env), envir = .GlobalEnv)
         })
       } else {
         cat("Environment empty, nothing to move\n")
@@ -83,6 +83,7 @@ debug.browser <- function() {
                 "b - Move Backward one line\n",
                 "c - moves to end of \'execution\'\n",
                 "ls - prints name of variables at the current point of \'execution\'\n",
+                "mv - moves the debugging environment to the Global Environment\n",
                 "help - brings up this dialouge\n",
                 "Q - quits the debugger\n"
                 ))
@@ -144,6 +145,9 @@ debug.browser <- function() {
       apply(line.df, 1, function(row){
         if(!is.na(row["val"][[1]])){
           if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
+            # if(.debug.env$has.folder){
+            #   
+            # }
             assign(row["var/code"][[1]], "SNAPSHOT" , envir = var.env)
           } else {
             assign(row["var/code"][[1]], methods::as(row["val"][[1]],row["type"][[1]]) , envir = var.env)
