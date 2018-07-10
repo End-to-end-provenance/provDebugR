@@ -28,5 +28,3 @@ warning.trace <- function(x, forward = F) {
 
 
 source("./inst/testdata/test3.R")
-
-x <- 5
