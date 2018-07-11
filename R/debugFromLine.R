@@ -38,7 +38,6 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   # Get proc-data edges
   # Subset out edges that correspond to proc.delete
   proc.data.edges <- get.proc.data()
-  data.delete <- proc.data.edges[(proc.data.edges$activity %in% proc.delete), "entity"]
   .debug.env$proc.data.edges <- proc.data.edges[!(proc.data.edges$activity %in% proc.delete), ]
   
   # Get data nodes (and thus var, val, and type) from parser
@@ -46,8 +45,7 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   # Capture file-type nodes in delete.these for later subsetting
   data.nodes <- get.data.nodes()
   file.delete <- data.nodes[data.nodes$type == "File", "label"]
-  data.nodes <- data.nodes[data.nodes$type != "File", ]
-  .debug.env$data.nodes <- data.nodes[!(data.nodes$label %in% data.delete), ]
+  .debug.env$data.nodes <- data.nodes[data.nodes$type != "File", ]
 
   # Get data-proc edges
   # Subset file-type nodes with file.delete
@@ -188,13 +186,15 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   if (grepl("p", node)) {
     # entity will be character(0) if there's no corresponding data node
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+    script <- script.num
   } else if (grepl("d", node)) {
     entity <- node
+    entity.activity <- get.proc.data()[get.proc.data()$entity == entity, "activity"]
+    script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
   }
 
   # Initialize variables to be returned
   val <- var <- type <- NULL
-  script <- script.num
   if (length(entity) == 0) {
 
     # For state, val and type don't exist
@@ -218,14 +218,6 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     
     # JSON formatted so that we can put a list in a single element of a data frame
     dim <- paste(val.type$dimension, collapse = ",")
-    # type <- unlist(lapply(val.type$type, function(t) {
-    #   if (t == "numeric") {
-    #     return(typeof(as.numeric(t)))
-    #   } else {
-    #     return(t)
-    #   }
-    # }))
-    # types <- paste("{[", paste(type, collapse = ","), "]}")
     type <- paste("{ \"type\" : [",
                   paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
                   , "]}")
