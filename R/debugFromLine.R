@@ -139,6 +139,7 @@ debug.from.line <- function(..., state = F) {
 
     # Find number of preceding data nodes
     # Subset that out of data.nodes
+    rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
     rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
     nodes <- .debug.env$data.nodes["1":rnum[1], "label"]
 
