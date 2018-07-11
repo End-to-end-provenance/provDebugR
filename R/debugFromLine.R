@@ -19,17 +19,24 @@
 #' debug.from.line()
 #' }
 
-debug.from.line <- function(..., state = F) {
+debug.from.line <- function(..., state = F, script.num = 0) {
 
   # Collect the arguments passed to the function
   args <- .flatten.args(...)
 
   # Get procedure nodes (and thus startLine and scriptNum) from parser
+  # Subset by inputted script number
   # Subset operation-type nodes to get rid of NA values
   # (Gets rid of Start and Finish type)
   proc.nodes <- get.proc.nodes()
-  .debug.env$proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-
+  proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+  to.delete <- proc.nodes[proc.nodes$scriptNum != script.num, "label"]
+  .debug.env$proc.nodes <- proc.nodes[proc.nodes$scriptNum == script.num, ]
+  
+  # HAVE TO GET RID OF CORRESPONDING EDGES (BOTH WAYS)!!!!!
+  # use proc-data edges to remove corresponding data nodes
+  # get rid of edges as well
+  
   # Get data nodes (and thus var, val, and type) from parser
   # Subset file-type nodes to get rid of those with no corresponding procedure
   # Capture file-type nodes in delete.these for later subsetting
@@ -174,15 +181,14 @@ debug.from.line <- function(..., state = F) {
   if (grepl("p", node)) {
     # entity will be character(0) if there's no corresponding data node
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
-    script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
   } else if (grepl("d", node)) {
     entity <- node
-    script <- 0 # NA, could omit column upon return
   }
 
   # Initialize variables to be returned
   val <- var <- type <- NULL
-  if (length(entity) == 0) { # || !(entity %in% .debug.env$data.nodes)
+  script <- script.num
+  if (length(entity) == 0) {
 
     # For state, val and type don't exist
     val <- container <- dim <- type <- NA
