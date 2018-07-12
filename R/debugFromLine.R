@@ -8,6 +8,8 @@
 #' @param state If FALSE, returns the refereneces to variables on
 #' inputed line(s). If TRUE, returns the state of all variables up to
 #' that point in execution.
+#' @param script.num If 0, only examine variables from the main script.
+#' If 1 or higher, examine variables from further nested source scripts.
 #' @return A list of one data frame per line, containing information about
 #' the variables on that line. If no parameters were passed, returns a
 #' data frame containing the state of all variables at the end of execution.
@@ -19,31 +21,37 @@
 #' debug.from.line()
 #' }
 
-debug.from.line <- function(..., state = F) {
+debug.from.line <- function(..., state = F, script.num = 0) {
 
   # Collect the arguments passed to the function
   args <- .flatten.args(...)
 
   # Get procedure nodes (and thus startLine and scriptNum) from parser
+  # Subset by inputted script number
   # Subset operation-type nodes to get rid of NA values
   # (Gets rid of Start and Finish type)
   proc.nodes <- get.proc.nodes()
-  .debug.env$proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-
+  proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+  proc.delete <- proc.nodes[proc.nodes$scriptNum != script.num, "label"]
+  .debug.env$proc.nodes <- proc.nodes[proc.nodes$scriptNum == script.num, ]
+  
+  # Get proc-data edges
+  # Subset out edges that correspond to proc.delete
+  proc.data.edges <- get.proc.data()
+  .debug.env$proc.data.edges <- proc.data.edges[!(proc.data.edges$activity %in% proc.delete), ]
+  
   # Get data nodes (and thus var, val, and type) from parser
   # Subset file-type nodes to get rid of those with no corresponding procedure
   # Capture file-type nodes in delete.these for later subsetting
   data.nodes <- get.data.nodes()
-  delete.these <- data.nodes[data.nodes$type == "File", "label"]
+  file.delete <- data.nodes[data.nodes$type == "File", "label"]
   .debug.env$data.nodes <- data.nodes[data.nodes$type != "File", ]
 
-  # Get proc-data edges
-  .debug.env$proc.data.edges <- get.proc.data()
-
   # Get data-proc edges
-  # Subset file-type nodes with delete.these
+  # Subset file-type nodes with file.delete
   data.proc.edges <- get.data.proc()
-  .debug.env$data.proc.edges <- data.proc.edges[!(data.proc.edges$entity %in% delete.these), ]
+  data.proc.edges <- data.proc.edges[!(data.proc.edges$entity %in% file.delete), ]
+  .debug.env$data.proc.edges <- data.proc.edges[!(data.proc.edges$activity %in% proc.delete), ]
 
   # Check if line number is valid entry
   # True if input is a possible line number
@@ -63,10 +71,10 @@ debug.from.line <- function(..., state = F) {
   # Otherwise, call helper function .grab.line over each line input
   if (length(args) == 0) {
     print("State of all variables at end of execution:")
-    ret.val <- .grab.line(max(pos.line), state = T)
+    ret.val <- .grab.line(max(pos.line), state = T, script.num = 0)
     return(ret.val)
   } else {
-    ret.val <- lapply(args, .grab.line, state)
+    ret.val <- lapply(args, .grab.line, state, script.num)
     names(ret.val) <- args
     return(ret.val)
   }
@@ -83,10 +91,12 @@ debug.from.line <- function(..., state = F) {
 #' @param state Determines if the variable references on that line
 #' will be examined or the state of all variables up to that line's
 #' execution
+#' @param script.num If 0 examine only variables from the main script.
+#' If 1, examine variables from first nested source script.
 #'
 #' @return A data frame in the debug environemnt, which contains the
 #' columns var/code, val, type, and script. Each row is a variable.
-.grab.line <- function(lineNumber, state) {
+.grab.line <- function(lineNumber, state, script.num) {
 
   # Clear line.df for subsequent function calls
   .debug.env$line.df <- data.frame()
@@ -111,7 +121,7 @@ debug.from.line <- function(..., state = F) {
     nodes <- nodes[!is.na(nodes)]
 
     # Create row for each variable on the line, then rbind into a data frame
-    lapply(nodes, .process.node)
+    lapply(nodes, .process.node, script.num)
 
     # Name columns and rows
     colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
@@ -149,7 +159,7 @@ debug.from.line <- function(..., state = F) {
     nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
 
     # Create row for each variable on the line, then rbind into a data frame
-    lapply(nodes, .process.node)
+    lapply(nodes, .process.node, script.num)
 
     # Name columns and rows
     colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
@@ -164,9 +174,11 @@ debug.from.line <- function(..., state = F) {
 #' to a data frame in the debug environment.
 #' @name process.node
 #' @param node A character corresponding to a node name in the prov
+#' @param script.num If 0, examine only variables from the main script.
+#' If 1, examine variables from first nested source script.
 #'
 #' @return Nothing
-.process.node <- function(node) {
+.process.node <- function(node, script.num) {
 
   # Extract data entity from procedure activity via procedure-to-data edges
   # For reference, argument will be proc node
@@ -174,15 +186,16 @@ debug.from.line <- function(..., state = F) {
   if (grepl("p", node)) {
     # entity will be character(0) if there's no corresponding data node
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
-    script <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "scriptNum"]
+    script <- script.num
   } else if (grepl("d", node)) {
     entity <- node
-    script <- 0 # NA, could omit column upon return
+    entity.activity <- get.proc.data()[get.proc.data()$entity == entity, "activity"]
+    script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
   }
 
   # Initialize variables to be returned
   val <- var <- type <- NULL
-  if (length(entity) == 0) { # || !(entity %in% .debug.env$data.nodes)
+  if (length(entity) == 0) {
 
     # For state, val and type don't exist
     val <- container <- dim <- type <- NA
@@ -205,14 +218,6 @@ debug.from.line <- function(..., state = F) {
     
     # JSON formatted so that we can put a list in a single element of a data frame
     dim <- paste(val.type$dimension, collapse = ",")
-    # type <- unlist(lapply(val.type$type, function(t) {
-    #   if (t == "numeric") {
-    #     return(typeof(as.numeric(t)))
-    #   } else {
-    #     return(t)
-    #   }
-    # }))
-    # types <- paste("{[", paste(type, collapse = ","), "]}")
     type <- paste("{ \"type\" : [",
                   paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
                   , "]}")
