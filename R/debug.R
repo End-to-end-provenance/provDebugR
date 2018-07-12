@@ -29,8 +29,10 @@ debug.init <- function(input.data = NA) {
   # will not appear until after the script it is
   # AND another command is run in the console
   def.warn <- options()$warn
-  options(warn = 1)
-
+  if(!def.warn > 1){
+    options(warn = 1)
+  }
+  
   # Extract what the file type is to make sure that it is an R file
   # Also grab the name of the file (minus extension) for locating ddg folder
   if(!is.na(input.data)){
