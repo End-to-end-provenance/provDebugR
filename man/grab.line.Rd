@@ -7,7 +7,7 @@
 on each line that the user has passed. The nodes are then processed
 in another helper function which modifies the data frame line.df}
 \usage{
-.grab.line(lineNumber, state)
+.grab.line(lineNumber, state, script.num)
 }
 \arguments{
 \item{lineNumber}{A numeric corresponding to the line that the
@@ -16,6 +16,9 @@ user wants to examine}
 \item{state}{Determines if the variable references on that line
 will be examined or the state of all variables up to that line's
 execution}
+
+\item{script.num}{If 0 examine only variables from the main script.
+If 1, examine variables from first nested source script.}
 }
 \value{
 A data frame in the debug environemnt, which contains the

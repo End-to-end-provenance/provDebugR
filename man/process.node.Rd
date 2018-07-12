@@ -7,10 +7,13 @@
 passed to it. A row with the information is created and appended
 to a data frame in the debug environment.}
 \usage{
-.process.node(node)
+.process.node(node, script.num)
 }
 \arguments{
 \item{node}{A character corresponding to a node name in the prov}
+
+\item{script.num}{If 0, examine only variables from the main script.
+If 1, examine variables from first nested source script.}
 }
 \value{
 Nothing

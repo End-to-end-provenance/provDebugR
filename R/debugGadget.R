@@ -1,6 +1,3 @@
-library(shiny)
-library(miniUI)
-library(provDebugR)
 
 debugGadget <- function() {
   
