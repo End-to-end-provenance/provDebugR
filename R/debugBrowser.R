@@ -130,7 +130,7 @@ debug.browser <- function() {
     # the line of code 
     cat(paste(lines[var.env$lineIndex],
               ": ",
-              proc.nodes[var.env$lineIndex, ]$name,
+              proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex - 1], ]$name,
               "\n",
               sep=""))
   }
