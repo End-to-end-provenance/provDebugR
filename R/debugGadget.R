@@ -1,27 +1,34 @@
 debugGadget <- function() {
-  
+
   ui <- miniPage(
     gadgetTitleBar("provDebugR"),
-    miniContentPanel(padding = 15,
-      fileInput(inputId = "file",
-                label = "Choose R script or prov-JSON file",
-                accept = c(
-                  ".R",
-                  ".Rmd",
-                  ".json"),
-                multiple = FALSE,
-                buttonLabel = "Browse...",
-                placeholder = "No file selected"
-                ),
-      fillRow(textInput(inputId = "lines",
-                        label = "Lines", #NULL?
-                        value = "",
-                        placeholder = "Enter the lines you want to examine")
-              ),
-      #hr(),
-      fillRow(verbatimTextOutput("value")),
-      tableOutput("return")
+    miniContentPanel(
+      fillRow(
+        flex = c(1, 2),
+        fillCol(
+          fileInput(inputId = "file",
+                    label = "Choose R script or prov-JSON file",
+                    accept = c(".R", 
+                               ".Rmd", 
+                               ".json"),
+                    multiple = FALSE,
+                    buttonLabel = "Browse...",
+                    placeholder = "No file selected"),
+          radioButtons(inputId = "state",
+                       label = "State or reference",
+                       choices = list("State" = 1,
+                                      "Reference" = 2),
+                       selected = 1),
+          textInput(inputId = "lines",
+                    label = "Lines",
+                    value = "",
+                    placeholder = "Enter lines to examine")
+          ),
+        fillCol(
+          verbatimTextOutput(outputId = "value")
+        )
       )
+    )
   )
   
   #session?
@@ -29,20 +36,13 @@ debugGadget <- function() {
     
     #debug.init(input$file)
     
-    output$lines <- renderPrint({
-      debug.from.line(input$lines)
-    })
-    
     output$value <- renderPrint({
-      input$file#,
+      input$file
       #env = .debug.env()
-    })
-    
-    output$return <- renderTable({
-      #debug.from.line()
+      #debug.from.line(input$lines)
     })
   }
   
-  # dialogViewer("provDebugR")?
-  runGadget(ui, server, viewer = paneViewer())
+  # paneViewer()?
+  runGadget(ui, server, viewer = dialogViewer("provDebugR"))
 }
