@@ -22,24 +22,33 @@ debug.browser <- function() {
   proc.nodes <- get.proc.nodes()
   var.env <- new.env(parent = emptyenv())
   
+  
+  current.script = 0
+  
   #The script name isn't an opertion so will be removed
   # on the next line, but is needed to print to the user
   script.name <- proc.nodes[1,]$name
   
   proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+  proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
   
   # All the possible lines so the debugger can move through
   # debug.from.line without throwing any warnings
-  lines <- proc.nodes$startLine
+  lines <- na.omit(proc.nodes$startLine)
   var.env$lineIndex <- 1
-  currentScript = 0
+  
   
   # Instructions for how to use the debugger
   cat("Debugger initialized, type \"help\" for more information or Q to quit\n")
   cat(paste(script.name), "\n", sep="")
 
   # Each line will print the code for the line 
-  cat(paste(lines[var.env$lineIndex], ": ", proc.nodes[lines[var.env$lineIndex], ]$name, sep=""))
+  cat(paste(lines[var.env$lineIndex],
+            ": ",
+            proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
+            "\n",
+            sep=""))
+  
   # This is used to determine which variables to print to the screen
   # if their name is input instead of being passed to the interpreter
   var.env$vars <- NA
@@ -130,7 +139,7 @@ debug.browser <- function() {
     # the line of code 
     cat(paste(lines[var.env$lineIndex],
               ": ",
-              proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex - 1], ]$name,
+              proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
               "\n",
               sep=""))
   }
@@ -202,13 +211,23 @@ debug.browser <- function() {
                 # or just a single vector.
                 if(file.exists(full.path)){
                   temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
-                  indexes <- 1:ncol(temp.var)
-                  temp.var <- cbind(sapply(indexes, function(index) {
-                    temp.var[[index]]
-                  }))
-                  # a single vector is formatted differently than a single column of a matrix
-                  if(ncol(temp.var) == 1 & row[["container"]] == "vector" ){
-                    temp.var <- as.vector(temp.var)
+                  if(nrow(temp.var) == 0 ){
+                    if (row[["container"]] == "vector") {
+                      temp.var <- rep("", length.out = as.integer(row[["dim"]]))
+                    }
+                    # } else if (row[["container"]] == "matrix") {
+                    #   temp.var <- matrix(data ="", nrow = , ncol = 5)
+                    # }
+                    
+                  } else {
+                    indexes <- 1:ncol(temp.var)
+                    temp.var <- cbind(sapply(indexes, function(index) {
+                      temp.var[[index]]
+                    }))
+                    # a single vector is formatted differently than a single column of a matrix
+                    if(ncol(temp.var) == 1 & row[["container"]] == "vector" ){
+                      temp.var <- as.vector(temp.var)
+                    }
                   }
                   
                   assign(row["var/code"][[1]], temp.var, envir = var.env)
