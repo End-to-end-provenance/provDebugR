@@ -1,4 +1,3 @@
-
 debugGadget <- function() {
   
   ui <- miniPage(
