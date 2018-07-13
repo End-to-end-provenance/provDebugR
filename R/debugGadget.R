@@ -38,36 +38,31 @@ debugGadget <- function() {
     reactiveInit <- reactive({
       file <- input$file$datapath
       debug.init(file)
+    
+      # interesting - automatically tries to run on line 0
+      # environment issue?
     })
     
     reactiveDebug <- reactive({
-      args <- as.numeric(input$lines) # string-split by comma, put into a list (do stuff for colon too)
+      args <- as.numeric(unlist(strsplit(input$lines, ",")))
       state <- input$state
-
-      print(args)
-      #(debug.from.line(args, state, script = 0))
+      debug.from.line(args, state, script = 0)
     })
 
     output$value <- renderPrint({
       # put message for when file hasn't been inputed yet
+      # state
       reactiveInit()
       if (input$lines != "") {
         reactiveDebug()
+      } else {
+        print("No lines entered")
       }
     })
     
-    #output$value <- renderPrint({
-    #  reactiveDebug()
-    #})
-    
-    # output$value <- renderPrint({
-    #   input$file
-    #   #env = .debug.env()
-    #   #debug.from.line(input$lines)
-    # })
-    
     observeEvent(input$done, {
-      #returnValue <- debug.from.line(input$lines, input$state)
+      #to return last lines queried:
+      #returnValue <- reactiveDebug()
       #stopApp(returnValue)
       stopApp()
     })
@@ -77,6 +72,6 @@ debugGadget <- function() {
     })
   }
 
-  # paneViewer()?
+  # paneViewer()
   runGadget(ui, server, viewer = dialogViewer("provDebugR", width = 1000, height = 800))
 }
