@@ -60,7 +60,7 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     if (arg %in% pos.line) {
       return(TRUE)
     } else {
-      cat(arg, "is not a possible line", sep = " ")
+      cat(arg, "is not a possible line\n", sep = " ")
       return(FALSE)
     }
   }, pos.line = pos.line)

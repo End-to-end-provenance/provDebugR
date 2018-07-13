@@ -62,9 +62,9 @@ debugGadget <- function() {
     
     observeEvent(input$done, {
       #to return last lines queried:
-      #returnValue <- reactiveDebug()
-      #stopApp(returnValue)
-      stopApp()
+      returnValue <- reactiveDebug()
+      stopApp(returnValue)
+      #stopApp()
     })
     
     observeEvent(input$cancel, {
