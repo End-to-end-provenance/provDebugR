@@ -41,4 +41,5 @@ debug.lineage(..., forward = F)
 debug.error.trace(stack.overflow = F)
 debug.warning.trace(..., stack.overflow = F) 
 debug.browser()
+debug.gadget()
 ```
