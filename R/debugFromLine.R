@@ -25,6 +25,9 @@ debug.from.line <- function(..., state = F, script.num = 0) {
 
   # Collect the arguments passed to the function
   args <- .flatten.args(...)
+  
+  # Remove 0s (for debugGadget())
+  args <- args[!args %in% 0]
 
   # Get procedure nodes (and thus startLine and scriptNum) from parser
   # Subset by inputted script number

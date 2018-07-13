@@ -4,7 +4,7 @@ debugGadget <- function() {
     gadgetTitleBar("provDebugR"),
     miniContentPanel(
       fillRow(
-        flex = c(1, 2),
+        flex = c(1, 3),
         fillCol(
           fileInput(inputId = "file",
                     label = "Choose R script or prov-JSON file",
@@ -16,9 +16,9 @@ debugGadget <- function() {
                     placeholder = "No file selected"),
           radioButtons(inputId = "state",
                        label = "State or reference",
-                       choices = list("State" = 1,
-                                      "Reference" = 2),
-                       selected = 1),
+                       choices = list("State" = TRUE,
+                                      "Reference" = FALSE),
+                       selected = TRUE),
           textInput(inputId = "lines",
                     label = "Enter lines to examine, separated by a comma or colon (for range)",
                     value = "",
@@ -44,9 +44,10 @@ debugGadget <- function() {
     })
     
     reactiveDebug <- reactive({
-      args <- as.numeric(unlist(strsplit(input$lines, ",")))
-      state <- input$state
-      debug.from.line(args, state, script = 0)
+      args <- unname(as.numeric(unlist(strsplit(input$lines, ","))))
+      state <- as.logical(input$state)
+      
+      debug.from.line(args, state = state, script = 0)
     })
 
     output$value <- renderPrint({
@@ -56,6 +57,7 @@ debugGadget <- function() {
       if (input$lines != "") {
         reactiveDebug()
       } else {
+        #debug.from.line()
         print("No lines entered")
       }
     })
