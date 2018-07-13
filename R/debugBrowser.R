@@ -42,7 +42,7 @@ debug.browser <- function() {
   cat("Debugger initialized, type \"help\" for more information or Q to quit\n")
   cat(paste(script.name), "\n", sep="")
 
-  # Each line will print the code for the line 
+  #Each line will print the code for the line
   cat(paste(lines[var.env$lineIndex],
             ": ",
             proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
@@ -64,8 +64,15 @@ debug.browser <- function() {
       break
     } else if(input == "ls") { # lists variables present in "execution"
       print(var.env$vars)
-    } else if (input == "n")  { # advances a line
-      var.env$lineIndex <- var.env$lineIndex + 1
+    } else if (input == "n" | grepl("^n[[:digit:]]", input))  { # advances a line
+      new.in <- gsub("n", "", input)
+      if(grepl("[[:digit:]]", new.in)){
+        forw.by <- as.integer(new.in)
+        
+        var.env$lineIndex <- findInterval(lines[var.env$lineIndex] + forw.by, lines)
+      } else {
+        var.env$lineIndex <- var.env$lineIndex + 1
+      }
       
       .change.line(var.env, lines, proc.nodes)
     } else if (input == "c") { # moves to the end of the script
@@ -172,7 +179,7 @@ debug.browser <- function() {
             file.name <- file.parts[[1]][1]
             
             # A text file means that the data has been stored as an RObject
-            # this can be loaded back in simplusing load()
+            # this can be loaded back in simply using load()
             if(file.ext == "txt") {
               full.path <- paste(.debug.env$ddg.folder,
                                  "/", file.name,
