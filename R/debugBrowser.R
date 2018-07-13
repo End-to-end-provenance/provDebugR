@@ -42,7 +42,7 @@ debug.browser <- function() {
   cat("Debugger initialized, type \"help\" for more information or Q to quit\n")
   cat(paste(script.name), "\n", sep="")
 
-  # Each line will print the code for the line 
+  #Each line will print the code for the line
   cat(paste(lines[var.env$lineIndex],
             ": ",
             proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
@@ -59,25 +59,74 @@ debug.browser <- function() {
   while(TRUE) {
     input <- readline(prompt = "Debug> ")
     
-    if (input == "Q") { # Quits the program
+    # If they enter a Q the loop breaks
+    if (input == "Q") { 
       print("Quitting")
       break
-    } else if(input == "ls") { # lists variables present in "execution"
+    # lists variables present in "execution"
+    # THey can enter one as an input and it will print it's value
+    } else if(input == "ls") { 
       print(var.env$vars)
-    } else if (input == "n")  { # advances a line
-      var.env$lineIndex <- var.env$lineIndex + 1
+      
+    # advances a line, or if a number is specified, advances
+    # by the number of lines specified
+    } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
+      # Clear out the command, if a number is left then 
+      # modify behavior to use the number
+      new.in <- gsub("n", "", input)
+      if(grepl("[[:digit:]]", new.in)){
+        forw.by <- as.integer(new.in)
+        # Find the index closest value to what was specified 
+        # in lines andthen change execution to go there 
+        var.env$lineIndex <- findInterval(lines[var.env$lineIndex] + forw.by, lines)
+      } else {
+        var.env$lineIndex <- var.env$lineIndex + 1
+      }
       
       .change.line(var.env, lines, proc.nodes)
-    } else if (input == "c") { # moves to the end of the script
+    
+    # moves "execution" to the end of the script
+    } else if (input == "c") { 
       # Continue until the "end" of execution
       var.env$lineIndex <- length(lines)
       
       .change.line(var.env, lines, proc.nodes)
-    } else if (input == "b") { # moves back a line
-      var.env$lineIndex <- var.env$lineIndex - 1
       
+    # Moves back by the number of line specified by the user
+    # If no lines are specified, moves back one line
+    } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
+      # Clear out the command, if a number is left then 
+      # modify behavior to use the number
+      new.in <- gsub("b", "", input)
+      if(grepl("[[:digit:]]", new.in)) {
+        back.by <- as.integer(new.in)
+        # Find the index closest value to what was specified 
+        # in lines andthen change execution to go there 
+        var.env$lineIndex <- findInterval(lines[var.env$lineIndex] - back.by, lines)
+      } else {
+        var.env$lineIndex <- var.env$lineIndex - 1
+      }
+     
       .change.line(var.env, lines, proc.nodes)
-    } else if (input == "mv") { # moves environment over to the global environment
+    # This function will print the line that the "execution" is 
+    # currently on or if they specify a number will jump to that line
+    } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
+      # Clear out the command, if a number is left then 
+      # modify behavior to use the number
+      new.in <- gsub("l", "", input)
+      if(grepl("[[:digit:]]", new.in)) {
+        var.env$lineIndex <- findInterval(as.integer(new.in), lines)
+        .change.line(var.env, lines, proc.nodes)
+      } else {
+        #Each line will print the code for the line
+        cat(paste(lines[var.env$lineIndex],
+                  ": ",
+                  proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
+                  "\n",
+                  sep=""))
+      }
+    # moves the simulated execution environment over to the global environment
+    } else if (input == "mv") { 
       #transfer environment
       if(!is.na(var.env$vars[1])){
         lapply(var.env$vars, function(var){
@@ -87,22 +136,27 @@ debug.browser <- function() {
       } else {
         cat("Environment empty, nothing to move\n")
       }
-      
-    } else if (input == "help") { # print information 
+    # print information on how to use the debugger
+    } else if (input == "help") { 
       cat(paste("This is a post-mortem debugger for R \n", 
                 "n - Move forward one line\n",
-                "b - Move Backward one line\n",
+                "n* - Move forward * number of times (where * is an integer) ",
+                "b - Move backward one line\n",
+                "b* - Move backward * number of times (where * is an integer)",
                 "c - moves to end of \'execution\'\n",
                 "ls - prints name of variables at the current point of \'execution\'\n",
-                "mv - moves the debugging environment to the Global Environment\n",
-                "help - brings up this dialouge\n",
+                "l - print the current line",
+                "l* - Move to line * (where * is an integer)",
+                "mv - moves the current debugging environment to the Global Environment\n",
+                "help - brings up this dialog \n",
                 "Q - quits the debugger\n"
                 ))
     } else if(input %in% var.env$vars){ # if they supplied a variable in script, print value
       print(get(input, envir = var.env))
     } else { # pass their code to interpreter 
       tryCatch({
-        source(exprs = parse(text = input))
+        capture_output(ret.val <- eval(parse(text = input), envir = parent.frame(3)))
+        print(ret.val)
       }, error = function(error.message) {
         cat(paste("Error: \n", error.message, "\n", sep = ""))
       })
@@ -172,7 +226,7 @@ debug.browser <- function() {
             file.name <- file.parts[[1]][1]
             
             # A text file means that the data has been stored as an RObject
-            # this can be loaded back in simplusing load()
+            # this can be loaded back in simply using load()
             if(file.ext == "txt") {
               full.path <- paste(.debug.env$ddg.folder,
                                  "/", file.name,
