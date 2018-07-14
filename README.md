@@ -7,14 +7,24 @@ Devtools is needed for installation:
 ```{r}
 install.packages("devtools")
 ```
-Installation with dependencies (copy and paste):
+Installation of all required packages (can be copied and pasted):
 ```{r}
-install.packages("igraph")
 devtools::install_github("ProvTools/provParseR")
 devtools::install_github("jwons/provGraphR")
 devtools::install_github("End-to-end-provenance/RDataTracker", ref = "development")
 devtools::install_github("jwons/provDebugR")
 ```
+also uses:
+* httr
+* jsonlite
+* methods
+
+and if your environment is RStudio:
+* rstudioapi
+* shiny
+* miniUI
+
+
 Once installed, load the package:
 ```{r}
 library("provDebugR")
@@ -25,13 +35,14 @@ While writing a script, run the script by calling:
 ```{r}
 debug.init("yourScriptNameHere.R")
 ```
-If you have provenance stored as prov.json somewhere you can alternatively run:
+If you already have provenance stored as prov.json, you can also 
+use that file as an argument.
 ```{r}
-debug.prov("yourProvJsonHere.json")
+debug.init("prov.json")
 ```
 
 Once either debug.prov or debug.init is run the rest of the functions can be used. 
-
+To find out more about what each function does, refer to the Wiki!
 ```{r}
 debug.init(input.data)
 debug.variable.type(..., just.logical = F)
