@@ -24,7 +24,7 @@
 #'debug.init("prov.json")
 #'debug.init(ddg.json()) # ddg.json is an RDataTracker function
 #'}
-debug.init <- function(input.data = NA) {
+debug.init <- function(input.data = NA, dir = NULL) {
   # If the warn option is not set to 1 the warnings in a user's script
   # will not appear until after the script it is
   # AND another command is run in the console
@@ -64,7 +64,7 @@ debug.init <- function(input.data = NA) {
     })
   } else if (file.ext == "r" || file.ext == "rmd") {
     try.result = tryCatch({
-      ddg.run(input.data)
+      ddg.run(input.data, ddgdir = dir)
     }, error = function(error_condition) {
       cat(paste("\nThis script had an error:\n",
                 error_condition,
