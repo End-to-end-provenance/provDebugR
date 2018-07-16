@@ -2,36 +2,47 @@ debug.gadget <- function() {
 
   ui <- miniPage(
     gadgetTitleBar("provDebugR"),
-    miniContentPanel(
-      fillRow(
-        flex = c(1, 2),
-        fillCol(
-          fileInput(inputId = "file",
-                    label = "Choose R script or prov-JSON file",
-                    accept = c(".R", 
-                               ".Rmd", 
-                               ".json"),
-                    multiple = FALSE,
-                    buttonLabel = "Browse...",
-                    placeholder = "No file selected"),
-          radioButtons(inputId = "state",
-                       label = "State or reference",
-                       choices = list("State" = TRUE,
-                                      "Reference" = FALSE),
-                       selected = TRUE),
-          textInput(inputId = "lines",
-                    label = "Enter lines to examine, separated by a comma",
-                    value = "",
-                    placeholder = "E.g., 1, 3:5, 10")
-          ),
-        fillCol(
-          #vervatimTextOutput(outputId = "code"),
-          tags$h4("Code"),
-          uiOutput("code", container = rCodeContainer),
-          tags$h4("Output"),
-          verbatimTextOutput(outputId = "value")
-        )
-      )
+    miniTabstripPanel(
+      miniTabPanel("From Line",
+        miniContentPanel(
+          fillRow(
+            flex = c(1, 2),
+            fillCol(
+              fileInput(inputId = "file",
+                        label = "Choose R script or prov-JSON file",
+                        accept = c(".R",
+                                   ".Rmd",
+                                   ".json"),
+                        multiple = FALSE,
+                        buttonLabel = "Browse...",
+                        placeholder = "No file selected"),
+              radioButtons(inputId = "state",
+                           label = "State or reference",
+                           choices = list("State" = TRUE,
+                                         "Reference" = FALSE),
+                           selected = TRUE),
+              textInput(inputId = "lines",
+                        label = "Enter lines to examine, separated by a comma",
+                        value = "",
+                        placeholder = "E.g., 1, 3:5, 10")
+              ),
+            fillCol(
+              #vervatimTextOutput(outputId = "code"),
+              tags$h4("Code"),
+              uiOutput("code", container = rCodeContainer),
+              tags$h4("Output"),
+              verbatimTextOutput(outputId = "value")
+              )
+            )
+          )),
+      miniTabPanel("Lineage",
+        miniContentPanel(
+          ...
+        )),
+      miniTabPanel("Variable",
+        miniContentPanel(
+          ...
+        ))
     )
   )
   
