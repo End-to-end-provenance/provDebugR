@@ -44,8 +44,13 @@ debug.init <- function(input.data = NA, dir = NULL) {
     file.path <- gsub("([^/]+$)", "", input.data)
   }
   
+  # Check for the ddg folder which will have information for scripts and 
+  # snapshot data later on
   ddg.folder <- paste(file.path, file.name, "_ddg", sep ="")
   
+  # If it was found save it's location in the environment to be used later
+  # Otherwise save an NA value to indicate it is missing to prevent
+  # reading in from a file that does not exist
   if(!dir.exists(ddg.folder)) {
     ddg.folder <- NA
     .debug.env$ddg.folder <- NA
@@ -53,8 +58,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
     .debug.env$ddg.folder <- ddg.folder
   }
   
-  # Run the script and if it error'd let the user know
-  # and let them know how to find lineage of the error
+  # If no data is input, look for json in memory
   if (is.na(input.data)) {
     tryCatch({
       .debug.prov(ddg.json(), is.file = F)
@@ -63,6 +67,8 @@ debug.init <- function(input.data = NA, dir = NULL) {
     }, error = function(error.message) {
       cat("\nNo provenance in memory\n")
     })
+  # If it's a script, run it, and if it errors let the user know
+  # and let them know how to find lineage of the error
   } else if (file.ext == "r" || file.ext == "rmd") {
     try.result = tryCatch({
       ddg.run(input.data, ddgdir = dir)
@@ -73,14 +79,27 @@ debug.init <- function(input.data = NA, dir = NULL) {
     }, finally={
       cat("RDataTracker is finished running \n")
     })
+    
     .debug.prov(ddg.json(), is.file = F)
+    
+  # If the file was a json file, it has provenance and 
+  # can be passed right to debug.prov to be parsed
   } else if (file.ext == "json") {
     .debug.prov(input.data)
   } else {
     .debug.prov(input.data, is.file = F)
   }
-
-  # Set the warning options back to whatever the user origianlly had
+  
+  # If even a single variable did not come from the script, but the outside environment 
+  # before the script was run, inform the user. This means that the provenance cannot 
+  # function as well for increasing reproducibility
+  if(TRUE %in% get.data.nodes()$fromEnv){
+    cat("\nThis provenance is incomplete. Variables were used that existed before the script began.\n",
+        "This harms the reproducibility of the script and we highly recommend you make it clear where\n",
+        "all variables cames from \n")
+  }
+  
+  # Set the warning options back to whatever the user originally had
   options(warn = def.warn)
 }
 

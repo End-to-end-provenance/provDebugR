@@ -138,15 +138,15 @@ debug.browser <- function() {
       }
     # print information on how to use the debugger
     } else if (input == "help") { 
-      cat(paste("This is a post-mortem debugger for R \n", 
+      cat(paste("This is a postmortem debugger for R \n", 
                 "n - Move forward one line\n",
-                "n* - Move forward * number of times (where * is an integer) ",
+                "n* - Move forward * number of times (where * is an integer) \n",
                 "b - Move backward one line\n",
-                "b* - Move backward * number of times (where * is an integer)",
+                "b* - Move backward * number of times (where * is an integer)\n",
                 "c - moves to end of \'execution\'\n",
                 "ls - prints name of variables at the current point of \'execution\'\n",
-                "l - print the current line",
-                "l* - Move to line * (where * is an integer)",
+                "l - print the current line\n",
+                "l* - Move to line * (where * is an integer)\n",
                 "mv - moves the current debugging environment to the Global Environment\n",
                 "help - brings up this dialog \n",
                 "Q - quits the debugger\n"
