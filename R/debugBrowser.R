@@ -34,7 +34,7 @@ debug.browser <- function() {
   
   # All the possible lines so the debugger can move through
   # debug.from.line without throwing any warnings
-  lines <- na.omit(proc.nodes$startLine)
+  lines <- stats::na.omit(proc.nodes$startLine)
   var.env$lineIndex <- 1
   
   
@@ -151,11 +151,13 @@ debug.browser <- function() {
                 "help - brings up this dialog \n",
                 "Q - quits the debugger\n"
                 ))
-    } else if(input %in% var.env$vars){ # if they supplied a variable in script, print value
+    # if they supplied a variable in script, print value  
+    } else if(input %in% var.env$vars){ 
       print(get(input, envir = var.env))
-    } else { # pass their code to interpreter 
+    # pass their code to interpreter   
+    } else { 
       tryCatch({
-        capture_output(ret.val <- eval(parse(text = input), envir = parent.frame(3)))
+        testthat::capture_output(ret.val <- eval(parse(text = input), envir = parent.frame(3)))
         print(ret.val)
       }, error = function(error.message) {
         cat(paste("Error: \n", error.message, "\n", sep = ""))

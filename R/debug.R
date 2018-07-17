@@ -10,6 +10,7 @@
 #'
 #'@param input.data A path to an R script, a prov.json file,
 #'provenance from memory, or nothing.
+#'@param dir A path to where to save the prov folder
 #'@return nothing
 #'@import RDataTracker
 #'@import provParseR
