@@ -12,7 +12,7 @@ Installation of all required packages (can be copied and pasted):
 devtools::install_github("ProvTools/provParseR")
 devtools::install_github("jwons/provGraphR")
 devtools::install_github("End-to-end-provenance/RDataTracker", ref = "development")
-devtools::install_github("jwons/provDebugR")
+devtools::install_github("ProvTools/provDebugR")
 ```
 also uses:
 * httr
