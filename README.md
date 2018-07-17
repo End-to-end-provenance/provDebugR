@@ -3,6 +3,9 @@
 A debugging tool that leverages provenance to provide handy information about R scripts to assist in writing them.
 
 # Installation
+
+This requires version 3.5.0 or later of R.
+
 Devtools is needed for installation:
 ```{r}
 install.packages("devtools")
