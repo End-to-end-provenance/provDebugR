@@ -4,7 +4,7 @@ A debugging tool that leverages provenance to provide handy information about R 
 
 # Installation
 
-This requires version 3.5.0 or later of R.
+Version 3.5.0 or later of R is required.
 
 Devtools is needed for installation:
 ```{r}
