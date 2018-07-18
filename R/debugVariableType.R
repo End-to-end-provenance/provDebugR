@@ -106,19 +106,14 @@ debug.variable.type <- function(..., just.logical = F) {
   container <- NULL
   dim <- NULL
   type <- NULL
-  # lapply(res.dat.nodes$valType, function(val, container, dim, type){
-  #   if(val == "object"){
-  #     assign("container", append(container, NA), envir = parent.frame(2))
-  #     assign("dim", append(dim, NA), envir = parent.frame(2))
-  #     assign("type", append(type, "object"), envir = parent.frame(2))
-  #   } else {
-  #     parsed.val <- jsonlite::fromJSON(val)
-  #     assign("container", append(container, parsed.val$container), envir = parent.frame(2))
-  #     assign("dim", append(dim, paste(parsed.val$dimension, collapse = ",")), envir = parent.frame(2))
-  #     assign("type", append(type, paste(parsed.val$type, collapse = ",")), envir = parent.frame(2))
-  #   }
-  # }, container = container, dim = dim, type = type)
+
+  # valType is a string that contains the container, dim, and type info
+  # This string is stored (almost always) as a JSON object that needs 
+  # to be parsed before the information can be grabbed
   for (val in res.dat.nodes$valType) {
+    # The one instance where it's not an object, is when RDT
+    # doesn't know that information about the variable, likely
+    # due to it being a complex class. In this case it's purely: 
     if(val == "object"){
       container <- append(container, NA)
       dim <- append(dim, NA)
@@ -126,29 +121,13 @@ debug.variable.type <- function(..., just.logical = F) {
     } else {
       parsed.val <- jsonlite::fromJSON(val)
       container <- append(container, parsed.val$container)
+      
+      # Dimensions and type can be vectors when there are multiple 
+      # dimensions to a variable. Type will have each columns type.
       dim <- append(dim, paste(parsed.val$dimension, collapse = ","))
       type <- append(type, paste(parsed.val$type, collapse = ","))
     }
   }
-  
-  # Since the type is stored as a json in the data frame, the type needs to be extraced
-  # If it is a data frame, inform the user of its dimensions
-  # type <- unlist(lapply(res.dat.nodes$valType, function(type){
-  #   if(type == "object"){
-  #     return("object")
-  #   }
-  #   valType <- jsonlite::fromJSON(type)
-  #   if(valType$container == "data_frame") {
-  #     return(paste(valType$container,
-  #                  ", with dimensions: ",
-  #                  valType$dimension[1],
-  #                  ",",
-  #                  valType$dimension[2],
-  #                  sep=""))
-  #   } else {
-  #     return(valType$type)
-  #   }
-  #   }))
 
   # Combine all the data and return to the user
   df <- as.data.frame(cbind(script, line, scope, container, dim, type), stringsAsFactors = F)
