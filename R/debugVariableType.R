@@ -111,13 +111,25 @@ debug.variable.type <- function(..., just.logical = F) {
   # This string is stored (almost always) as a JSON object that needs 
   # to be parsed before the information can be grabbed
   for (val in res.dat.nodes$valType) {
-    # The one instance where it's not an object, is when RDT
-    # doesn't know that information about the variable, likely
-    # due to it being a complex class. In this case it's purely: 
-    if(val == "object"){
+    # The instances where it's not a JSON string is as follows,
+    # object, environment, language, and function
+    # For now make the type equal to what is in valType and NA the rest
+    if(val == "\"object\""){
       container <- append(container, NA)
       dim <- append(dim, NA)
       type <- append(type, "object")
+    } else if (val == "\"environment\"") {
+      container <- append(container, NA)
+      dim <- append(dim, NA)
+      type <- append(type, "environment")
+    } else if (val == "\"language\"") {
+      container <- append(container, NA)
+      dim <- append(dim, NA)
+      type <- append(type, "language")
+    } else if (val == "\"function\"") {
+      container <- append(container, NA)
+      dim <- append(dim, NA)
+      type <- append(type, "function")
     } else {
       parsed.val <- jsonlite::fromJSON(val)
       container <- append(container, parsed.val$container)
