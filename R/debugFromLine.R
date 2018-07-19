@@ -146,27 +146,49 @@ debug.from.line <- function(..., state = F, script.num = 0) {
       pos.lines <- sort(.debug.env$proc.nodes$startLine, decreasing = FALSE)
       index <- which(pos.lines == lineNumber)
       new.line <- pos.lines[index - 1]
+      # Without this break could be an infinite loop when
+      # there are no values AND the chosen line was 1
+      if(length(new.line) == 0){
+        break
+      }
       node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == new.line, "label"]
       entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+      # Without this break could be an infinite loop when
+      # there are no values
+      if(new.line == pos.lines[1] & length(entity) == 0){
+        break
+      }
     }
 
-    # Find number of preceding data nodes
-    # Subset that out of data.nodes
-    rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
-    rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
-    nodes <- .debug.env$data.nodes["1":rnum[1], "label"]
-
-    # Account for duplicates by removing all but the tail
-    node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
-    temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
-    nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
-
-    # Create row for each variable on the line, then rbind into a data frame
-    lapply(nodes, .process.node, script.num)
-
-    # Name columns and rows
-    colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
-    rownames(.debug.env$line.df) <- c(1:length(nodes))
+    # If entity is 0 that means there were no values
+    # If it's not 0 create the data frame
+    if(length(entity) > 0)
+    {
+      # Find number of preceding data nodes
+      # Subset that out of data.nodes
+      rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
+      rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
+      nodes <- .debug.env$data.nodes["1":rnum[1], "label"]
+      
+      # Account for duplicates by removing all but the tail
+      node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
+      temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
+      nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
+      
+      # Create row for each variable on the line, then rbind into a data frame
+      lapply(nodes, .process.node, script.num)
+      
+      # Name columns and rows
+      colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
+      rownames(.debug.env$line.df) <- c(1:length(nodes))
+    #If entity was 0, populate a data frame with NAs 
+    } else {
+      .debug.env$line.df <- rbind(rep(NA, 6))
+      # Name columns and rows
+      colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
+      rownames(.debug.env$line.df) <- c(1:nrow(.debug.env$line.df))
+    }
+   
 
     return(.debug.env$line.df)
   }

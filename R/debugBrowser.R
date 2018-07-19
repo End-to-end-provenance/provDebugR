@@ -21,7 +21,7 @@ debug.browser <- function() {
   # var.env allows the user to get their variables back from their script
   proc.nodes <- get.proc.nodes()
   var.env <- new.env(parent = emptyenv())
-  var.env$call.stack <- NULL
+  var.env$call.stack <- list()
   
   #The script name isn't an operation so will be removed
   # later on, but is needed to print to the user
@@ -47,7 +47,9 @@ debug.browser <- function() {
       step.in <- rbind(step.in, c(curr.script, line.number, next.script))
     }
   }
-  names(step.in) <- c("cur.script", "line.number", "next.script")
+  if(length(step.in) != 0){
+    names(step.in) <- c("cur.script", "line.number", "next.script")
+  } 
   
   current.script = 0
   
@@ -87,6 +89,37 @@ debug.browser <- function() {
       break
     # lists variables present in "execution"
     # THey can enter one as an input and it will print it's value
+    } else if (input == "s") {
+      if(length(step.in) != 0){
+        script.steps <- step.in[step.in$cur.script == current.script, ]
+        if(lines[var.env$lineIndex] %in% script.steps$line.number){
+          step.info <- script.steps[script.steps$line.number == lines[var.env$lineIndex], ]
+          call.back <- setNames(list(step.info$cur.script, lines[var.env$lineIndex]),
+                                c("script", "line"))
+          var.env$call.stack <- append(var.env$call.stack, list(call.back), after = 0)
+          
+          current.script <- step.info$next.script
+          
+          proc.nodes <- get.proc.nodes()
+          proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+          proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+          
+          # All the possible lines so the debugger can move through
+          # debug.from.line without throwing any warnings
+          lines <- stats::na.omit(proc.nodes$startLine)
+          var.env$lineIndex <- 1
+          
+          .change.line(var.env, lines, proc.nodes, current.script)
+        } else {
+          var.env$lineIndex <- var.env$lineIndex + 1
+          
+          .change.line(var.env, lines, proc.nodes, current.script)
+        }
+      } else {
+        var.env$lineIndex <- var.env$lineIndex + 1
+        
+        .change.line(var.env, lines, proc.nodes,  current.script)
+      }
     } else if(input == "ls") { 
       print(var.env$vars)
       
@@ -105,14 +138,14 @@ debug.browser <- function() {
         var.env$lineIndex <- var.env$lineIndex + 1
       }
       
-      .change.line(var.env, lines, proc.nodes)
-    
+      .change.line(var.env, lines, proc.nodes,  current.script)
+      
     # moves "execution" to the end of the script
     } else if (input == "c") { 
       # Continue until the "end" of execution
       var.env$lineIndex <- length(lines)
       
-      .change.line(var.env, lines, proc.nodes)
+      .change.line(var.env, lines, proc.nodes,  current.script)
       
     # Moves back by the number of line specified by the user
     # If no lines are specified, moves back one line
@@ -129,7 +162,7 @@ debug.browser <- function() {
         var.env$lineIndex <- var.env$lineIndex - 1
       }
      
-      .change.line(var.env, lines, proc.nodes)
+      .change.line(var.env, lines, proc.nodes, current.script)
     # This function will print the line that the "execution" is 
     # currently on or if they specify a number will jump to that line
     } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
@@ -138,7 +171,7 @@ debug.browser <- function() {
       new.in <- gsub("l", "", input)
       if(grepl("[[:digit:]]", new.in)) {
         var.env$lineIndex <- findInterval(as.integer(new.in), lines)
-        .change.line(var.env, lines, proc.nodes)
+        .change.line(var.env, lines, proc.nodes, current.script)
       } else {
         #Each line will print the code for the line
         cat(paste(lines[var.env$lineIndex],
@@ -202,7 +235,7 @@ debug.browser <- function() {
 #' @importFrom utils read.csv
 #' @return nothing
 #'
-.change.line <- function(var.env, lines, proc.nodes) {
+.change.line <- function(var.env, lines, proc.nodes, current.script) {
   # if they choose to go past the amount of lines for execution
   # set it to the end and print they've reached the end
   if(var.env$lineIndex > length(lines)) {
@@ -227,124 +260,127 @@ debug.browser <- function() {
   # if they are past the first line, set the environment to be 
   # where execution was at before their current line was executed
   if(var.env$lineIndex > 1) {
-    line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T)[[1]]
+    line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T, script.num = current.script)[[1]]
     
-    #store the name of all variables for printing out at a user's input
-    var.env$vars <- line.df$`var/code`
-    
-    load.env <- new.env()
-    # Assign each variable and it's value to the created environment
-    apply(line.df, 1, function(row){
-      if(!is.na(row["val"][[1]])){
-        # Check if the value is a snapshot, regex here checks for starting with
-        # data and is a file with an extension
-        if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
-          # If the provenance folder was found the snapshots can be grabbed
-          # from the file system
-          if(!is.na(.debug.env$ddg.folder)) {
-            # The file ext indicates what type of data will be stored and how to 
-            # read it back in for the user, the file name is also used to complete
-            # the path to the final file
-            file.parts <- strsplit(row["val"][[1]], "\\.")
-            file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
-            file.name <- file.parts[[1]][1]
-            
-            # A text file means that the data has been stored as an RObject
-            # this can be loaded back in simply using load()
-            if(file.ext == "txt") {
-              full.path <- paste(.debug.env$ddg.folder,
-                                 "/", file.name,
-                                 ".RObject", sep = "")
-              # Don't try and read in a file that could possibly not exist
-              if(file.exists(full.path)){
-                var.name <- load(full.path, envir = load.env)
-                assign(row["var/code"][[1]], get(var.name, load.env), envir = var.env)
-              } else {
-                assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-              }
-            # csv could be matrix, array, or data_frame
-            } else if (file.ext == "csv") { 
+    # A matrix means no variables were present at that point in execution
+    if(class(line.df) != "matrix"){
+      #store the name of all variables for printing out at a user's input
+      var.env$vars <- line.df$`var/code`
+      
+      load.env <- new.env()
+      # Assign each variable and it's value to the created environment
+      apply(line.df, 1, function(row){
+        if(!is.na(row["val"][[1]])){
+          # Check if the value is a snapshot, regex here checks for starting with
+          # data and is a file with an extension
+          if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
+            # If the provenance folder was found the snapshots can be grabbed
+            # from the file system
+            if(!is.na(.debug.env$ddg.folder)) {
+              # The file ext indicates what type of data will be stored and how to 
+              # read it back in for the user, the file name is also used to complete
+              # the path to the final file
+              file.parts <- strsplit(row["val"][[1]], "\\.")
+              file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
+              file.name <- file.parts[[1]][1]
               
-              # a data frame can be read in using the read.csv function
-              # which creates a data frame
-              if(row[["container"]] == "data_frame"){
-          
+              # A text file means that the data has been stored as an RObject
+              # this can be loaded back in simply using load()
+              if(file.ext == "txt") {
                 full.path <- paste(.debug.env$ddg.folder,
                                    "/", file.name,
-                                   ".csv", sep = "")
+                                   ".RObject", sep = "")
+                # Don't try and read in a file that could possibly not exist
                 if(file.exists(full.path)){
-                  temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
-                  
-                  assign(row["var/code"][[1]], temp.var, envir = var.env)
+                  var.name <- load(full.path, envir = load.env)
+                  assign(row["var/code"][[1]], get(var.name, load.env), envir = var.env)
                 } else {
                   assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
                 }
-              # A vector can be read in using read.csv but then needs the vectors extracted
-              } else if (row[["container"]] == "vector" | row[["container"]] == "matrix") {
-              
-                full.path <- paste(.debug.env$ddg.folder,
-                                   "/", file.name,
-                                   ".csv", sep = "")
-                # Grab each column out of the data frame and then bind to create matrix
-                # or just a single vector.
-                if(file.exists(full.path)){
-                  temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
-                  if(nrow(temp.var) == 0 ){
-                    if (row[["container"]] == "vector") {
-                      temp.var <- rep("", length.out = as.integer(row[["dim"]]))
-                    }
-                    # } else if (row[["container"]] == "matrix") {
-                    #   temp.var <- matrix(data ="", nrow = , ncol = 5)
-                    # }
+                # csv could be matrix, array, or data_frame
+              } else if (file.ext == "csv") { 
+                
+                # a data frame can be read in using the read.csv function
+                # which creates a data frame
+                if(row[["container"]] == "data_frame"){
+                  
+                  full.path <- paste(.debug.env$ddg.folder,
+                                     "/", file.name,
+                                     ".csv", sep = "")
+                  if(file.exists(full.path)){
+                    temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
                     
+                    assign(row["var/code"][[1]], temp.var, envir = var.env)
                   } else {
+                    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+                  }
+                  # A vector can be read in using read.csv but then needs the vectors extracted
+                } else if (row[["container"]] == "vector" | row[["container"]] == "matrix") {
+                  
+                  full.path <- paste(.debug.env$ddg.folder,
+                                     "/", file.name,
+                                     ".csv", sep = "")
+                  # Grab each column out of the data frame and then bind to create matrix
+                  # or just a single vector.
+                  if(file.exists(full.path)){
+                    temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
+                    if(nrow(temp.var) == 0 ){
+                      if (row[["container"]] == "vector") {
+                        temp.var <- rep("", length.out = as.integer(row[["dim"]]))
+                      }
+                      # } else if (row[["container"]] == "matrix") {
+                      #   temp.var <- matrix(data ="", nrow = , ncol = 5)
+                      # }
+                      
+                    } else {
+                      indexes <- 1:ncol(temp.var)
+                      temp.var <- cbind(sapply(indexes, function(index) {
+                        temp.var[[index]]
+                      }))
+                      # a single vector is formatted differently than a single column of a matrix
+                      if(ncol(temp.var) == 1 & row[["container"]] == "vector" ){
+                        temp.var <- as.vector(temp.var)
+                      }
+                    }
+                    
+                    assign(row["var/code"][[1]], temp.var, envir = var.env)
+                    # No file found
+                  } else {
+                    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+                  }
+                  # An array is very similar to a vector but can be coerced into an array post read
+                } else if (row[["container"]] == "array") {
+                  if(file.exists(full.path)){
+                    temp.var <- read.csv(full.path, stringsAsFactors = F)
                     indexes <- 1:ncol(temp.var)
                     temp.var <- cbind(sapply(indexes, function(index) {
                       temp.var[[index]]
                     }))
-                    # a single vector is formatted differently than a single column of a matrix
-                    if(ncol(temp.var) == 1 & row[["container"]] == "vector" ){
-                      temp.var <- as.vector(temp.var)
-                    }
-                  }
-                  
-                  assign(row["var/code"][[1]], temp.var, envir = var.env)
-                # No file found
-                } else {
-                  assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-                }
-              # An array is very similar to a vector but can be coerced into an array post read
-              } else if (row[["container"]] == "array") {
-                if(file.exists(full.path)){
-                  temp.var <- read.csv(full.path, stringsAsFactors = F)
-                  indexes <- 1:ncol(temp.var)
-                  temp.var <- cbind(sapply(indexes, function(index) {
-                    temp.var[[index]]
-                  }))
-                  temp.var <- as.array(temp.var)
+                    temp.var <- as.array(temp.var)
+                  } else {
+                    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+                  } 
+                  #No identifiable container
                 } else {
                   assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
                 } 
-                #No identifiable container
+                # No identifiable file extension
               } else {
-                assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-              } 
-            # No identifiable file extension
+                assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT" , envir = var.env)
+              }
+              # If the ddg.folder was not located
             } else {
-              assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT" , envir = var.env)
+              assign(row["var/code"][[1]], "SNAPSHOT/MISSING PROVENANCE" , envir = var.env)
             }
-          # If the ddg.folder was not located
+            #If the data is not a snapshot it can be loaded directly into the variable env
           } else {
-            assign(row["var/code"][[1]], "SNAPSHOT/MISSING PROVENANCE" , envir = var.env)
+            type <- jsonlite::fromJSON(row["type"])$type
+            assign(row["var/code"][[1]], methods::as(row["val"][[1]], type), envir = var.env)
           }
-        #If the data is not a snapshot it can be loaded directly into the variable env
-        } else {
-          type <- jsonlite::fromJSON(row["type"])$type
-          assign(row["var/code"][[1]], methods::as(row["val"][[1]], type), envir = var.env)
         }
-      }
-    })
-    rm(list=ls(load.env), envir = load.env)
+      })
+      rm(list=ls(load.env), envir = load.env)
+    }
   }
 }
 
