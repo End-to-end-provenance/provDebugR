@@ -21,13 +21,35 @@ debug.browser <- function() {
   # var.env allows the user to get their variables back from their script
   proc.nodes <- get.proc.nodes()
   var.env <- new.env(parent = emptyenv())
+  var.env$call.stack <- NULL
   
+  #The script name isn't an operation so will be removed
+  # later on, but is needed to print to the user
+  script.name <- proc.nodes[1,]$name
+  
+  # A table needs to be created to inform the debugger when it is possible for a 
+  # user to be able to step into a sourced script
+  # Finish nodes provide the necesssary information for when it is
+  # possible to step-in and where to step back out to 
+  finish.nodes <- proc.nodes[proc.nodes$type == "Finish", ]
+  # The indexes are where in proc.nodes the debugger needs to look around 
+  f.node.indexes <- as.integer(rownames(finish.nodes))
+  step.in <- data.frame()
+  
+  # Each instance of finish can identify what script the step-in will
+  # occur from, where it goes, and which line it's possible to step on
+  for(f.index in f.node.indexes) {
+    if(!f.index + 1 > nrow(proc.nodes)){
+      curr.script <- proc.nodes[f.index + 1, ]$scriptNum
+      line.number <- proc.nodes[f.index + 1, ]$startLine
+      next.script <- proc.nodes[f.index - 1, ]$scriptNum
+
+      step.in <- rbind(step.in, c(curr.script, line.number, next.script))
+    }
+  }
+  names(step.in) <- c("cur.script", "line.number", "next.script")
   
   current.script = 0
-  
-  #The script name isn't an opertion so will be removed
-  # on the next line, but is needed to print to the user
-  script.name <- proc.nodes[1,]$name
   
   proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
   proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
@@ -338,7 +360,9 @@ debug.browser <- function() {
 #'
 .clear.environment <- function(var.env) {
   temp.index <- var.env$lineIndex
+  temp.stack <- var.env$call.stack
   rm(list=ls(var.env), envir = var.env)
   var.env$lineIndex <- temp.index
+  var.env$call.stack <- temp.stack
   var.env$vars <- NA
 }
