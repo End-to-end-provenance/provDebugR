@@ -115,7 +115,7 @@ debug.browser <- function() {
           # been executed. We want before, and the line executed before that is the line
           # before the source script - prev.line
           # When stepping back out, need to know which script to step to - script
-          call.back <- setNames(list(step.info$cur.script, lines[var.env$lineIndex + 1], lines[var.env$lineIndex - 1] ),
+          call.back <- stats::setNames(list(step.info$cur.script, lines[var.env$lineIndex + 1], lines[var.env$lineIndex - 1] ),
                                 c("script", "next.line", "prev.line"))
           
           # call.stack is a list used here as a stack object to allow nesting source() calls
@@ -227,8 +227,44 @@ debug.browser <- function() {
       } else {
         var.env$lineIndex <- var.env$lineIndex - 1
       }
+      
+      # In the event they are ending a source()ed script
+      # then the exectuion needs to shift to a new set of proc.nodes
+      if(var.env$lineIndex < 1 & length(var.env$call.stack) != 0 ) {
+        
+        # Use the information from var.env's call stack to reset proc.nodes
+        # to the previous script to right after where the source call was 
+        current.script <- var.env$call.stack[[1]]$script
+        proc.nodes <- get.proc.nodes()
+        proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+        proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+        
+        # All the possible lines so the debugger can move through
+        # debug.from.line without throwing any warnings
+        lines <- stats::na.omit(proc.nodes$startLine)
+        
+        # If 0 the source call was the first line and can just set lineIndex 
+        # to 1, if not NA than the (index value for it) + 1 is the source call
+        if(length(var.env$call.stack[[1]]$prev.line) != 0){
+          var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$prev.line, lines)
+          var.env$lineIndex <- var.env$lineIndex + 1
+        } else {
+          var.env$lineIndex <- 1
+        }
+        
+        #the main script doesn't appear in the sourced scripts vector
+        if(current.script == 0){
+          cat(paste(script.name), "\n", sep="")
+        } else {
+          cat(paste(scripts[current.script]), "\n", sep="")
+        }
+        
+        # "pop" the stack now that execution has jumped back to the previous script
+        var.env$call.stack <- var.env$call.stack[-1]
+      }
      
       .change.line(var.env, lines, proc.nodes, current.script)
+      
     # This function will print the line that the "execution" is 
     # currently on or if they specify a number will jump to that line
     } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
@@ -299,6 +335,7 @@ debug.browser <- function() {
 #' of "execution"
 #' @param lines A vector of line numbers corresponding to lines of the script that had code
 #' @param proc.nodes The procedure nodes, used for extracting the code on a line
+#' @param current.script in the even of sourced scripts this will change to reflect the current
 #' @importFrom utils read.csv
 #' @return nothing
 #'

@@ -16,6 +16,8 @@ of "execution"}
 \item{lines}{A vector of line numbers corresponding to lines of the script that had code}
 
 \item{proc.nodes}{The procedure nodes, used for extracting the code on a line}
+
+\item{current.script}{in the even of sourced scripts this will change to reflect the current}
 }
 \value{
 nothing
