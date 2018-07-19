@@ -7,7 +7,7 @@
 at a specific line of the script. It stores variable names and values 
 in the var.env}
 \usage{
-.change.line(var.env, lines, proc.nodes)
+.change.line(var.env, lines, proc.nodes, current.script)
 }
 \arguments{
 \item{var.env}{the environment that stores the variables and current line

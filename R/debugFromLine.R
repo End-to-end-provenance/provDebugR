@@ -143,19 +143,17 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     # If no corresponding entity (data node) exists, get next viable node
     # from the preceding line number. This accounts for source() calls to files.
     while (length(entity) == 0) {
-      pos.lines <- sort(.debug.env$proc.nodes$startLine, decreasing = FALSE)
-      index <- which(pos.lines == lineNumber)
-      new.line <- pos.lines[index - 1]
-      # Without this break could be an infinite loop when
-      # there are no values AND the chosen line was 1
-      if(length(new.line) == 0){
+      all.proc.nodes <- get.proc.nodes()[get.proc.nodes()$type == "Operation", ]
+      all.proc.data <- get.proc.data()
+      rownames(all.proc.nodes) <- 1:nrow(all.proc.nodes)
+      new.node.index <- as.integer(rownames(all.proc.nodes[all.proc.nodes$label == node, ])) - 1
+      if(length(new.node.index) == 0) {
         break
       }
-      node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == new.line, "label"]
-      entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
-      # Without this break could be an infinite loop when
-      # there are no values
-      if(new.line == pos.lines[1] & length(entity) == 0){
+      node <- all.proc.nodes[new.node.index, "label"]
+      entity <- all.proc.data[all.proc.data$activity == node, "entity"]
+      if(new.node.index == 1 & length(entity) == 0)
+      {
         break
       }
     }

@@ -50,6 +50,7 @@ debug.browser <- function() {
   if(length(step.in) != 0){
     names(step.in) <- c("cur.script", "line.number", "next.script")
   } 
+  scripts <- get.scripts()$scripts
   
   current.script = 0
   
@@ -90,12 +91,19 @@ debug.browser <- function() {
     # lists variables present in "execution"
     # THey can enter one as an input and it will print it's value
     } else if (input == "s") {
-      if(length(step.in) != 0){
+      if(length(step.in) != 0) {
+        
+        # Grab the possible step-in places for the current script only
         script.steps <- step.in[step.in$cur.script == current.script, ]
+        
+        # Only if the current line the execution is at can be stepped into
+        # should we attempt to. Otherwise just go to next line.
+        # Scripts are 'stepped into" by simply swapping the procedure nodes out with 
+        # the nodes from another script
         if(lines[var.env$lineIndex] %in% script.steps$line.number){
           step.info <- script.steps[script.steps$line.number == lines[var.env$lineIndex], ]
-          call.back <- setNames(list(step.info$cur.script, lines[var.env$lineIndex]),
-                                c("script", "line"))
+          call.back <- setNames(list(step.info$cur.script, lines[var.env$lineIndex + 1], lines[var.env$lineIndex - 1] ),
+                                c("script", "next.line", "prev.line"))
           var.env$call.stack <- append(var.env$call.stack, list(call.back), after = 0)
           
           current.script <- step.info$next.script
@@ -107,6 +115,9 @@ debug.browser <- function() {
           # All the possible lines so the debugger can move through
           # debug.from.line without throwing any warnings
           lines <- stats::na.omit(proc.nodes$startLine)
+          
+          cat(paste(scripts[current.script]), "\n", sep="")
+          
           var.env$lineIndex <- 1
           
           .change.line(var.env, lines, proc.nodes, current.script)
@@ -120,6 +131,7 @@ debug.browser <- function() {
         
         .change.line(var.env, lines, proc.nodes,  current.script)
       }
+
     } else if(input == "ls") { 
       print(var.env$vars)
       
@@ -136,6 +148,32 @@ debug.browser <- function() {
         var.env$lineIndex <- findInterval(lines[var.env$lineIndex] + forw.by, lines)
       } else {
         var.env$lineIndex <- var.env$lineIndex + 1
+      }
+      
+      if(var.env$lineIndex > length(lines) & length(var.env$call.stack) != 0 ) {
+        
+        current.script <- var.env$call.stack[[1]]$script
+        proc.nodes <- get.proc.nodes()
+        proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+        proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+        
+        # All the possible lines so the debugger can move through
+        # debug.from.line without throwing any warnings
+        lines <- stats::na.omit(proc.nodes$startLine)
+        
+        if(!is.na(var.env$call.stack[[1]]$next.line)){
+          var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$next.line, lines)
+        } else {
+          var.env$lineIndex <- lines[length(lines)]
+        }
+        if(current.script == 0){
+          cat(paste(script.name), "\n", sep="")
+        } else {
+          cat(paste(scripts[current.script]), "\n", sep="")
+        }
+       
+        
+        var.env$call.stack <- var.env$call.stack[-1]
       }
       
       .change.line(var.env, lines, proc.nodes,  current.script)
@@ -257,10 +295,21 @@ debug.browser <- function() {
   # The environment will likely have variables from past line of execution 
   # clear it but keep the index of lines
   .clear.environment(var.env)
-  # if they are past the first line, set the environment to be 
-  # where execution was at before their current line was executed
-  if(var.env$lineIndex > 1) {
-    line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T, script.num = current.script)[[1]]
+  
+  if(var.env$lineIndex == 1 & current.script == 0){
+    var.env$vars <- NA
+  } else {
+    if (var.env$lineIndex == 1) {
+      if(length(var.env$call.stack[[1]]$prev.line) == 0) {
+        line.df <- matrix()
+      } else {
+        line.df <- debug.from.line(var.env$call.stack[[1]]$prev.line,
+                                   state = T, 
+                                   script.num = var.env$call.stack[[1]]$script)[[1]]
+      }
+    } else {
+      line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T, script.num = current.script)[[1]]
+    }
     
     # A matrix means no variables were present at that point in execution
     if(class(line.df) != "matrix"){
