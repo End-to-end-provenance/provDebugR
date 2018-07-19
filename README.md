@@ -2,6 +2,8 @@
 
 A debugging tool that leverages provenance to provide handy information about R scripts to assist in writing them.
 
+For a more in-depth description of the functions available in this package [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+
 # Installation
 
 Version 3.5.0 or later of R is required.
