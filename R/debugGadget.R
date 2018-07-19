@@ -6,17 +6,19 @@ debug.gadget <- function() {
       miniTabPanel("Initialize",
                    miniContentPanel(
                      h4("Initialize and check error lineage"),
-                     helpText("..."),
+                     helpText("Select a file on which to initialize the debugger."),
                      hr(),
                      fileInput(inputId = "file",
                                label = "Choose R script or prov-JSON file",
                                accept = c(".R", 
                                           ".Rmd", 
                                           ".json")),
-                     verbatimTextOutput(outputId = "init"),
-                     h4("Errors"), 
+                     h5("Debug Init"),
+                     verbatimTextOutput(outputId = "init",
+                                        placeholder = TRUE),
+                     h5("Error Trace"), 
                      verbatimTextOutput(outputId = "trace",
-                                        placeholder = FALSE)),
+                                        placeholder = TRUE)),
                    icon = icon("power-off")),
       miniTabPanel("From Line",
                    miniContentPanel(
@@ -26,17 +28,21 @@ debug.gadget <- function() {
                               that line in execution."),
                      hr(),
                      .stableColumnLayout(
+                       textInput(inputId = "lines",
+                                 label = "Enter lines to examine, separated by a comma",
+                                 value = "",
+                                 placeholder = "E.g., 1, 3:5, 10"),
                        radioButtons(inputId = "state",
                                     label = "State or reference",
                                     choices = list("State" = TRUE, 
                                                    "Reference" = FALSE),
-                                    selected = TRUE),
-                       textInput(inputId = "lines",
-                                 label = "Enter lines to examine, separated by a comma",
-                                 value = "",
-                                 placeholder = "E.g., 1, 3:5, 10")),
+                                    selected = FALSE)),
                      hr(),
-                     verbatimTextOutput(outputId = "lineValue")),
+                     .stableColumnLayout(
+                       verbatimTextOutput(outputId = "lineValue"),
+                       uiOutput("code", container = .rCodeContainer)
+                     )),
+                     #verbatimTextOutput(outputId = "lineValue")),
                    icon = icon("align-justify")),
       miniTabPanel("Lineage",
                    miniContentPanel(
@@ -48,15 +54,15 @@ debug.gadget <- function() {
                               " lineage reveals what went into creating a variable."),
                      hr(),
                      .stableColumnLayout(
+                       textInput(inputId = "variables",
+                                 label = "Enter variables to examine, separated by a comma",
+                                 value = "",
+                                 placeholder = "E.g., ..."),
                        radioButtons(inputId = "forward",
                                     label = "Forward or backward",
                                     choices = list("Forward" = TRUE,
                                                    "Backward" = FALSE),
-                                    selected = FALSE),
-                       textInput(inputId = "variables",
-                                 label = "Enter variables to examine, separated by a comma",
-                                 value = "",
-                                 placeholder = "E.g., ...")),
+                                    selected = FALSE)),
                      hr(),
                      verbatimTextOutput(outputId = "posVariables"),
                      verbatimTextOutput(outputId = "lineageValue")),
@@ -69,15 +75,16 @@ debug.gadget <- function() {
                               execution."),
                      hr(),
                      .stableColumnLayout(
+                       textInput(inputId = "vars",
+                                 label = "Enter variables to examine, separated by a comma",
+                                 value = "",
+                                 placeholder = "Ex: x, df"),
                        radioButtons(inputId = "just.logical",
                                     label = "Just logical",
                                     choices = c("True" = TRUE,
                                                 "False" = FALSE),
-                                    selected = FALSE),
-                       textInput(inputId = "vars",
-                                 label = "Enter variables to examine, separated by a comma",
-                                 value = "",
-                                 placeholder = "E.g., ...")),
+                                    selected = FALSE)
+                       ),
                      hr(),
                      verbatimTextOutput(outputId = "posVars"),
                      verbatimTextOutput(outputId = "typeValue")),
@@ -133,6 +140,13 @@ debug.gadget <- function() {
         print("No lines entered")
         #debug.from.line()
       }
+    })
+    
+    code.context <- rstudioapi::getActiveDocumentContext()
+    script <- code.context$contents
+    
+    output$code <- .renderCode({
+      script
     })
     
     ####################################################################
@@ -208,6 +222,19 @@ debug.gadget <- function() {
       div(class = class, el)
     })
   )
+}
+
+.rCodeContainer <- function(...) {
+  code <- HTML(as.character(tags$code(class = "language-r", ...)))
+  div(pre(code))
+}
+
+.renderCode <- function(expr, env = parent.frame(), quoted = FALSE) {
+  func <- NULL
+  installExprFunction(expr, "func", env, quoted)
+  markRenderFunction(textOutput, function() {
+    paste(func(), collapse = "\n")
+  })
 }
 
 #######################################################################################################
