@@ -40,7 +40,7 @@ debug.gadget <- function() {
                                  value = "",
                                  placeholder = "E.g., ...")),
                      hr(),
-                     verbatimTextOutput(outputId = "posVars"),
+                     verbatimTextOutput(outputId = "posVariables"),
                      verbatimTextOutput(outputId = "lineageValue")),
                    icon = icon("arrows-v")),
       miniTabPanel("Variable Type",
@@ -58,6 +58,7 @@ debug.gadget <- function() {
                                  value = "",
                                  placeholder = "E.g., ...")),
                      hr(),
+                     verbatimTextOutput(outputId = "posVars"),
                      verbatimTextOutput(outputId = "typeValue")),
                    icon = icon("code")),
       miniTabPanel("Error Trace",
@@ -65,8 +66,8 @@ debug.gadget <- function() {
                      h4("Examine the lineage of an error and query stack overflow"),
                      hr(),
                      stableColumnLayout(
-                       actionButton(inputId = "error",
-                                    label = "Trace error"),
+                       # actionButton(inputId = "error",
+                       #              label = "Trace error"),
                        radioButtons(inputId = "stack.overflow",
                                     label = "Stack overflow",
                                     choices = c("On" = TRUE,
@@ -116,7 +117,7 @@ debug.gadget <- function() {
       debug.lineage(args, forward = forward)
     })
     
-    output$posVars <- renderPrint({
+    output$posVariables <- renderPrint({
       debug.lineage()
     })
     
@@ -139,24 +140,40 @@ debug.gadget <- function() {
       debug.variable.type(args, just.logical = just.logical)
     })
     
+    output$posVars <- renderPrint({
+      debug.variable.type()
+    })
+    
     output$typeValue <- renderPrint({
-      if (input$vars != "") {
-        reactiveType()
-      } else {
-        print("No variables entered")
-      }
+      # if (input$vars != "") {
+      #   reactiveType()
+      # } else {
+      #   print("No variables entered")
+      # }
+      input$vars
     })
     
     ####################################################################
     ## Debug Error Trace
     ####################################################################
+    reactiveError <- reactive({
+      stack.overflow <- as.logical(input$stack.overflow)
+      debug.error.trace(stack.overflow = stack.overflow)
+    })
+    
     output$trace <- renderPrint({
+      #observeEvent(input$error, {
+      #  reactiveError()
+      #})
       input$error
     })
-
+    
+    ####################################################################
+    ## Cancel/Done Handling
+    ####################################################################
     observeEvent(input$done, {
       #to return last lines queried: (might be an error if there's no line entered yet)
-      returnValue <- reactiveDebug()
+      returnValue <- reactiveLine()
       stopApp(returnValue)
     })
 
