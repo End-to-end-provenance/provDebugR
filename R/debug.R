@@ -41,16 +41,19 @@ debug.init <- function(input.data = NA) {
     file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
     file.name <- file.parts[[1]][1]
     file.path <- gsub("([^/]+$)", "", input.data)
-  }
-  
-  ddg.folder <- paste(file.path, file.name, "_ddg", sep ="")
-  
-  if(!dir.exists(ddg.folder)) {
-    ddg.folder <- NA
-    .debug.env$ddg.folder <- NA
+    ddg.folder <- paste(file.path, file.name, "_ddg", sep ="")
+    
+    if(!dir.exists(ddg.folder)) {
+      ddg.folder <- NA
+      .debug.env$ddg.folder <- NA
+    } else {
+      .debug.env$ddg.folder <- ddg.folder
+    }
   } else {
-    .debug.env$ddg.folder <- ddg.folder
+    .debug.env$ddg.folder <- NA
   }
+  
+  
   
   # Run the script and if it error'd let the user know
   # and let them know how to find lineage of the error

@@ -3,16 +3,29 @@ debug.gadget <- function() {
   ui <- miniPage(
     gadgetTitleBar("Debug with Provenance"),
     miniTabstripPanel(
+      miniTabPanel("Initialize",
+                   miniContentPanel(
+                     h4("Initialize and check error lineage"),
+                     helpText("..."),
+                     hr(),
+                     fileInput(inputId = "file",
+                               label = "Choose R script or prov-JSON file",
+                               accept = c(".R", 
+                                          ".Rmd", 
+                                          ".json")),
+                     verbatimTextOutput(outputId = "init"),
+                     h4("Errors"), 
+                     verbatimTextOutput(outputId = "trace",
+                                        placeholder = FALSE)),
+                   icon = icon("power-off")),
       miniTabPanel("From Line",
                    miniContentPanel(
                      h4("Examine the variables in a script on a line-by-line basis"),
+                     helpText(em("Reference"), " refers to the variables referenced on a line.",
+                              em("State"), " refers to the state of variables in a script up to
+                              that line in execution."),
                      hr(),
-                     stableColumnLayout(
-                       fileInput(inputId = "file",
-                                 label = "Choose R script or prov-JSON file",
-                                 accept = c(".R", 
-                                            ".Rmd", 
-                                            ".json")),
+                     .stableColumnLayout(
                        radioButtons(inputId = "state",
                                     label = "State or reference",
                                     choices = list("State" = TRUE, 
@@ -28,8 +41,13 @@ debug.gadget <- function() {
       miniTabPanel("Lineage",
                    miniContentPanel(
                      h4("Examine the lineage, either forward or backward, of variables"),
+                     helpText("Lineage is the connection between variables. It can be used
+                              to identify the steps and values used to create particular 
+                              data values. ", em("Forward"), " lineage reveals the effects 
+                              that a variable has on the rest of the script. ", em("Backward"), 
+                              " lineage reveals what went into creating a variable."),
                      hr(),
-                     stableColumnLayout(
+                     .stableColumnLayout(
                        radioButtons(inputId = "forward",
                                     label = "Forward or backward",
                                     choices = list("Forward" = TRUE,
@@ -45,13 +63,16 @@ debug.gadget <- function() {
                    icon = icon("arrows-v")),
       miniTabPanel("Variable Type",
                    miniContentPanel(
-                     h4("Examine the types of variables"),
+                     h4("Examine changes in the types of variables"),
+                     helpText("If true, ", em("just logical"), " returns whether the variable type
+                              has changed. If false, it returns the variable's type(s) throughout
+                              execution."),
                      hr(),
-                     stableColumnLayout(
+                     .stableColumnLayout(
                        radioButtons(inputId = "just.logical",
                                     label = "Just logical",
-                                    choices = c("On" = TRUE,
-                                                "Off" = FALSE),
+                                    choices = c("True" = TRUE,
+                                                "False" = FALSE),
                                     selected = FALSE),
                        textInput(inputId = "vars",
                                  label = "Enter variables to examine, separated by a comma",
@@ -60,33 +81,39 @@ debug.gadget <- function() {
                      hr(),
                      verbatimTextOutput(outputId = "posVars"),
                      verbatimTextOutput(outputId = "typeValue")),
-                   icon = icon("code")),
-      miniTabPanel("Error Trace",
-                   miniContentPanel(
-                     h4("Examine the lineage of an error and query stack overflow"),
-                     hr(),
-                     stableColumnLayout(
-                       # actionButton(inputId = "error",
-                       #              label = "Trace error"),
-                       radioButtons(inputId = "stack.overflow",
-                                    label = "Stack overflow",
-                                    choices = c("On" = TRUE,
-                                                "Off" = FALSE),
-                                    selected = FALSE)),
-                     hr(),
-                     verbatimTextOutput(outputId = "trace")),
-                   icon = icon("exclamation-circle"))
+                   icon = icon("code"))
       )
     )
 
   #session?
   server <- function(input, output) {
 
+    
+    ####################################################################
+    ## Debug Init and Debug Error Trace
+    ####################################################################
+    
     # Initialize debugger
     reactiveInit <- reactive({
-      # put message for when file hasn't been inputed yet
-      file <- input$file$datapath
+      if (is.null(input$file$datapath)) {
+        file <- NA
+      } else {
+        file <- input$file$datapath
+      }
       debug.init(file)
+    })
+    
+    output$init <- renderPrint({
+      reactiveInit()
+    })
+    
+    # Trace error lineage, if there is an error
+    reactiveError <- reactive({
+      debug.error.trace(stack.overflow = FALSE)
+    })
+    
+    output$trace <- renderPrint({
+      reactiveError()
     })
 
     ####################################################################
@@ -100,11 +127,11 @@ debug.gadget <- function() {
     })
 
     output$lineValue <- renderPrint({
-      reactiveInit()
       if (input$lines != "") {
         reactiveLine()
       } else {
         print("No lines entered")
+        #debug.from.line()
       }
     })
     
@@ -112,11 +139,12 @@ debug.gadget <- function() {
     ## Debug Lineage
     ####################################################################
     reactiveLineage <- reactive({
-      args <- unname(as.character(unlist(strsplit(input$variables, ","))))
+      args <- unlist(strsplit(gsub(" ", "", input$variables), ","))
       forward <- as.logical(input$forward)
       debug.lineage(args, forward = forward)
     })
     
+    # Display variable options
     output$posVariables <- renderPrint({
       debug.lineage()
     })
@@ -127,47 +155,30 @@ debug.gadget <- function() {
       } else {
         print("No variables entered")
       }
-      #input$variables
-      #args
     })
     
     ####################################################################
     ## Debug Variable Type
     ####################################################################
     reactiveType <- reactive({
-      args <- input$vars
+      args <- unlist(strsplit(gsub(" ", "", input$vars), ","))
       just.logical <- as.logical(input$just.logical)
       debug.variable.type(args, just.logical = just.logical)
     })
     
+    # Display variable options
     output$posVars <- renderPrint({
       debug.variable.type()
     })
     
     output$typeValue <- renderPrint({
-      # if (input$vars != "") {
-      #   reactiveType()
-      # } else {
-      #   print("No variables entered")
-      # }
-      input$vars
+      if (input$vars != "") {
+        reactiveType()
+      } else {
+        print("No variables entered")
+      }
     })
-    
-    ####################################################################
-    ## Debug Error Trace
-    ####################################################################
-    reactiveError <- reactive({
-      stack.overflow <- as.logical(input$stack.overflow)
-      debug.error.trace(stack.overflow = stack.overflow)
-    })
-    
-    output$trace <- renderPrint({
-      #observeEvent(input$error, {
-      #  reactiveError()
-      #})
-      input$error
-    })
-    
+
     ####################################################################
     ## Cancel/Done Handling
     ####################################################################
@@ -187,7 +198,7 @@ debug.gadget <- function() {
 }
 
 # from rstudio/addinexamples repo
-stableColumnLayout <- function(...) {
+.stableColumnLayout <- function(...) {
   dots <- list(...)
   n <- length(dots)
   width <- 12 / n
