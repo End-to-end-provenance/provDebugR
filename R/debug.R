@@ -93,15 +93,6 @@ debug.init <- function(input.data = NA, dir = NULL) {
     .debug.prov(input.data, is.file = F)
   }
   
-  # If even a single variable did not come from the script, but the outside environment 
-  # before the script was run, inform the user. This means that the provenance cannot 
-  # function as well for increasing reproducibility
-  if(TRUE %in% get.data.nodes()$fromEnv){
-    cat("\nThis provenance is incomplete. Variables were used that existed before the script began.\n",
-        "This harms the reproducibility of the script and we highly recommend you make it clear where\n",
-        "all variables cames from \n")
-  }
-  
   # Set the warning options back to whatever the user originally had
   options(warn = def.warn)
 }
