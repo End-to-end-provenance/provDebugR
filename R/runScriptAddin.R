@@ -48,8 +48,15 @@ run.script.addin <- function(input.path = NA) {
       # the file is technically different.
       file.name <- basename(file.name)
       input.path <- file.path(tempdir(), file.name)
-      # Write the hgihlighted text to that file
-      write(selection$text, file = input.path)
+      if(selection$range$start[[1]] > 1) {
+        new.lines <- rep("\n", selection$range$start[[1]] - 1)
+        # Write the hgihlighted text to that file, but to keep line numbers correct add newlines
+        write(paste(paste(new.lines, collapse = ""), selection$text, sep = ""), file = input.path)
+      } else {
+        # Write the hgihlighted text to that file
+        write(selection$text, file = input.path)
+      }
+
     }
    
   }
