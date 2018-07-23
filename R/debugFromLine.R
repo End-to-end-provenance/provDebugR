@@ -112,14 +112,17 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     # Add to list of nodes those that are referenced on the line
     # by finding their corresponding data node (via data-to-proc edges)
     # and seeing if there's another proc node attached (via proc-to-data edges)
-    ref.nodes <- lapply(nodes, function(node) {
+    ref.nodes <- unlist(lapply(nodes, function(node) {
       ref.entity <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$activity == node, "entity"]
       ref.node <- NA
       if (length(ref.entity) != 0) {
         ref.node <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$entity == ref.entity, "activity"]
+        if(length(ref.node) == 0){
+          ref.node <- ref.entity
+        }
       }
       return(ref.node)
-    })
+    }))
     nodes <- c(nodes, ref.nodes)
     nodes <- nodes[!is.na(nodes)]
 
@@ -213,7 +216,15 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   } else if (grepl("d", node)) {
     entity <- node
     entity.activity <- get.proc.data()[get.proc.data()$entity == entity, "activity"]
-    script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
+    
+    # If there is no entity.activity then the variable came from envir before script ran
+    # In this case there is no script #, populate with NA to indicate this
+    if(length(entity.activity > 0)){
+      script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
+    } else {
+      script <- NA
+    }
+    
   }
 
   # Initialize variables to be returned
