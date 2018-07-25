@@ -38,11 +38,7 @@ debug.gadget <- function() {
                                                    "Reference" = FALSE),
                                     selected = FALSE)),
                      hr(),
-                     .stableColumnLayout(
-                       verbatimTextOutput(outputId = "lineValue"),
-                       uiOutput("code", container = .rCodeContainer)
-                     )),
-                     #verbatimTextOutput(outputId = "lineValue")),
+                     verbatimTextOutput(outputId = "lineValue")),
                    icon = icon("align-justify")),
       miniTabPanel("Lineage",
                    miniContentPanel(
@@ -92,14 +88,11 @@ debug.gadget <- function() {
       )
     )
 
-  #session?
   server <- function(input, output) {
 
-    
     ####################################################################
     ## Debug Init and Debug Error Trace
     ####################################################################
-    
     # Initialize debugger
     reactiveInit <- reactive({
       if (is.null(input$file$datapath)) {
@@ -126,7 +119,6 @@ debug.gadget <- function() {
     ####################################################################
     ## Debug From Line
     ####################################################################
-    # reactiveLine <- observeEvent(input$lines, {
     reactiveLine <- reactive({
       args <- unname(as.numeric(unlist(strsplit(input$lines, ","))))
       state <- as.logical(input$state)
@@ -138,15 +130,7 @@ debug.gadget <- function() {
         reactiveLine()
       } else {
         print("No lines entered")
-        #debug.from.line()
       }
-    })
-    
-    code.context <- rstudioapi::getActiveDocumentContext()
-    script <- code.context$contents
-    
-    output$code <- .renderCode({
-      script
     })
     
     ####################################################################
@@ -207,7 +191,6 @@ debug.gadget <- function() {
     })
   }
 
-  # paneViewer()
   runGadget(ui, server, viewer = dialogViewer("provDebugR", width = 1000, height = 800))
 }
 
@@ -223,41 +206,3 @@ debug.gadget <- function() {
     })
   )
 }
-
-.rCodeContainer <- function(...) {
-  code <- HTML(as.character(tags$code(class = "language-r", ...)))
-  div(pre(code))
-}
-
-.renderCode <- function(expr, env = parent.frame(), quoted = FALSE) {
-  func <- NULL
-  installExprFunction(expr, "func", env, quoted)
-  markRenderFunction(textOutput, function() {
-    paste(func(), collapse = "\n")
-  })
-}
-
-#######################################################################################################
-
-# uiOutput("code", container = rCodeContainer),
-
-# output$code <- renderUI({
-#   input$file$name
-#   #name <- get.proc.nodes()[get.proc.nodes()$startLine == 2, "name"]
-#   #name <- name[!is.na(name)]
-# })
-
-# rCodeContainer <- function(...) {
-#   code <- HTML(as.character(tags$code(class = "language-r", ...)))
-#   div(pre(code))
-# }
-
-#ideas:
-# find scripts in scripts folder in ddg folder
-# make each line a button, click a line and it would tell you what's going on
-# action button, next/previous line -- returns info about what variables are referenced on each line
-# two panels, one with debug.from.line and the other with a step-through debugger
-#   not sure which is more useful
-# observeEvent or reactiveEvent which triggers debug.from.line()
-
-# tabs: from line, lineage, variable type, error
