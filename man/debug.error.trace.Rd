@@ -7,7 +7,7 @@
 \usage{
 debug.error.trace(stack.overflow = F)
 
-debug.warning.trace(..., stack.overflow = F)
+debug.warning.trace(...)
 }
 \arguments{
 \item{stack.overflow}{Determines whether or not the
@@ -33,7 +33,7 @@ that led up to a script stopping
 \dontrun{
 debug.init("example.R")
 debug.error.trace()
-debug.error.trace(stack.overflow = T) # Not currently supported
+debug.error.trace(stack.overflow = T) 
 }
 \dontrun{
 debug.init("example.R")
