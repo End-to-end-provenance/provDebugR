@@ -5,11 +5,11 @@
 #'
 #'@param ... Variables to find the type for. Can be single elements or vectors/lists.
 #'@param just.logical Determines whether or not to display only if the variable has changed
-#'or what the actual values were throughout execution
+#'or what the actual values were throughout execution.
 #'@return Returns one of two things. If no parameters were passed to the function
 #'then a vector of possible variables will be returned. If variables were passed to the
 #'function then a list of data frames is returned. Each data frame corresponds to one
-#'of the variables. The names of the list will correspond to the variable passed
+#'of the variables. The names of the list will correspond to the variable passed. 
 #'@export
 #'@examples
 #'\dontrun{
@@ -47,7 +47,7 @@ debug.variable.type <- function(..., just.logical = F) {
 
   # If they did not provide any results themselves, list them out for them
   if(length(args) == 0) {
-    cat("Possible results:\n")
+    cat("Options:\n")
     return(unlist(pos.vars))
   } else {
     ret.val <- lapply(args, .grab.instances)

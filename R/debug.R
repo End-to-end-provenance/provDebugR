@@ -42,6 +42,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
     file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
     file.name <- file.parts[[1]][1]
     file.path <- gsub("([^/]+$)", "", input.data)
+
     # Check for the ddg folder which will have information for scripts and 
     # snapshot data later on
     ddg.folder <- paste(file.path, file.name, "_ddg", sep ="")
@@ -58,7 +59,6 @@ debug.init <- function(input.data = NA, dir = NULL) {
   } else {
     .debug.env$ddg.folder <- NA
   }
-  
 
   
   # If no data is input, look for json in memory

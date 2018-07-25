@@ -5,7 +5,7 @@
 #' execution.
 #'
 #' @param ... Line(s) to examine. Can be single lines or vectors/lines.
-#' @param state If FALSE, returns the refereneces to variables on
+#' @param state If FALSE, returns the references to variables on
 #' inputed line(s). If TRUE, returns the state of all variables up to
 #' that point in execution.
 #' @param script.num If 0, only examine variables from the main script.
