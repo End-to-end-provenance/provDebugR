@@ -43,5 +43,14 @@ test_that("wrong arguments can be ignored", {
   expect_equal(length(variable.results), 12)
 })
 
+test.data <- system.file("testdata", "specialChar.json", package = "provDebugR")
+debug.init(test.data)
+
+test_that("special values are being grabbed", {
+  variable.results <- debug.variable.type("y")
+  expect_match(variable.results$y$type[2], "object")
+  expect_match(variable.results$y$type[3], "environment")
+  #expect_match(variable.results$y$type[2], "language")  #**NOT currently supported by RDT
+})
 
 

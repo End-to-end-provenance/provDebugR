@@ -112,14 +112,17 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     # Add to list of nodes those that are referenced on the line
     # by finding their corresponding data node (via data-to-proc edges)
     # and seeing if there's another proc node attached (via proc-to-data edges)
-    ref.nodes <- lapply(nodes, function(node) {
+    ref.nodes <- unlist(lapply(nodes, function(node) {
       ref.entity <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$activity == node, "entity"]
       ref.node <- NA
       if (length(ref.entity) != 0) {
         ref.node <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$entity == ref.entity, "activity"]
+        if(length(ref.node) == 0){
+          ref.node <- ref.entity
+        }
       }
       return(ref.node)
-    })
+    }))
     nodes <- c(nodes, ref.nodes)
     nodes <- nodes[!is.na(nodes)]
 
@@ -143,30 +146,50 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     # If no corresponding entity (data node) exists, get next viable node
     # from the preceding line number. This accounts for source() calls to files.
     while (length(entity) == 0) {
-      pos.lines <- sort(.debug.env$proc.nodes$startLine, decreasing = FALSE)
-      index <- which(pos.lines == lineNumber)
-      new.line <- pos.lines[index - 1]
-      node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == new.line, "label"]
-      entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+      all.proc.nodes <- get.proc.nodes()[get.proc.nodes()$type == "Operation", ]
+      all.proc.data <- get.proc.data()
+      rownames(all.proc.nodes) <- 1:nrow(all.proc.nodes)
+      new.node.index <- as.integer(rownames(all.proc.nodes[all.proc.nodes$label == node, ])) - 1
+      if(length(new.node.index) == 0) {
+        break
+      }
+      node <- all.proc.nodes[new.node.index, "label"]
+      entity <- all.proc.data[all.proc.data$activity == node, "entity"]
+      if(new.node.index == 1 & length(entity) == 0)
+      {
+        break
+      }
     }
 
-    # Find number of preceding data nodes
-    # Subset that out of data.nodes
-    rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
-    rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
-    nodes <- .debug.env$data.nodes["1":rnum[1], "label"]
-
-    # Account for duplicates by removing all but the tail
-    node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
-    temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
-    nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
-
-    # Create row for each variable on the line, then rbind into a data frame
-    lapply(nodes, .process.node, script.num)
-
-    # Name columns and rows
-    colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
-    rownames(.debug.env$line.df) <- c(1:length(nodes))
+    # If entity is 0 that means there were no values
+    # If it's not 0 create the data frame
+    if(length(entity) > 0)
+    {
+      # Find number of preceding data nodes
+      # Subset that out of data.nodes
+      rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
+      rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
+      nodes <- .debug.env$data.nodes["1":rnum[1], "label"]
+      
+      # Account for duplicates by removing all but the tail
+      node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
+      temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
+      nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
+      
+      # Create row for each variable on the line, then rbind into a data frame
+      lapply(nodes, .process.node, script.num)
+      
+      # Name columns and rows
+      colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
+      rownames(.debug.env$line.df) <- c(1:length(nodes))
+    #If entity was 0, populate a data frame with NAs 
+    } else {
+      .debug.env$line.df <- rbind(rep(NA, 6))
+      # Name columns and rows
+      colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
+      rownames(.debug.env$line.df) <- c(1:nrow(.debug.env$line.df))
+    }
+   
 
     return(.debug.env$line.df)
   }
@@ -193,7 +216,15 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   } else if (grepl("d", node)) {
     entity <- node
     entity.activity <- get.proc.data()[get.proc.data()$entity == entity, "activity"]
-    script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
+    
+    # If there is no entity.activity then the variable came from envir before script ran
+    # In this case there is no script #, populate with NA to indicate this
+    if(length(entity.activity > 0)){
+      script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
+    } else {
+      script <- NA
+    }
+    
   }
 
   # Initialize variables to be returned
