@@ -1,5 +1,19 @@
+#' GUI for debugging functions
+#'
+#' @import miniUI
+#' @import shiny
+#' @return If 'done' event is observed, returns the data frames
+#' returned by debug.from.line. If 'cancel' event is observed,
+#' no return value.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' debug.gadget()
+#' }
 debug.gadget <- function() {
   
+  #
   ui <- miniPage(
     gadgetTitleBar("Debug with Provenance"),
     miniTabstripPanel(
@@ -88,6 +102,17 @@ debug.gadget <- function() {
       )
     )
 
+  
+  # Roxygen style, but within a function so not roxygen 
+  #
+  # Server logic for gadget. Instructions on how to build and
+  # rebuild objects displayed in the UI. Adds functions from
+  # provDebugR to output UI elements.
+  #
+  # @param input IDs for input UI elements
+  # @param output IDs for output UI elements
+  #
+  # @return R output to the UI
   server <- function(input, output) {
 
     ####################################################################
@@ -194,7 +219,14 @@ debug.gadget <- function() {
   runGadget(ui, server, viewer = dialogViewer("provDebugR", width = 1000, height = 800))
 }
 
-# from rstudio/addinexamples repo
+
+#' This helper function from the rstudio/addinexample repo formats
+#' a stable column layout.
+#'
+#' @param ... UI elements
+#'
+#' @return A list of shiny tags, or functions that parallel common 
+#' HTML tags, representing each UI element argument.
 .stableColumnLayout <- function(...) {
   dots <- list(...)
   n <- length(dots)
