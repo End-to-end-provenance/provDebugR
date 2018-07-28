@@ -223,6 +223,7 @@ debug.gadget <- function() {
 #' This helper function from the rstudio/addinexample repo formats
 #' a stable column layout.
 #'
+#' @name stableColumnLayout
 #' @param ... UI elements
 #'
 #' @return A list of shiny tags, or functions that parallel common 

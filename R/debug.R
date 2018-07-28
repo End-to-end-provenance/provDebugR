@@ -45,7 +45,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
 
     # Check for the ddg folder which will have information for scripts and 
     # snapshot data later on
-    ddg.folder <- paste(file.path, file.name, "_ddg", sep ="")
+    ddg.folder <- paste(tempdir(), "prov_", file.name, sep ="")
     
     # If it was found save it's location in the environment to be used later
     # Otherwise save an NA value to indicate it is missing to prevent
