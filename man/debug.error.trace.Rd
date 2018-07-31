@@ -7,7 +7,7 @@
 \usage{
 debug.error.trace(stack.overflow = F)
 
-debug.warning.trace(..., stack.overflow = F)
+debug.warning.trace(...)
 }
 \arguments{
 \item{stack.overflow}{Determines whether or not the
@@ -35,7 +35,7 @@ This function shows the lineage of the warning messages in a script
 \dontrun{
 debug.init("example.R")
 debug.error.trace()
-debug.error.trace(stack.overflow = T) # Not currently supported
+debug.error.trace(stack.overflow = T) 
 }
 \dontrun{
 debug.init("example.R")

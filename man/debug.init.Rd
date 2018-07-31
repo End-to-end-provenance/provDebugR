@@ -4,11 +4,13 @@
 \alias{debug.init}
 \title{Initialization functions}
 \usage{
-debug.init(input.data = NA)
+debug.init(input.data = NA, dir = NULL)
 }
 \arguments{
 \item{input.data}{A path to an R script, a prov.json file,
 provenance from memory, or nothing.}
+
+\item{dir}{A path to where to save the prov folder}
 }
 \value{
 nothing
