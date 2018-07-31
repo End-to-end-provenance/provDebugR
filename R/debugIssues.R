@@ -15,7 +15,7 @@
 #'\dontrun{
 #'debug.init("example.R")
 #'debug.error.trace()
-#'debug.error.trace(stack.overflow = T) # Not currently supported
+#'debug.error.trace(stack.overflow = T) 
 #'}
 debug.error.trace <- function(stack.overflow = F) {
   # This function is useless unless the adj.graph exists
@@ -101,7 +101,7 @@ debug.error.trace <- function(stack.overflow = F) {
 #'debug.warning.trace(1, 4) # returns warnings 1 and 4
 #'debug.warning.trace(1:4, 7) # returns warnings 1 through 4 and 7
 #'}
-debug.warning.trace <- function(..., stack.overflow = F) {
+debug.warning.trace <- function(...) {
 
   args <- .flatten.args(...)
 
@@ -155,10 +155,6 @@ debug.warning.trace <- function(..., stack.overflow = F) {
       dfs <- lapply(args, function(arg){
         .process.label(pos.vars[arg, ]$label, proc.nodes, forward = F)
       })
-
-      if(stack.overflow) {
-        warning("stack overflow functionality is currently not supported")
-      }
 
       return(dfs)
     }

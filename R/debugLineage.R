@@ -45,7 +45,7 @@ debug.lineage <- function(..., forward = F) {
 
   # If they did not provide any results themselve, list them out for them
   if(length(args) == 0) {
-    cat("Possible results:\n")
+    cat("Options:\n")
     print(unlist(pos.vars))
   } else {
     ret.val <- lapply(args, .grab.lineage, forward = forward)
