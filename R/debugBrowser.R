@@ -499,9 +499,6 @@ debug.browser <- function() {
                     if (row[["container"]] == "vector") {
                       temp.var <- rep("", length.out = as.integer(row[["dim"]]))
                     }
-                    # } else if (row[["container"]] == "matrix") {
-                    #   temp.var <- matrix(data ="", nrow = , ncol = 5)
-                    # }
                     
                   } else {
                     indexes <- 1:ncol(temp.var)
