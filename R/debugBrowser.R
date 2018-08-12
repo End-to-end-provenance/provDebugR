@@ -447,7 +447,7 @@ debug.browser <- function() {
         if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
           # If the provenance folder was found the snapshots can be grabbed
           # from the file system
-          if(!is.na(.debug.env$ddg.folder)) {
+          if(!is.na(.debug.env$prov.folder)) {
             # The file ext indicates what type of data will be stored and how to 
             # read it back in for the user, the file name is also used to complete
             # the path to the final file
@@ -458,7 +458,7 @@ debug.browser <- function() {
             # A text file means that the data has been stored as an RObject
             # this can be loaded back in simply using load()
             if(file.ext == "txt") {
-              full.path <- paste(.debug.env$ddg.folder,
+              full.path <- paste(.debug.env$prov.folder,
                                  "/", file.name,
                                  ".RObject", sep = "")
               # Don't try and read in a file that could possibly not exist
@@ -475,7 +475,7 @@ debug.browser <- function() {
               # which creates a data frame
               if(row[["container"]] == "data_frame"){
                 
-                full.path <- paste(.debug.env$ddg.folder,
+                full.path <- paste(.debug.env$prov.folder,
                                    "/", file.name,
                                    ".csv", sep = "")
                 if(file.exists(full.path)){
@@ -488,7 +488,7 @@ debug.browser <- function() {
                 # A vector can be read in using read.csv but then needs the vectors extracted
               } else if (row[["container"]] == "vector" | row[["container"]] == "matrix") {
                 
-                full.path <- paste(.debug.env$ddg.folder,
+                full.path <- paste(.debug.env$prov.folder,
                                    "/", file.name,
                                    ".csv", sep = "")
                 # Grab each column out of the data frame and then bind to create matrix
@@ -536,7 +536,7 @@ debug.browser <- function() {
             } else {
               assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT" , envir = var.env)
             }
-            # If the ddg.folder was not located
+            # If the prov.folder was not located
           } else {
             assign(row["var/code"][[1]], "SNAPSHOT/MISSING PROVENANCE" , envir = var.env)
           }

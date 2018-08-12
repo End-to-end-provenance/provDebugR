@@ -18,13 +18,13 @@
 #' # button is asssigned to a keyboard shortcut. 
 #' }
 run.script.addin <- function(input.path = NA) {
-  # The ddgdir is where the prov folder will be saved to when RDataTracker (RDT) runs.
+  # The prov.dir is where the prov folder will be saved to when RDataTracker (RDT) runs.
   # If the value is NULL a default directory is used by RDT, the dir the script resides in. 
   # If the user chose to run on highlighted text, a modified version of the script will be 
   # saved in the tempdir and run. Which, by default, would cause the prov to be saved to
   # the tempdir. Therefore if they choose highlighted text, this variable will change to
   # where the original script is
-  ddgdir <- NULL
+  prov.dir <- NULL
   if(is.na(input.path)) {
     # If the user did not highlight text then $text == "" and the whole script will be run
     if(rstudioapi::primary_selection(rstudioapi::getActiveDocumentContext())$text == "")
@@ -34,15 +34,15 @@ run.script.addin <- function(input.path = NA) {
     } else {
       # Grab the selection as it is used in a few different places
       selection <- rstudioapi::primary_selection(rstudioapi::getActiveDocumentContext())
-      # The ddg folder will have the range of lines appended to the script name
+      # The prov folder will have the range of lines appended to the script name
       line.range <- paste("[", selection$range$start[[1]], "-",
                           selection$range$end[[1]], "]", sep = "")
       # The filename is needed for saving to the tempdir
       file.name <- rstudioapi::getActiveDocumentContext()$path
       # The dir is needed for overriding where RDT will save the prov
-      ddgdir <- paste(strsplit(file.name, "\\.")[[1]][1],
-                      line.range,
-                      "_ddg", sep = "")
+      #prov.dir <- paste(strsplit(file.name, "\\.")[[1]][1],
+                      #line.range,
+                     # "prov_", sep = "")
       # This provides just the name, minus the path so we can save the same filename
       # to the tempdir. This allows script names in prov to be the same even though
       # the file is technically different.
@@ -64,7 +64,7 @@ run.script.addin <- function(input.path = NA) {
   if(input.path == "") {
     cat("No input path specified, make sure your cursor is within your script not the console\n")
   } else {
-    debug.init(input.path, dir = ddgdir)
+    debug.init(input.path, dir = prov.dir)
   }
 }
 
