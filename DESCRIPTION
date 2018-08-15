@@ -10,7 +10,7 @@ Description: provDebugR is a debugger that works post script execution. Users ca
     variables to discover what their types and values were throughout the exectuion of the script.
     The lineage of variable (the lines of the script that contributed to that variable's creation)
     can also be revealed. 
-Depends: R (>= 3.5.0), provParseR, provGraphR, RDataTracker
+Depends: R (>= 3.5.0), provParseR, provGraphR, RDataTracker (>= 3.0)
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true

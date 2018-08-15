@@ -26,6 +26,6 @@ debug.init() # if there RDataTracker has already run and
 there is provenance in memory
 debug.init("test.R")
 debug.init("prov.json")
-debug.init(ddg.json()) # ddg.json is an RDataTracker function
+debug.init(prov.json()) # prov.json is an RDataTracker function
 }
 }
