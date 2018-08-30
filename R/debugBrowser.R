@@ -1,4 +1,4 @@
-#' Interactive post-mortem script browser
+#' Interactive time traveling script browser
 #'
 #' This function calls up an interactive debugging interface
 #' similar to the browser() in core R. It has the functionality
@@ -63,7 +63,7 @@ debug.browser <- function() {
   
   # All the possible lines so the debugger can move through
   # debug.from.line without throwing any warnings
-  lines <- stats::na.omit(proc.nodes$startLine)
+  pos.lines <- stats::na.omit(proc.nodes$startLine)
   var.env$lineIndex <- 1
   
   # Instructions for how to use the debugger
@@ -71,16 +71,16 @@ debug.browser <- function() {
   cat(paste(script.name), "\n", sep="")
 
   #Each line will print the code for the line
-  cat(paste(lines[var.env$lineIndex],
+  cat(paste(pos.lines[var.env$lineIndex],
             ": ",
-            proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
+            proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
             "\n",
             sep=""))
   
 
   # Loads variables that may have been present before the script started into 
-  # the simulated environment
-  pre.data.nodes <- debug.from.line(lines[1], state = T)[[1]]
+  # the recontructed environment
+  pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
   pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
   if(nrow(pre.data.nodes) > 0) {
     .load.variables(pre.data.nodes, var.env)
@@ -101,126 +101,20 @@ debug.browser <- function() {
       break
     # lists variables present in "execution"
     # THey can enter one as an input and it will print it's value
-    } else if (input == "s") {
-      if(length(step.in) != 0) {
-        
-        # Grab the possible step-in places for the current script only
-        script.steps <- step.in[step.in$cur.script == current.script, ]
-        
-        # Only if the current line the execution is at can be stepped into
-        # should we attempt to. Otherwise just go to next line.
-        # Scripts are 'stepped into" by simply swapping the procedure nodes out with 
-        # the nodes from another script
-        if(lines[var.env$lineIndex] %in% script.steps$line.number){
-          
-          # Grab the exact script it is possible to step into and corresponding information
-          step.info <- script.steps[script.steps$line.number == lines[var.env$lineIndex], ]
-          
-          # When stepping back out, the debugger needs to know where to go - next.line
-          # When grabbing environment for the first line on the new script, sending it 
-          # straight to debug.from.line will return the execution AFTER that line has 
-          # been executed. We want before, and the line executed before that is the line
-          # before the source script - prev.line
-          # When stepping back out, need to know which script to step to - script
-          call.back <- stats::setNames(list(step.info$cur.script,
-                                            lines[var.env$lineIndex + 1],
-                                            lines[var.env$lineIndex - 1] ),
-                                       c("script", "next.line", "prev.line"))
-          
-          # call.stack is a list used here as a stack object to allow nesting source() calls
-          # When one script is stepped out of, that call.back object is removed from the list
-          var.env$call.stack <- append(var.env$call.stack, list(call.back), after = 0)
-          
-          # Switch execution to the new script, done by re-subsetting proc.nodes
-          current.script <- step.info$next.script
-          
-          proc.nodes <- get.proc.nodes()
-          proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-          proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
-          
-          # All the possible lines so the debugger can move through
-          # debug.from.line without throwing any warnings
-          lines <- stats::na.omit(proc.nodes$startLine)
-          
-          # print to the screen so the user know which script they're in 
-          cat(paste(scripts[current.script]), "\n", sep="")
-          
-          # All scripts start at the first line of code, which the index will point to
-          var.env$lineIndex <- 1
-          
-          .change.line(var.env, lines, proc.nodes, current.script)
-        } else {
-          # if they try and step into a script with no source call move forward one line
-          var.env$lineIndex <- var.env$lineIndex + 1
-          
-          .change.line(var.env, lines, proc.nodes, current.script)
-        }
-      } else {
-        var.env$lineIndex <- var.env$lineIndex + 1
-        
-        .change.line(var.env, lines, proc.nodes,  current.script)
-      }
-
     } else if(input == "ls") { 
       print(var.env$vars)
       
     # advances a line, or if a number is specified, advances
     # by the number of lines specified
     } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-      # Clear out the command, if a number is left then 
-      # modify behavior to use the number
-      new.in <- gsub("n", "", input)
-      if(grepl("[[:digit:]]", new.in)){
-        forw.by <- as.integer(new.in)
-        # Find the index closest value to what was specified 
-        # in lines andthen change execution to go there 
-        var.env$lineIndex <- findInterval(lines[var.env$lineIndex] + forw.by, lines)
-      } else {
-        var.env$lineIndex <- var.env$lineIndex + 1
-      }
-      
-      # In the event they are ending a source()ed script
-      # then the exectuion needs to shift to a new set of proc.nodes
-      if(var.env$lineIndex > length(lines) & length(var.env$call.stack) != 0 ) {
-        
-        # Use the information from var.env's call stack to reset proc.nodes
-        # to the previous script to right after where the source call was 
-        current.script <- var.env$call.stack[[1]]$script
-        proc.nodes <- get.proc.nodes()
-        proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-        proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
-        
-        # All the possible lines so the debugger can move through
-        # debug.from.line without throwing any warnings
-        lines <- stats::na.omit(proc.nodes$startLine)
-        
-        # If NA the source call was the last line and can just set lineIndex 
-        # to the length of lines +1 which will trigger the end of script message
-        if(!is.na(var.env$call.stack[[1]]$next.line)){
-          var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$next.line, lines)
-        } else {
-          var.env$lineIndex <- length(lines) + 1
-        }
-        
-        # the main script doesn't appear in the sourced scripts vector
-        if(current.script == 0){
-          cat(paste(script.name), "\n", sep="")
-        } else {
-          cat(paste(scripts[current.script]), "\n", sep="")
-        }
-       
-        # "pop" the stack now that execution has jumped back to the previous script
-        var.env$call.stack <- var.env$call.stack[-1]
-      }
-      
-      .change.line(var.env, lines, proc.nodes,  current.script)
+      .moveForward(input, var.env, current.script, pos.lines, proc.nodes)
       
     # moves "execution" to the end of the script
     } else if (input == "c") { 
       # Continue until the "end" of execution
-      var.env$lineIndex <- length(lines)
+      var.env$lineIndex <- length(pos.lines)
       
-      .change.line(var.env, lines, proc.nodes,  current.script)
+      .change.line(var.env, pos.lines, proc.nodes,  current.script)
       
     # Moves back by the number of line specified by the user
     # If no lines are specified, moves back one line
@@ -232,7 +126,7 @@ debug.browser <- function() {
         back.by <- as.integer(new.in)
         # Find the index closest value to what was specified 
         # in lines andthen change execution to go there 
-        var.env$lineIndex <- findInterval(lines[var.env$lineIndex] - back.by, lines)
+        var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] - back.by, pos.lines)
       } else {
         var.env$lineIndex <- var.env$lineIndex - 1
       }
@@ -250,12 +144,12 @@ debug.browser <- function() {
         
         # All the possible lines so the debugger can move through
         # debug.from.line without throwing any warnings
-        lines <- stats::na.omit(proc.nodes$startLine)
+        pos.lines <- stats::na.omit(proc.nodes$startLine)
         
         # If 0 the source call was the first line and can just set lineIndex 
         # to 1, if not NA than the (index value for it) + 1 is the source call
         if(length(var.env$call.stack[[1]]$prev.line) != 0){
-          var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$prev.line, lines)
+          var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$prev.line, pos.lines)
           var.env$lineIndex <- var.env$lineIndex + 1
         } else {
           var.env$lineIndex <- 1
@@ -272,39 +166,99 @@ debug.browser <- function() {
         var.env$call.stack <- var.env$call.stack[-1]
       }
      
-      .change.line(var.env, lines, proc.nodes, current.script)
+      .change.line(var.env, pos.lines, proc.nodes, current.script)
       
     # This function will print the line that the "execution" is 
     # currently on or if they specify a number will jump to that line
+    } else if (input == "s") {
+      if(length(step.in) != 0) {
+        
+        # Grab the possible step-in places for the current script only
+        script.steps <- step.in[step.in$cur.script == current.script, ]
+        
+        # Only if the current line the execution is at can be stepped into
+        # should we attempt to. Otherwise just go to next line.
+        # Scripts are 'stepped into" by simply swapping the procedure nodes out with 
+        # the nodes from another script
+        if(pos.lines[var.env$lineIndex] %in% script.steps$line.number){
+          
+          # Grab the exact script it is possible to step into and corresponding information
+          step.info <- script.steps[script.steps$line.number == pos.lines[var.env$lineIndex], ]
+          
+          # When stepping back out, the debugger needs to know where to go - next.line
+          # When grabbing environment for the first line on the new script, sending it 
+          # straight to debug.from.line will return the execution AFTER that line has 
+          # been executed. We want before, and the line executed before that is the line
+          # before the source script - prev.line
+          # When stepping back out, need to know which script to step to - script
+          call.back <- stats::setNames(list(step.info$cur.script,
+                                            pos.lines[var.env$lineIndex + 1],
+                                            pos.lines[var.env$lineIndex - 1] ),
+                                       c("script", "next.line", "prev.line"))
+          
+          # call.stack is a list used here as a stack object to allow nesting source() calls
+          # When one script is stepped out of, that call.back object is removed from the list
+          var.env$call.stack <- append(var.env$call.stack, list(call.back), after = 0)
+          
+          # Switch execution to the new script, done by re-subsetting proc.nodes
+          current.script <- step.info$next.script
+          
+          proc.nodes <- get.proc.nodes()
+          proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+          proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+          
+          # All the possible lines so the debugger can move through
+          # debug.from.line without throwing any warnings
+          pos.lines <- stats::na.omit(proc.nodes$startLine)
+          
+          # print to the screen so the user know which script they're in 
+          cat(paste(scripts[current.script]), "\n", sep="")
+          
+          # All scripts start at the first line of code, which the index will point to
+          var.env$lineIndex <- 1
+          
+          .change.line(var.env, pos.lines, proc.nodes, current.script)
+        } else {
+          # if they try and step into a script with no source call move forward one line
+          var.env$lineIndex <- var.env$lineIndex + 1
+          
+          .change.line(var.env, pos.lines, proc.nodes, current.script)
+        }
+      } else {
+        var.env$lineIndex <- var.env$lineIndex + 1
+        
+        .change.line(var.env, pos.lines, proc.nodes,  current.script)
+      }
+      
     } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
       # Clear out the command, if a number is left then 
       # modify behavior to use the number
       new.in <- gsub("l", "", input)
       if(grepl("[[:digit:]]", new.in)) {
-        var.env$lineIndex <- findInterval(as.integer(new.in), lines)
-        .change.line(var.env, lines, proc.nodes, current.script)
+        var.env$lineIndex <- findInterval(as.integer(new.in), pos.lines)
+        .change.line(var.env, pos.lines, proc.nodes, current.script)
       } else {
         #Each line will print the code for the line
-        cat(paste(lines[var.env$lineIndex],
+        cat(paste(pos.lines[var.env$lineIndex],
                   ": ",
-                  proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
+                  proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
                   "\n",
                   sep=""))
       }
-    # moves the simulated execution environment over to the global environment
+    # moves the reconstructed execution environment over to the global environment
     } else if (input == "mv") { 
       #transfer environment
       if(!is.na(var.env$vars[1])){
         lapply(var.env$vars, function(var){
           # n = 3 sends to environment that called debug.browser
-          assign(var, get(var, envir = var.env), envir = parent.frame(n = 3))
+          assign(var, get(var, envir = var.env), envir = .GlobalEnv)
         })
       } else {
         cat("Environment empty, nothing to move\n")
       }
     # print information on how to use the debugger
     } else if (input == "help") { 
-      cat(paste("This is a postmortem debugger for R \n", 
+      cat(paste("This is a time-traveling debugger for R \n", 
                 "n - Move forward one line\n",
                 "n* - Move forward * number of times (where * is an integer) \n",
                 "b - Move backward one line\n",
@@ -334,7 +288,7 @@ debug.browser <- function() {
   }
 }
 
-#' This function uses debug.from.line to simulate the execution environment 
+#' This function uses debug.from.line to reconstruct the execution environment 
 #' at a specific line of the script. It stores variable names and values 
 #' in the var.env
 #'
@@ -342,19 +296,19 @@ debug.browser <- function() {
 #'
 #' @param var.env the environment that stores the variables and current line
 #' of "execution"
-#' @param lines A vector of line numbers corresponding to lines of the script that had code
+#' @param pos.lines A vector of line numbers corresponding to lines of the script that had code
 #' @param proc.nodes The procedure nodes, used for extracting the code on a line
 #' @param current.script in the even of sourced scripts this will change to reflect the current
 #' @importFrom utils read.csv
 #' @return nothing
 #'
-.change.line <- function(var.env, lines, proc.nodes, current.script) {
+.change.line <- function(var.env, pos.lines, proc.nodes, current.script) {
   
   # if they choose to go past the amount of lines for execution
   # set it to the end and print they've reached the end
-  if(var.env$lineIndex > length(lines)) {
+  if(var.env$lineIndex > length(pos.lines)) {
     print("End of Script")
-    var.env$lineIndex <- length(lines) + 1
+    var.env$lineIndex <- length(pos.lines) + 1
   # If they've gone before executions starts, print they have reached the beginning 
   } else if (var.env$lineIndex < 1) {
     print("Start of Script")
@@ -363,9 +317,9 @@ debug.browser <- function() {
   } else {
     # Print the line number they are on as well as 
     # the line of code 
-    cat(paste(lines[var.env$lineIndex],
+    cat(paste(pos.lines[var.env$lineIndex],
               ": ",
-              proc.nodes[proc.nodes$startLine == lines[var.env$lineIndex], ]$name,
+              proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
               "\n",
               sep=""))
   }
@@ -379,7 +333,7 @@ debug.browser <- function() {
     # debug from line will return variables that were present pre-execution 
     # when state is true, but their script nubmer is NA, that's how it is 
     # possible to tell pre-execution variables
-    pre.data.nodes <- debug.from.line(lines[1], state = T)[[1]]
+    pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
     pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
     .load.variables(pre.data.nodes, var.env)
   } else {
@@ -404,7 +358,7 @@ debug.browser <- function() {
         }
       }
     } else {
-      line.df <- debug.from.line(lines[var.env$lineIndex - 1], state = T, script.num = current.script)[[1]]
+      line.df <- debug.from.line(pos.lines[var.env$lineIndex - 1], state = T, script.num = current.script)[[1]]
     }
     
     .load.variables(line.df, var.env)
@@ -549,4 +503,54 @@ debug.browser <- function() {
     })
     rm(list=ls(load.env), envir = load.env)
   }
+}
+
+.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes) {
+  # Clear out the command, if a number is left then 
+  # modify behavior to use the number
+  new.in <- gsub("n", "", input)
+  if(grepl("[[:digit:]]", new.in)){
+    forw.by <- as.integer(new.in)
+    # Find the index closest value to what was specified 
+    # in lines andthen change execution to go there 
+    var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] + forw.by, pos.lines)
+  } else {
+    var.env$lineIndex <- var.env$lineIndex + 1
+  }
+  
+  # In the event they are ending a source()ed script
+  # then the exectuion needs to shift to a new set of proc.nodes
+  if(var.env$lineIndex > length(pos.lines) & length(var.env$call.stack) != 0 ) {
+    
+    # Use the information from var.env's call stack to reset proc.nodes
+    # to the previous script to right after where the source call was 
+    current.script <- var.env$call.stack[[1]]$script
+    proc.nodes <- get.proc.nodes()
+    proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+    proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+    
+    # All the possible lines so the debugger can move through
+    # debug.from.line without throwing any warnings
+    pos.lines <- stats::na.omit(proc.nodes$startLine)
+    
+    # If NA the source call was the last line and can just set lineIndex 
+    # to the length of lines +1 which will trigger the end of script message
+    if(!is.na(var.env$call.stack[[1]]$next.line)){
+      var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$next.line, pos.lines)
+    } else {
+      var.env$lineIndex <- length(pos.lines) + 1
+    }
+    
+    # the main script doesn't appear in the sourced scripts vector
+    if(current.script == 0){
+      cat(paste(script.name), "\n", sep="")
+    } else {
+      cat(paste(scripts[current.script]), "\n", sep="")
+    }
+    
+    # "pop" the stack now that execution has jumped back to the previous script
+    var.env$call.stack <- var.env$call.stack[-1]
+  }
+  
+  .change.line(var.env, pos.lines, proc.nodes,  current.script)
 }
