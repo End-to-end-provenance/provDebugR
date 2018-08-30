@@ -107,7 +107,7 @@ debug.browser <- function() {
     # advances a line, or if a number is specified, advances
     # by the number of lines specified
     } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-      .moveForward(input, var.env, current.script, pos.lines, proc.nodes)
+      .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
       
     # moves "execution" to the end of the script
     } else if (input == "c") { 
@@ -119,116 +119,12 @@ debug.browser <- function() {
     # Moves back by the number of line specified by the user
     # If no lines are specified, moves back one line
     } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
-      # Clear out the command, if a number is left then 
-      # modify behavior to use the number
-      new.in <- gsub("b", "", input)
-      if(grepl("[[:digit:]]", new.in)) {
-        back.by <- as.integer(new.in)
-        # Find the index closest value to what was specified 
-        # in lines andthen change execution to go there 
-        var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] - back.by, pos.lines)
-      } else {
-        var.env$lineIndex <- var.env$lineIndex - 1
-      }
-      
-      # In the event they are ending a source()ed script
-      # then the exectuion needs to shift to a new set of proc.nodes
-      if(var.env$lineIndex < 1 & length(var.env$call.stack) != 0 ) {
-        
-        # Use the information from var.env's call stack to reset proc.nodes
-        # to the previous script to right after where the source call was 
-        current.script <- var.env$call.stack[[1]]$script
-        proc.nodes <- get.proc.nodes()
-        proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-        proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
-        
-        # All the possible lines so the debugger can move through
-        # debug.from.line without throwing any warnings
-        pos.lines <- stats::na.omit(proc.nodes$startLine)
-        
-        # If 0 the source call was the first line and can just set lineIndex 
-        # to 1, if not NA than the (index value for it) + 1 is the source call
-        if(length(var.env$call.stack[[1]]$prev.line) != 0){
-          var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$prev.line, pos.lines)
-          var.env$lineIndex <- var.env$lineIndex + 1
-        } else {
-          var.env$lineIndex <- 1
-        }
-        
-        #the main script doesn't appear in the sourced scripts vector
-        if(current.script == 0){
-          cat(paste(script.name), "\n", sep="")
-        } else {
-          cat(paste(scripts[current.script]), "\n", sep="")
-        }
-        
-        # "pop" the stack now that execution has jumped back to the previous script
-        var.env$call.stack <- var.env$call.stack[-1]
-      }
-     
-      .change.line(var.env, pos.lines, proc.nodes, current.script)
+      .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
       
     # This function will print the line that the "execution" is 
     # currently on or if they specify a number will jump to that line
     } else if (input == "s") {
-      if(length(step.in) != 0) {
-        
-        # Grab the possible step-in places for the current script only
-        script.steps <- step.in[step.in$cur.script == current.script, ]
-        
-        # Only if the current line the execution is at can be stepped into
-        # should we attempt to. Otherwise just go to next line.
-        # Scripts are 'stepped into" by simply swapping the procedure nodes out with 
-        # the nodes from another script
-        if(pos.lines[var.env$lineIndex] %in% script.steps$line.number){
-          
-          # Grab the exact script it is possible to step into and corresponding information
-          step.info <- script.steps[script.steps$line.number == pos.lines[var.env$lineIndex], ]
-          
-          # When stepping back out, the debugger needs to know where to go - next.line
-          # When grabbing environment for the first line on the new script, sending it 
-          # straight to debug.from.line will return the execution AFTER that line has 
-          # been executed. We want before, and the line executed before that is the line
-          # before the source script - prev.line
-          # When stepping back out, need to know which script to step to - script
-          call.back <- stats::setNames(list(step.info$cur.script,
-                                            pos.lines[var.env$lineIndex + 1],
-                                            pos.lines[var.env$lineIndex - 1] ),
-                                       c("script", "next.line", "prev.line"))
-          
-          # call.stack is a list used here as a stack object to allow nesting source() calls
-          # When one script is stepped out of, that call.back object is removed from the list
-          var.env$call.stack <- append(var.env$call.stack, list(call.back), after = 0)
-          
-          # Switch execution to the new script, done by re-subsetting proc.nodes
-          current.script <- step.info$next.script
-          
-          proc.nodes <- get.proc.nodes()
-          proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-          proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
-          
-          # All the possible lines so the debugger can move through
-          # debug.from.line without throwing any warnings
-          pos.lines <- stats::na.omit(proc.nodes$startLine)
-          
-          # print to the screen so the user know which script they're in 
-          cat(paste(scripts[current.script]), "\n", sep="")
-          
-          # All scripts start at the first line of code, which the index will point to
-          var.env$lineIndex <- 1
-          
-          .change.line(var.env, pos.lines, proc.nodes, current.script)
-        } else {
-          # if they try and step into a script with no source call move forward one line
-          var.env$lineIndex <- var.env$lineIndex + 1
-          
-          .change.line(var.env, pos.lines, proc.nodes, current.script)
-        }
-      } else {
-        var.env$lineIndex <- var.env$lineIndex + 1
-        
-        .change.line(var.env, pos.lines, proc.nodes,  current.script)
-      }
+      .stepIn(var.env, current.script, pos.lines, proc.nodes, step.in)
       
     } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
       # Clear out the command, if a number is left then 
@@ -505,7 +401,7 @@ debug.browser <- function() {
   }
 }
 
-.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes) {
+.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
   new.in <- gsub("n", "", input)
@@ -553,4 +449,116 @@ debug.browser <- function() {
   }
   
   .change.line(var.env, pos.lines, proc.nodes,  current.script)
+}
+
+.moveBackward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+  # Clear out the command, if a number is left then 
+  # modify behavior to use the number
+  new.in <- gsub("b", "", input)
+  if(grepl("[[:digit:]]", new.in)) {
+    back.by <- as.integer(new.in)
+    # Find the index closest value to what was specified 
+    # in lines andthen change execution to go there 
+    var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] - back.by, pos.lines)
+  } else {
+    var.env$lineIndex <- var.env$lineIndex - 1
+  }
+  
+  # In the event they are ending a source()ed script
+  # then the exectuion needs to shift to a new set of proc.nodes
+  if(var.env$lineIndex < 1 & length(var.env$call.stack) != 0 ) {
+    
+    # Use the information from var.env's call stack to reset proc.nodes
+    # to the previous script to right after where the source call was 
+    current.script <- var.env$call.stack[[1]]$script
+    proc.nodes <- get.proc.nodes()
+    proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+    proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+    
+    # All the possible lines so the debugger can move through
+    # debug.from.line without throwing any warnings
+    pos.lines <- stats::na.omit(proc.nodes$startLine)
+    
+    # If 0 the source call was the first line and can just set lineIndex 
+    # to 1, if not NA than the (index value for it) + 1 is the source call
+    if(length(var.env$call.stack[[1]]$prev.line) != 0){
+      var.env$lineIndex <- findInterval(var.env$call.stack[[1]]$prev.line, pos.lines)
+      var.env$lineIndex <- var.env$lineIndex + 1
+    } else {
+      var.env$lineIndex <- 1
+    }
+    
+    #the main script doesn't appear in the sourced scripts vector
+    if(current.script == 0){
+      cat(paste(script.name), "\n", sep="")
+    } else {
+      cat(paste(scripts[current.script]), "\n", sep="")
+    }
+    
+    # "pop" the stack now that execution has jumped back to the previous script
+    var.env$call.stack <- var.env$call.stack[-1]
+  }
+  
+  .change.line(var.env, pos.lines, proc.nodes, current.script)
+}
+
+.stepIn <- function(var.env, current.script, pos.lines, proc.nodes, step.in, scripts) {
+  if(length(step.in) != 0) {
+    
+    # Grab the possible step-in places for the current script only
+    script.steps <- step.in[step.in$cur.script == current.script, ]
+    
+    # Only if the current line the execution is at can be stepped into
+    # should we attempt to. Otherwise just go to next line.
+    # Scripts are 'stepped into" by simply swapping the procedure nodes out with 
+    # the nodes from another script
+    if(pos.lines[var.env$lineIndex] %in% script.steps$line.number){
+      
+      # Grab the exact script it is possible to step into and corresponding information
+      step.info <- script.steps[script.steps$line.number == pos.lines[var.env$lineIndex], ]
+      
+      # When stepping back out, the debugger needs to know where to go - next.line
+      # When grabbing environment for the first line on the new script, sending it 
+      # straight to debug.from.line will return the execution AFTER that line has 
+      # been executed. We want before, and the line executed before that is the line
+      # before the source script - prev.line
+      # When stepping back out, need to know which script to step to - script
+      call.back <- stats::setNames(list(step.info$cur.script,
+                                        pos.lines[var.env$lineIndex + 1],
+                                        pos.lines[var.env$lineIndex - 1] ),
+                                   c("script", "next.line", "prev.line"))
+      
+      # call.stack is a list used here as a stack object to allow nesting source() calls
+      # When one script is stepped out of, that call.back object is removed from the list
+      var.env$call.stack <- append(var.env$call.stack, list(call.back), after = 0)
+      
+      # Switch execution to the new script, done by re-subsetting proc.nodes
+      current.script <- step.info$next.script
+      
+      proc.nodes <- get.proc.nodes()
+      proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+      proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
+      
+      # All the possible lines so the debugger can move through
+      # debug.from.line without throwing any warnings
+      pos.lines <- stats::na.omit(proc.nodes$startLine)
+      
+      # print to the screen so the user know which script they're in 
+      cat(paste(scripts[current.script]), "\n", sep="")
+      
+      # All scripts start at the first line of code, which the index will point to
+      var.env$lineIndex <- 1
+      
+      .change.line(var.env, pos.lines, proc.nodes, current.script)
+    } else {
+      # if they try and step into a script with no source call move forward one line
+      var.env$lineIndex <- var.env$lineIndex + 1
+      
+      .change.line(var.env, pos.lines, proc.nodes, current.script)
+    }
+  } else {
+    var.env$lineIndex <- var.env$lineIndex + 1
+    
+    .change.line(var.env, pos.lines, proc.nodes,  current.script)
+  }
 }

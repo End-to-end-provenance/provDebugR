@@ -3,17 +3,17 @@
 \name{change.line}
 \alias{change.line}
 \alias{.change.line}
-\title{This function uses debug.from.line to simulate the execution environment 
+\title{This function uses debug.from.line to reconstruct the execution environment 
 at a specific line of the script. It stores variable names and values 
 in the var.env}
 \usage{
-.change.line(var.env, lines, proc.nodes, current.script)
+.change.line(var.env, pos.lines, proc.nodes, current.script)
 }
 \arguments{
 \item{var.env}{the environment that stores the variables and current line
 of "execution"}
 
-\item{lines}{A vector of line numbers corresponding to lines of the script that had code}
+\item{pos.lines}{A vector of line numbers corresponding to lines of the script that had code}
 
 \item{proc.nodes}{The procedure nodes, used for extracting the code on a line}
 
@@ -23,7 +23,7 @@ of "execution"}
 nothing
 }
 \description{
-This function uses debug.from.line to simulate the execution environment 
+This function uses debug.from.line to reconstruct the execution environment 
 at a specific line of the script. It stores variable names and values 
 in the var.env
 }
