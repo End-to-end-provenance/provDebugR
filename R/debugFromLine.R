@@ -33,26 +33,26 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   # Subset by inputted script number
   # Subset operation-type nodes to get rid of NA values
   # (Gets rid of Start and Finish type)
-  proc.nodes <- get.proc.nodes()
+  proc.nodes <- provParseR::get.proc.nodes()
   proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-  proc.delete <- proc.nodes[proc.nodes$scriptNum != script.num, "label"]
+  proc.delete <- proc.nodes[proc.nodes$scriptNum != script.num, "id"]
   .debug.env$proc.nodes <- proc.nodes[proc.nodes$scriptNum == script.num, ]
   
   # Get proc-data edges
   # Subset out edges that correspond to proc.delete
-  proc.data.edges <- get.proc.data()
+  proc.data.edges <- provParseR::get.proc.data()
   .debug.env$proc.data.edges <- proc.data.edges[!(proc.data.edges$activity %in% proc.delete), ]
   
   # Get data nodes (and thus var, val, and type) from parser
   # Subset file-type nodes to get rid of those with no corresponding procedure
   # Capture file-type nodes in delete.these for later subsetting
-  data.nodes <- get.data.nodes()
-  file.delete <- data.nodes[data.nodes$type == "File", "label"]
+  data.nodes <- provParseR::get.data.nodes()
+  file.delete <- data.nodes[data.nodes$type == "File", "id"]
   .debug.env$data.nodes <- data.nodes[data.nodes$type != "File", ]
 
   # Get data-proc edges
   # Subset file-type nodes with file.delete
-  data.proc.edges <- get.data.proc()
+  data.proc.edges <- provParseR::get.data.proc()
   data.proc.edges <- data.proc.edges[!(data.proc.edges$entity %in% file.delete), ]
   .debug.env$data.proc.edges <- data.proc.edges[!(data.proc.edges$activity %in% proc.delete), ]
 
@@ -107,7 +107,7 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   if (!state) { # REFERENCE - all variables referenced on the line
 
     # Find procedure nodes with the inputted line number
-    nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "label"]
+    nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "id"]
 
     # Add to list of nodes those that are referenced on the line
     # by finding their corresponding data node (via data-to-proc edges)
@@ -138,7 +138,7 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   } else { # STATE - state of all variables up to that line in execution
 
     # Find procedure nodes with the inputted line number
-    node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "label"]
+    node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "id"]
 
     # Extract data entity from procedure activity via procedure-to-data edges
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
@@ -146,14 +146,14 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     # If no corresponding entity (data node) exists, get next viable node
     # from the preceding line number. This accounts for source() calls to files.
     while (length(entity) == 0) {
-      all.proc.nodes <- get.proc.nodes()[get.proc.nodes()$type == "Operation", ]
-      all.proc.data <- get.proc.data()
+      all.proc.nodes <- provParseR::get.proc.nodes()[provParseR::get.proc.nodes()$type == "Operation", ]
+      all.proc.data <- provParseR::get.proc.data()
       rownames(all.proc.nodes) <- 1:nrow(all.proc.nodes)
-      new.node.index <- as.integer(rownames(all.proc.nodes[all.proc.nodes$label == node, ])) - 1
+      new.node.index <- as.integer(rownames(all.proc.nodes[all.proc.nodes$id == node, ])) - 1
       if(length(new.node.index) == 0) {
         break
       }
-      node <- all.proc.nodes[new.node.index, "label"]
+      node <- all.proc.nodes[new.node.index, "id"]
       entity <- all.proc.data[all.proc.data$activity == node, "entity"]
       if(new.node.index == 1 & length(entity) == 0)
       {
@@ -168,8 +168,8 @@ debug.from.line <- function(..., state = F, script.num = 0) {
       # Find number of preceding data nodes
       # Subset that out of data.nodes
       rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
-      rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, ])
-      nodes <- .debug.env$data.nodes["1":rnum[1], "label"]
+      rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$id == entity, ])
+      nodes <- .debug.env$data.nodes["1":rnum[1], "id"]
       
       # Account for duplicates by removing all but the tail
       node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
@@ -215,12 +215,12 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     script <- script.num
   } else if (grepl("d", node)) {
     entity <- node
-    entity.activity <- get.proc.data()[get.proc.data()$entity == entity, "activity"]
+    entity.activity <- provParseR::get.proc.data()[provParseR::get.proc.data()$entity == entity, "activity"]
     
     # If there is no entity.activity then the variable came from envir before script ran
     # In this case there is no script #, populate with NA to indicate this
     if(length(entity.activity > 0)){
-      script <- get.proc.nodes()[get.proc.nodes()$label == entity.activity, "scriptNum"]
+      script <- provParseR::get.proc.nodes()[provParseR::get.proc.nodes()$id == entity.activity, "scriptNum"]
     } else {
       script <- NA
     }
@@ -235,18 +235,18 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     val <- container <- dim <- type <- NA
 
     # Set var to the code on the line (name in proc.nodes)
-    var <- .debug.env$proc.nodes[.debug.env$proc.nodes$label == node, "name"]
+    var <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == node, "name"]
 
   } else {
 
     # Var is entity name
-    var <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "name"]
+    var <- .debug.env$data.nodes[.debug.env$data.nodes$id == entity, "name"]
 
     # Val is entity value
-    val <- .debug.env$data.nodes[.debug.env$data.nodes$label == entity, "value"]
+    val <- .debug.env$data.nodes[.debug.env$data.nodes$id == entity, "value"]
 
     # Type is string parsed from entity valType
-    val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$label == entity, "valType"])
+    val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$id == entity, "valType"])
     
     container <- val.type$container
     

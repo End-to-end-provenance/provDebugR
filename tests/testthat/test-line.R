@@ -1,6 +1,7 @@
-context("Debugging From Line")
-
 library(provDebugR)
+library (testthat)
+
+context("Debugging From Line")
 
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
 debug.init(test.data)
@@ -22,7 +23,7 @@ test_that("possible results can be grabbed", {
 })
 
 test_that("all possible lines can be queried", {
-  pos.lines <- unique(sort(get.proc.nodes()$startLine))
+  pos.lines <- unique(sort(provParseR::get.proc.nodes()$startLine))
   line.results <- debug.from.line(pos.lines, state = F)
   expect_equal(length(line.results), 17)
   expect_match(line.results$'12'$'val', "a test")

@@ -19,13 +19,18 @@ debug.browser <- function() {
   
   # The procedure nodes provide lines of code
   # var.env allows the user to get their variables back from their script
-  proc.nodes <- get.proc.nodes()
+  proc.nodes <- provParseR::get.proc.nodes()
   var.env <- new.env(parent = emptyenv())
   var.env$call.stack <- list()
   
+  # This is used when stepping through scripts to print the name
+  # of the script the execution has jumped to
+  scripts <- provParseR::get.scripts()$scripts
+  
   #The script name isn't an operation so will be removed
   # later on, but is needed to print to the user
-  script.name <- proc.nodes[1,]$name
+  #script.name <- proc.nodes[1,]$name
+  script.name <- scripts$name[1]
   
   # A table needs to be created to inform the debugger when it is possible for a 
   # user to be able to step into a sourced script
@@ -50,11 +55,7 @@ debug.browser <- function() {
   if(length(step.in) != 0){
     names(step.in) <- c("cur.script", "line.number", "next.script")
   } 
-  
-  # This is used when stepping through scripts to print the name
-  # of the script the execution has jumped to
-  scripts <- get.scripts()$scripts
-  
+    
   # The main script is script 0, and flow of control starts there
   current.script = 0
   
@@ -421,7 +422,7 @@ debug.browser <- function() {
     # Use the information from var.env's call stack to reset proc.nodes
     # to the previous script to right after where the source call was 
     current.script <- var.env$call.stack[[1]]$script
-    proc.nodes <- get.proc.nodes()
+    proc.nodes <- provParseR::get.proc.nodes()
     proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
     proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
     
@@ -471,7 +472,7 @@ debug.browser <- function() {
     # Use the information from var.env's call stack to reset proc.nodes
     # to the previous script to right after where the source call was 
     current.script <- var.env$call.stack[[1]]$script
-    proc.nodes <- get.proc.nodes()
+    proc.nodes <- provParseR::get.proc.nodes()
     proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
     proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
     
@@ -535,7 +536,7 @@ debug.browser <- function() {
       # Switch execution to the new script, done by re-subsetting proc.nodes
       current.script <- step.info$next.script
       
-      proc.nodes <- get.proc.nodes()
+      proc.nodes <- provParseR::get.proc.nodes()
       proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
       proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
       

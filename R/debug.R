@@ -1,6 +1,7 @@
 # These environment will be used throughout the package as a way to communicate between functions
 .debug.env <- new.env(parent = emptyenv())
 .debug.env$has.graph = FALSE
+.debug.env$graph <- NULL
 .debug.env$prov.folder <- NA
 
 #'Initialization functions
@@ -13,9 +14,6 @@
 #'provenance from memory, or nothing.
 #'@param dir A path to where to save the prov folder
 #'@return nothing
-#'@import RDataTracker
-#'@import provParseR
-#'@import provGraphR
 #'@import igraph
 #'@export
 #'@examples
@@ -56,6 +54,36 @@ debug.init <- function(input.data = NA, dir = NULL) {
     }
   }
 
+  # Determine where to load prov.json and prov.run from
+  loaded <- loadedNamespaces()
+  if ("provR" %in% loaded) {
+    tool <- "provr"
+  }
+  else if ("RDataTracker" %in% loaded) {
+    tool <- "rdt"
+  }
+  else {
+    installed <- utils::installed.packages ()
+    if ("provR" %in% installed) {
+      tool <- "provr"
+    }
+    else if ("RDataTracker" %in% installed) {
+      tool <- "rdt"
+    }
+    else {
+      stop ("One of provR or RDataTracker must be installed.")
+    }
+  }
+
+  if (tool == "rdt" || tool == "rdatatracker") {
+    prov.run <- RDataTracker::prov.run
+    prov.json <- RDataTracker::prov.json
+  }
+  else {
+    prov.run <- provR::prov.run
+    prov.json <- provR::prov.json
+  }
+  
   
   # If no data is input, look for json in memory
   if (is.na(input.data)) {
@@ -98,8 +126,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
 #'@param input.prov A prov.json compliant file from the system or a string from memory
 #'@param is.file Logical stating whether or not input.prov needs to be read in from the system or not
 .debug.prov <- function(input.prov, is.file = T) {
-  prov.parse(input.prov, isFile = is.file)
-  create.graph()
+  .debug.env$graph <- provGraphR::create.graph(input.prov, isFile = is.file)
   .debug.env$has.graph = TRUE
 }
 
