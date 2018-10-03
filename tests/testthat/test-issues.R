@@ -1,26 +1,10 @@
-context("Debugging Warning and Error Tracing")
-
 library(provDebugR)
+library (testthat)
 
-test.data <- system.file("testdata", "test.json", package = "provDebugR")
-debug.init(test.data)
-
-test_that("scripts with no errors/warnings will throw an error", {
-  warning.results <- capture.output(debug.warning.trace())
-  expect_match(warning.results, "There were no warnings in this script!")
-  error.results <- capture.output(debug.error.trace())
-  expect_match(error.results, "There were no errors in this script!")
-})
+context("Debugging Warning and Error Tracing")
 
 test.data <- system.file("testdata", "testErrors.json", package = "provDebugR")
 debug.init(test.data)
-
-test_that("possible results can be grabbed", {
-  warning.results <- capture.output(debug.warning.trace())
-  expect_equal(length(warning.results), 6)
-  expect_match(warning.results[[3]] ,
-               "1      In  eval(annot, environ, NULL) :  this is a test", fixed = T)
-})
 
 test_that("all variables can be queried", {
   warning.results <- debug.warning.trace(1:2)
@@ -48,3 +32,22 @@ test_that("debug error does something", {
   expect_equal(error.results$line[[2]], 24)
   expect_match(error.results$code[[2]],"x <- b + y", fixed = T)
 })
+
+test_that("possible results can be grabbed", {
+      warning.results <- capture.output(debug.warning.trace())
+      expect_equal(length(warning.results), 6)
+      expect_match(warning.results[[3]] ,
+          "1      In  eval(annot, environ, NULL) :  this is a test", fixed = T)
+    })
+
+test.data <- system.file("testdata", "test.json", package = "provDebugR")
+debug.init(test.data)
+
+test_that("scripts with no errors/warnings will throw an error", {
+      warning.results <- capture.output(debug.warning.trace())
+      expect_match(warning.results, "There were no warnings in this script!")
+      error.results <- capture.output(debug.error.trace())
+      expect_match(error.results, "There were no errors in this script!")
+    })
+
+

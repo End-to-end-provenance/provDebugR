@@ -23,7 +23,7 @@ debug.lineage <- function(..., forward = F) {
   args <- .flatten.args(...)
 
   # Collect possible results the user could ask for
-  pos.vars <- get.data.nodes()
+  pos.vars <- provParseR::get.data.nodes()
   pos.vars <- pos.vars[pos.vars$type == "Data" | pos.vars$type == "Snapshot" |  pos.vars$name == "error.msg", ]
   pos.vars <- as.list(unique(pos.vars$name))
 
@@ -67,16 +67,16 @@ debug.lineage <- function(..., forward = F) {
 #' script #, line #, etc.
 .grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables
-  data.nodes <- get.data.nodes()
-  proc.nodes <- get.proc.nodes()
+  data.nodes <- provParseR::get.data.nodes()
+  proc.nodes <- provParseR::get.proc.nodes()
 
   # Get all the nodes from the requested variable, but since
   # it's going either forward or backward grab the end
   node.label <- NULL
   if(!forward) {
-    node.label <- utils::tail(n=1,data.nodes[data.nodes$name == result, ])$label
+    node.label <- utils::tail(n=1,data.nodes[data.nodes$name == result, ])$id
   } else {
-    node.label <- utils::head(n=1,data.nodes[data.nodes$name == result, ])$label
+    node.label <- utils::head(n=1,data.nodes[data.nodes$name == result, ])$id
   }
 
   # The assignment statement is inclusive when going backward, but not
@@ -84,7 +84,7 @@ debug.lineage <- function(..., forward = F) {
   if(forward) {
     # This code finds assignemnt statement grabbing first procedure node
     # The first procedure node with the variable in it, is where it is first assigned
-    proc.data.edges <- get.proc.data()
+    proc.data.edges <- provParseR::get.proc.data()
     edges <- proc.data.edges[proc.data.edges$entity == node.label, ]
     assign.state <- NA
     if(nrow(edges) > 0){
@@ -112,7 +112,7 @@ debug.lineage <- function(..., forward = F) {
 #' @name process.label
 .process.label <- function(label, proc.nodes, forward, assign.state = NA) {
   # Grab the nodes that have connections to the chosen node from the adj graph
-  spine <- get.spine(label, forward)
+  spine <- provGraphR::get.lineage(.debug.env$graph, label, forward)
 
   # If moving forward the procedure node that contains the assignment
   # statement should be placed at the front of the spine to keep the order accurate
@@ -123,9 +123,9 @@ debug.lineage <- function(..., forward = F) {
   # Pull the lines from the proc nodes that are referenced
   # in the spine, each is stored as a row
   lines <- lapply(spine[grep("p[[:digit:]]", spine)], function(proc.node) {
-    list(proc.nodes[proc.nodes$label == proc.node, ]$scriptNum,
-         proc.nodes[proc.nodes$label == proc.node, ]$startLine,
-         proc.nodes[proc.nodes$label == proc.node, ]$name)
+    list(proc.nodes[proc.nodes$id == proc.node, ]$scriptNum,
+         proc.nodes[proc.nodes$id == proc.node, ]$startLine,
+         proc.nodes[proc.nodes$id == proc.node, ]$name)
   })
 
   # Since each line is stored as a row and the wanted result is a
