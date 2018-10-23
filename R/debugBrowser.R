@@ -19,13 +19,13 @@ debug.browser <- function() {
   
   # The procedure nodes provide lines of code
   # var.env allows the user to get their variables back from their script
-  proc.nodes <- provParseR::get.proc.nodes()
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
   var.env <- new.env(parent = emptyenv())
   var.env$call.stack <- list()
   
   # This is used when stepping through scripts to print the name
   # of the script the execution has jumped to
-  scripts <- provParseR::get.scripts()$scripts
+  scripts <- provParseR::get.scripts(.debug.env$prov)$scripts
   
   #The script name isn't an operation so will be removed
   # later on, but is needed to print to the user
@@ -422,7 +422,7 @@ debug.browser <- function() {
     # Use the information from var.env's call stack to reset proc.nodes
     # to the previous script to right after where the source call was 
     current.script <- var.env$call.stack[[1]]$script
-    proc.nodes <- provParseR::get.proc.nodes()
+    proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
     proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
     proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
     
@@ -472,7 +472,7 @@ debug.browser <- function() {
     # Use the information from var.env's call stack to reset proc.nodes
     # to the previous script to right after where the source call was 
     current.script <- var.env$call.stack[[1]]$script
-    proc.nodes <- provParseR::get.proc.nodes()
+    proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
     proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
     proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
     
@@ -536,7 +536,7 @@ debug.browser <- function() {
       # Switch execution to the new script, done by re-subsetting proc.nodes
       current.script <- step.info$next.script
       
-      proc.nodes <- provParseR::get.proc.nodes()
+      proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
       proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
       proc.nodes <- proc.nodes[proc.nodes$scriptNum == current.script, ]
       

@@ -25,7 +25,7 @@ debug.variable.type <- function(..., just.logical = F) {
 
   # Collect possible results the user could ask for
   # Remove any rows that aren't variables
-  pos.vars <- provParseR::get.data.nodes()
+  pos.vars <- provParseR::get.data.nodes(.debug.env$prov)
   pos.vars <- pos.vars[pos.vars$type == "Data" | pos.vars$type == "Snapshot", ]
   pos.vars <- as.list(unique(pos.vars$name))
 
@@ -84,9 +84,9 @@ debug.variable.type <- function(..., just.logical = F) {
 #' @name grab.instances
 .grab.instances <- function(result) {
   # The data nodes have all the information on the variables
-  data.nodes <- provParseR::get.data.nodes()
-  proc.nodes <- provParseR::get.proc.nodes()
-  proc.data <- provParseR::get.proc.data()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
+  proc.data <- provParseR::get.proc.data(.debug.env$prov)
 
   # These data node are the rows that math with the provided result
   res.dat.nodes <- data.nodes[data.nodes$name == result, ]

@@ -23,7 +23,7 @@ debug.lineage <- function(..., forward = F) {
   args <- .flatten.args(...)
 
   # Collect possible results the user could ask for
-  pos.vars <- provParseR::get.data.nodes()
+  pos.vars <- provParseR::get.data.nodes(.debug.env$prov)
   pos.vars <- pos.vars[pos.vars$type == "Data" | pos.vars$type == "Snapshot" |  pos.vars$name == "error.msg", ]
   pos.vars <- as.list(unique(pos.vars$name))
 
@@ -67,8 +67,8 @@ debug.lineage <- function(..., forward = F) {
 #' script #, line #, etc.
 .grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables
-  data.nodes <- provParseR::get.data.nodes()
-  proc.nodes <- provParseR::get.proc.nodes()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
 
   # Get all the nodes from the requested variable, but since
   # it's going either forward or backward grab the end
@@ -84,7 +84,7 @@ debug.lineage <- function(..., forward = F) {
   if(forward) {
     # This code finds assignemnt statement grabbing first procedure node
     # The first procedure node with the variable in it, is where it is first assigned
-    proc.data.edges <- provParseR::get.proc.data()
+    proc.data.edges <- provParseR::get.proc.data(.debug.env$prov)
     edges <- proc.data.edges[proc.data.edges$entity == node.label, ]
     assign.state <- NA
     if(nrow(edges) > 0){

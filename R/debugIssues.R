@@ -27,7 +27,7 @@ debug.error.trace <- function(stack.overflow = F) {
   # and there can only be one we can grab the message to
   # print to the user and if it doesn't exist then we can
   # return gracefully after telling them
-  data.nodes <- provParseR::get.data.nodes()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
   message <- data.nodes[data.nodes$name == "error.msg", ]$value
 
   if(length(message) > 0){
@@ -106,7 +106,7 @@ debug.warning.trace <- function(...) {
   args <- .flatten.args(...)
 
   # Grab all the warning rows from the provenance
-  pos.vars <- provParseR::get.data.nodes()
+  pos.vars <- provParseR::get.data.nodes(.debug.env$prov)
   pos.vars <- pos.vars[pos.vars$name == "warning.msg", ]
   
   if(nrow(pos.vars) == 0){
@@ -149,7 +149,7 @@ debug.warning.trace <- function(...) {
     } else {
       # The procedure nodes are used in the .proccess.label fucntion
       # to find script and line numbers and code
-      proc.nodes <- provParseR::get.proc.nodes()
+      proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
 
       # Each of the chosen warning message needs to be processed,
       dfs <- lapply(args, function(arg){

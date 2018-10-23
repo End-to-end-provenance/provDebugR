@@ -1,0 +1,23 @@
+language: r
+r:
+  - release
+  - devel
+
+sudo: false
+cache: packages
+
+warnings_are_errors: true
+
+r_packages:
+  - devtools
+
+r_github_packages:
+  - ProvTools/provParseR
+  - ProvTools/provGraphR
+  - ProvTools/RDataTracker
+  - End-to-end-provenance/provR_test
+
+notifications:
+  slack: endtoendprovenance:DNYqXZWhV1c3eRhkjGYyjCEv
+
+

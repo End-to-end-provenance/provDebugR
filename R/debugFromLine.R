@@ -33,26 +33,26 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   # Subset by inputted script number
   # Subset operation-type nodes to get rid of NA values
   # (Gets rid of Start and Finish type)
-  proc.nodes <- provParseR::get.proc.nodes()
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
   proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
   proc.delete <- proc.nodes[proc.nodes$scriptNum != script.num, "id"]
   .debug.env$proc.nodes <- proc.nodes[proc.nodes$scriptNum == script.num, ]
   
   # Get proc-data edges
   # Subset out edges that correspond to proc.delete
-  proc.data.edges <- provParseR::get.proc.data()
+  proc.data.edges <- provParseR::get.proc.data(.debug.env$prov)
   .debug.env$proc.data.edges <- proc.data.edges[!(proc.data.edges$activity %in% proc.delete), ]
   
   # Get data nodes (and thus var, val, and type) from parser
   # Subset file-type nodes to get rid of those with no corresponding procedure
   # Capture file-type nodes in delete.these for later subsetting
-  data.nodes <- provParseR::get.data.nodes()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
   file.delete <- data.nodes[data.nodes$type == "File", "id"]
   .debug.env$data.nodes <- data.nodes[data.nodes$type != "File", ]
 
   # Get data-proc edges
   # Subset file-type nodes with file.delete
-  data.proc.edges <- provParseR::get.data.proc()
+  data.proc.edges <- provParseR::get.data.proc(.debug.env$prov)
   data.proc.edges <- data.proc.edges[!(data.proc.edges$entity %in% file.delete), ]
   .debug.env$data.proc.edges <- data.proc.edges[!(data.proc.edges$activity %in% proc.delete), ]
 
@@ -146,8 +146,8 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     # If no corresponding entity (data node) exists, get next viable node
     # from the preceding line number. This accounts for source() calls to files.
     while (length(entity) == 0) {
-      all.proc.nodes <- provParseR::get.proc.nodes()[provParseR::get.proc.nodes()$type == "Operation", ]
-      all.proc.data <- provParseR::get.proc.data()
+      all.proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)[provParseR::get.proc.nodes(.debug.env$prov)$type == "Operation", ]
+      all.proc.data <- provParseR::get.proc.data(.debug.env$prov)
       rownames(all.proc.nodes) <- 1:nrow(all.proc.nodes)
       new.node.index <- as.integer(rownames(all.proc.nodes[all.proc.nodes$id == node, ])) - 1
       if(length(new.node.index) == 0) {
@@ -215,12 +215,12 @@ debug.from.line <- function(..., state = F, script.num = 0) {
     script <- script.num
   } else if (grepl("d", node)) {
     entity <- node
-    entity.activity <- provParseR::get.proc.data()[provParseR::get.proc.data()$entity == entity, "activity"]
+    entity.activity <- provParseR::get.proc.data(.debug.env$prov)[provParseR::get.proc.data(.debug.env$prov)$entity == entity, "activity"]
     
     # If there is no entity.activity then the variable came from envir before script ran
     # In this case there is no script #, populate with NA to indicate this
     if(length(entity.activity > 0)){
-      script <- provParseR::get.proc.nodes()[provParseR::get.proc.nodes()$id == entity.activity, "scriptNum"]
+      script <- provParseR::get.proc.nodes(.debug.env$prov)[provParseR::get.proc.nodes(.debug.env$prov)$id == entity.activity, "scriptNum"]
     } else {
       script <- NA
     }
