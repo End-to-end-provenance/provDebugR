@@ -17,9 +17,9 @@
 debug.from.type <- function(var, type) {
 
   # Load data from parser
-  data.nodes <- provParseR::get.data.nodes()
-  proc.nodes <- provParseR::get.proc.nodes()
-  proc.data <- provParseR::get.proc.data()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
+  proc.data <- provParseR::get.proc.data(.debug.env$prov)
   
   # Find variable entities
   labels <- data.nodes[data.nodes$name == var, "id"]

@@ -126,6 +126,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
 #'@param input.prov A prov.json compliant file from the system or a string from memory
 #'@param is.file Logical stating whether or not input.prov needs to be read in from the system or not
 .debug.prov <- function(input.prov, is.file = T) {
+  .debug.env$prov <- provParseR::prov.parse(input.prov, isFile = is.file)
   .debug.env$graph <- provGraphR::create.graph(input.prov, isFile = is.file)
   .debug.env$has.graph = TRUE
 }
