@@ -4,7 +4,7 @@
 \alias{debug.from.line}
 \title{State of variables given lines}
 \usage{
-debug.from.line(..., state = F, script.num = 0)
+debug.from.line(..., state = F, script.num = 1)
 }
 \arguments{
 \item{...}{Line(s) to examine. Can be single lines or vectors/lines.}

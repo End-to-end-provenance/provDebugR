@@ -21,7 +21,7 @@
 #' debug.from.line()
 #' }
 
-debug.from.line <- function(..., state = F, script.num = 0) {
+debug.from.line <- function(..., state = F, script.num = 1) {
 
   # Collect the arguments passed to the function
   args <- .flatten.args(...)
