@@ -5,7 +5,8 @@
 \alias{.debug.search}
 \title{Search Stack Overflow}
 \usage{
-.debug.search(search.query, order = "desc", sort = "votes", tagged = "r")
+.debug.search(search.query, order = "desc", sort = "votes",
+  tagged = "r")
 }
 \arguments{
 \item{search.query}{What the user is searching for in stack overflow}
