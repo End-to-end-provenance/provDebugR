@@ -6,7 +6,7 @@
 
 #'Initialization functions
 #'
-#'Intialize the package by running RDataTracker on a script
+#'Intialize the package by running rdt or rdtLite on a script
 #'and/or parsing provenance into a useable format.
 #'Debug.init must be run before anything else
 #'
@@ -18,11 +18,11 @@
 #'@export
 #'@examples
 #'\dontrun{
-#'debug.init() # if there RDataTracker has already run and
+#'debug.init() # if rdt or rdtLite has already run and
 #'there is provenance in memory
 #'debug.init("test.R")
 #'debug.init("prov.json")
-#'debug.init(prov.json()) # prov.json is an RDataTracker function
+#'debug.init(prov.json()) # prov.json is a function in rdt/rdtLite
 #'}
 debug.init <- function(input.data = NA, dir = NULL) {
   # If the warn option is not set to 1 the warnings in a user's script
@@ -56,32 +56,32 @@ debug.init <- function(input.data = NA, dir = NULL) {
 
   # Determine where to load prov.json and prov.run from
   loaded <- loadedNamespaces()
-  if ("provR" %in% loaded) {
-    tool <- "provr"
+  if ("rdtLite" %in% loaded) {
+    tool <- "rdtLite"
   }
-  else if ("RDataTracker" %in% loaded) {
+  else if ("rdt" %in% loaded) {
     tool <- "rdt"
   }
   else {
     installed <- utils::installed.packages ()
-    if ("provR" %in% installed) {
-      tool <- "provr"
+    if ("rdtLite" %in% installed) {
+      tool <- "rdtLite"
     }
-    else if ("RDataTracker" %in% installed) {
+    else if ("rdt" %in% installed) {
       tool <- "rdt"
     }
     else {
-      stop ("One of provR or RDataTracker must be installed.")
+      stop ("One of rdtLite or rdt must be installed.")
     }
   }
 
-  if (tool == "rdt" || tool == "rdatatracker") {
-    prov.run <- RDataTracker::prov.run
-    prov.json <- RDataTracker::prov.json
+  if (tool == "rdt") {
+    prov.run <- rdt::prov.run
+    prov.json <- rdt::prov.json
   }
   else {
-    prov.run <- provR::prov.run
-    prov.json <- provR::prov.json
+    prov.run <- rdtLite::prov.run
+    prov.json <- rdtLite::prov.json
   }
   
   
@@ -104,7 +104,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
                 error_condition,
                 "\nTo learn more run: \ndebug.error.trace() \n\n"))
     }, finally={
-      cat("RDataTracker is finished running \n")
+      cat(paste (tool, "is finished running \n"))
     })
     
     .debug.prov(prov.json(), is.file = F)
@@ -140,6 +140,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
 #' @return A list of unnested elements
 #'
 #' @name flatten.args
+#' @noRd
 .flatten.args <- function(...) {
   # This function is useless unless the adj.graph exists
   if(!.debug.env$has.graph) {

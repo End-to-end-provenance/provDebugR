@@ -16,16 +16,16 @@ provenance from memory, or nothing.}
 nothing
 }
 \description{
-Intialize the package by running RDataTracker on a script
+Intialize the package by running rdt or rdtLite on a script
 and/or parsing provenance into a useable format.
 Debug.init must be run before anything else
 }
 \examples{
 \dontrun{
-debug.init() # if there RDataTracker has already run and
+debug.init() # if rdt or rdtLite has already run and
 there is provenance in memory
 debug.init("test.R")
 debug.init("prov.json")
-debug.init(prov.json()) # prov.json is an RDataTracker function
+debug.init(prov.json()) # prov.json is a function in rdt/rdtLite
 }
 }

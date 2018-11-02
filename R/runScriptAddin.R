@@ -18,8 +18,8 @@
 #' # button is asssigned to a keyboard shortcut. 
 #' }
 run.script.addin <- function(input.path = NA) {
-  # The prov.dir is where the prov folder will be saved to when RDataTracker (RDT) runs.
-  # If the value is NULL a default directory is used by RDT, the dir the script resides in. 
+  # The prov.dir is where the prov folder will be saved to when rdt or rdtLite runs.
+  # If the value is NULL a default directory is used, the dir the script resides in. 
   # If the user chose to run on highlighted text, a modified version of the script will be 
   # saved in the tempdir and run. Which, by default, would cause the prov to be saved to
   # the tempdir. Therefore if they choose highlighted text, this variable will change to

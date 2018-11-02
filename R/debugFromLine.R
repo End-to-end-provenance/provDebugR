@@ -8,8 +8,8 @@
 #' @param state If FALSE, returns the references to variables on
 #' inputed line(s). If TRUE, returns the state of all variables up to
 #' that point in execution.
-#' @param script.num If 0, only examine variables from the main script.
-#' If 1 or higher, examine variables from further nested source scripts.
+#' @param script.num If 1, only examine variables from the main script.
+#' If 2 or higher, examine variables from further nested source scripts.
 #' @return A list of one data frame per line, containing information about
 #' the variables on that line. If no parameters were passed, returns a
 #' data frame containing the state of all variables at the end of execution.
@@ -21,7 +21,7 @@
 #' debug.from.line()
 #' }
 
-debug.from.line <- function(..., state = F, script.num = 0) {
+debug.from.line <- function(..., state = F, script.num = 1) {
 
   # Collect the arguments passed to the function
   args <- .flatten.args(...)
@@ -74,7 +74,7 @@ debug.from.line <- function(..., state = F, script.num = 0) {
   # Otherwise, call helper function .grab.line over each line input
   if (length(args) == 0) {
     print("State of all variables at end of execution:")
-    ret.val <- .grab.line(max(pos.line), state = T, script.num = 0)
+    ret.val <- .grab.line(max(pos.line), state = T, script.num = 1)
     return(ret.val)
   } else {
     ret.val <- lapply(args, .grab.line, state, script.num)
@@ -94,11 +94,12 @@ debug.from.line <- function(..., state = F, script.num = 0) {
 #' @param state Determines if the variable references on that line
 #' will be examined or the state of all variables up to that line's
 #' execution
-#' @param script.num If 0 examine only variables from the main script.
-#' If 1, examine variables from first nested source script.
+#' @param script.num If 1 examine only variables from the main script.
+#' If 2, examine variables from first nested source script.
 #'
 #' @return A data frame in the debug environemnt, which contains the
 #' columns var/code, val, type, and script. Each row is a variable.
+#' @noRd
 .grab.line <- function(lineNumber, state, script.num) {
 
   # Clear line.df for subsequent function calls
@@ -200,10 +201,11 @@ debug.from.line <- function(..., state = F, script.num = 0) {
 #' to a data frame in the debug environment.
 #' @name process.node
 #' @param node A character corresponding to a node name in the prov
-#' @param script.num If 0, examine only variables from the main script.
-#' If 1, examine variables from first nested source script.
+#' @param script.num If 1, examine only variables from the main script.
+#' If 2, examine variables from first nested source script.
 #'
 #' @return Nothing
+#' @noRd
 .process.node <- function(node, script.num) {
 
   # Extract data entity from procedure activity via procedure-to-data edges

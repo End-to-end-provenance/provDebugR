@@ -26,7 +26,7 @@ Imports:
   shiny, 
   stats
 Suggests:
-  provR, 
-  RDataTracker,
+  rdtLite, 
+  rdt,
   testthat
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.0
