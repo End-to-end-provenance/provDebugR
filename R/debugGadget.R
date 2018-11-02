@@ -147,7 +147,7 @@ debug.gadget <- function() {
     reactiveLine <- reactive({
       args <- unname(as.numeric(unlist(strsplit(input$lines, ","))))
       state <- as.logical(input$state)
-      debug.from.line(args, state = state, script = 0)
+      debug.from.line(args, state = state, script = 1)
     })
 
     output$lineValue <- renderPrint({

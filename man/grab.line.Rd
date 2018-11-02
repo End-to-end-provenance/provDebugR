@@ -17,8 +17,8 @@ user wants to examine}
 will be examined or the state of all variables up to that line's
 execution}
 
-\item{script.num}{If 0 examine only variables from the main script.
-If 1, examine variables from first nested source script.}
+\item{script.num}{If 1 examine only variables from the main script.
+If 2, examine variables from first nested source script.}
 }
 \value{
 A data frame in the debug environemnt, which contains the

@@ -108,7 +108,10 @@ debug.browser <- function() {
     # advances a line, or if a number is specified, advances
     # by the number of lines specified
     } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-      .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+      new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+      current.script <- new.info$new.script
+      proc.nodes <- new.info$new.nodes
+      pos.lines <- new.info$new.lines
       
     # moves "execution" to the end of the script
     } else if (input == "c") { 
@@ -120,12 +123,18 @@ debug.browser <- function() {
     # Moves back by the number of line specified by the user
     # If no lines are specified, moves back one line
     } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
-      .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+      new.info <- .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+      current.script <- new.info$new.script
+      proc.nodes <- new.info$new.nodes
+      pos.lines <- new.info$new.lines
       
     # This function will print the line that the "execution" is 
     # currently on or if they specify a number will jump to that line
     } else if (input == "s") {
-      .stepIn(var.env, current.script, pos.lines, proc.nodes, step.in)
+      new.info <- .stepIn(var.env, current.script, pos.lines, proc.nodes, step.in, scripts)
+      current.script <- new.info$new.script
+      proc.nodes <- new.info$new.nodes
+      pos.lines <- new.info$new.lines
       
     } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
       # Clear out the command, if a number is left then 
@@ -226,7 +235,7 @@ debug.browser <- function() {
   
   # The first line won't have any values 
   # unless some were present in environment beforehand
-  if((var.env$lineIndex == 1 | var.env$lineIndex == 0) & current.script == 0){
+  if((var.env$lineIndex == 1 | var.env$lineIndex == 0) & current.script == 1){
     # debug from line will return variables that were present pre-execution 
     # when state is true, but their script nubmer is NA, that's how it is 
     # possible to tell pre-execution variables
@@ -439,17 +448,15 @@ debug.browser <- function() {
     }
     
     # the main script doesn't appear in the sourced scripts vector
-    if(current.script == 0){
-      cat(paste(script.name), "\n", sep="")
-    } else {
-      cat(paste(scripts[current.script]), "\n", sep="")
-    }
+    cat(paste(scripts[current.script]), "\n", sep="")
     
     # "pop" the stack now that execution has jumped back to the previous script
     var.env$call.stack <- var.env$call.stack[-1]
   }
   
   .change.line(var.env, pos.lines, proc.nodes,  current.script)
+  
+  return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
 .moveBackward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
@@ -489,18 +496,14 @@ debug.browser <- function() {
       var.env$lineIndex <- 1
     }
     
-    #the main script doesn't appear in the sourced scripts vector
-    if(current.script == 0){
-      cat(paste(script.name), "\n", sep="")
-    } else {
-      cat(paste(scripts[current.script]), "\n", sep="")
-    }
+    cat(paste(scripts[current.script]), "\n", sep="")
     
     # "pop" the stack now that execution has jumped back to the previous script
     var.env$call.stack <- var.env$call.stack[-1]
   }
   
   .change.line(var.env, pos.lines, proc.nodes, current.script)
+  return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
 .stepIn <- function(var.env, current.script, pos.lines, proc.nodes, step.in, scripts) {
@@ -562,4 +565,6 @@ debug.browser <- function() {
     
     .change.line(var.env, pos.lines, proc.nodes,  current.script)
   }
+  
+  return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }

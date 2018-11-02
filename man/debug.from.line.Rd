@@ -13,8 +13,8 @@ debug.from.line(..., state = F, script.num = 1)
 inputed line(s). If TRUE, returns the state of all variables up to
 that point in execution.}
 
-\item{script.num}{If 0, only examine variables from the main script.
-If 1 or higher, examine variables from further nested source scripts.}
+\item{script.num}{If 1, only examine variables from the main script.
+If 2 or higher, examine variables from further nested source scripts.}
 }
 \value{
 A list of one data frame per line, containing information about

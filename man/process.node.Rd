@@ -12,8 +12,8 @@ to a data frame in the debug environment.}
 \arguments{
 \item{node}{A character corresponding to a node name in the prov}
 
-\item{script.num}{If 0, examine only variables from the main script.
-If 1, examine variables from first nested source script.}
+\item{script.num}{If 1, examine only variables from the main script.
+If 2, examine variables from first nested source script.}
 }
 \value{
 Nothing
