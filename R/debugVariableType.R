@@ -82,6 +82,7 @@ debug.variable.type <- function(..., just.logical = F) {
 #' @return A data frame that has each assignment statmenent of result as a row
 #'
 #' @name grab.instances
+#' @noRd
 .grab.instances <- function(result) {
   # The data nodes have all the information on the variables
   data.nodes <- provParseR::get.data.nodes(.debug.env$prov)

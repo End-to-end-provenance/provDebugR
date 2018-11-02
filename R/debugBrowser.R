@@ -207,6 +207,7 @@ debug.browser <- function() {
 #' @param current.script in the even of sourced scripts this will change to reflect the current
 #' @importFrom utils read.csv
 #' @return nothing
+#' @noRd
 #'
 .change.line <- function(var.env, pos.lines, proc.nodes, current.script) {
   
@@ -281,6 +282,8 @@ debug.browser <- function() {
 #' 
 #' @return nothing
 #'
+#' @noRd
+
 .clear.environment <- function(var.env) {
   temp.index <- var.env$lineIndex
   temp.stack <- var.env$call.stack

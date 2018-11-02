@@ -99,6 +99,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
 #'
 #' @return A data frame in the debug environemnt, which contains the
 #' columns var/code, val, type, and script. Each row is a variable.
+#' @noRd
 .grab.line <- function(lineNumber, state, script.num) {
 
   # Clear line.df for subsequent function calls
@@ -204,6 +205,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
 #' If 2, examine variables from first nested source script.
 #'
 #' @return Nothing
+#' @noRd
 .process.node <- function(node, script.num) {
 
   # Extract data entity from procedure activity via procedure-to-data edges

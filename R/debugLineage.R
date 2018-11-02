@@ -65,6 +65,7 @@ debug.lineage <- function(..., forward = F) {
 #' @return A data frame that contains the lineage of a variable.
 #' Each row is a line from the script with corresponding metadata,
 #' script #, line #, etc.
+#' @noRd
 .grab.lineage <- function(result, forward) {
   # The data nodes have all the information on the variables
   data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
@@ -110,6 +111,7 @@ debug.lineage <- function(..., forward = F) {
 #' script #, line #, etc.
 #'
 #' @name process.label
+#' @noRd
 .process.label <- function(label, proc.nodes, forward, assign.state = NA) {
   # Grab the nodes that have connections to the chosen node from the adj graph
   spine <- provGraphR::get.lineage(.debug.env$graph, label, forward)

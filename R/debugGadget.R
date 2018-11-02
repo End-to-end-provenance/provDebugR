@@ -228,6 +228,7 @@ debug.gadget <- function() {
 #'
 #' @return A list of shiny tags, or functions that parallel common 
 #' HTML tags, representing each UI element argument.
+#' @noRd
 .stableColumnLayout <- function(...) {
   dots <- list(...)
   n <- length(dots)

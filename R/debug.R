@@ -140,6 +140,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
 #' @return A list of unnested elements
 #'
 #' @name flatten.args
+#' @noRd
 .flatten.args <- function(...) {
   # This function is useless unless the adj.graph exists
   if(!.debug.env$has.graph) {

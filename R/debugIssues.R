@@ -170,6 +170,7 @@ debug.warning.trace <- function(...) {
 #' @param error.message a character vector to be cleaned
 #' @name process.error
 #' @return character
+#' @noRd
 .process.error <- function(error.message) {
 
   split <- strsplit(error.message, ":")[[1]]
