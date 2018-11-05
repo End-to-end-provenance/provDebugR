@@ -16,7 +16,7 @@ Installation of all required packages (can be copied and pasted):
 ```{r}
 devtools::install_github("ProvTools/provParseR")
 devtools::install_github("jwons/provGraphR")
-devtools::install_github("End-to-end-provenance/RDataTracker", ref = "development")
+devtools::install_github("End-to-end-provenance/rdtLite")
 devtools::install_github("ProvTools/provDebugR")
 ```
 This package also imports:

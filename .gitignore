@@ -3,3 +3,6 @@
 .RData
 *ddg
 df1.csv
+/.project
+provDebugR.Rcheck
+*.tar.gz

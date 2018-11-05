@@ -17,12 +17,12 @@
 debug.from.type <- function(var, type) {
 
   # Load data from parser
-  data.nodes <- get.data.nodes()
-  proc.nodes <- get.proc.nodes()
-  proc.data <- get.proc.data()
-
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
+  proc.data <- provParseR::get.proc.data(.debug.env$prov)
+  
   # Find variable entities
-  labels <- data.nodes[data.nodes$name == var, "label"]
+  labels <- data.nodes[data.nodes$name == var, "id"]
 
   # Extract type information
   var.types <- data.nodes[data.nodes$name == var, "valType"]
@@ -47,8 +47,8 @@ debug.from.type <- function(var, type) {
     label.rows <- lapply(labels, function(label) {
     # Get line number and code from corresponding procedure node
       proc.node <- proc.data[proc.data$entity == label, "activity"]
-      line <- proc.nodes[proc.nodes$label == proc.node, "startLine"]
-      name <- proc.nodes[proc.nodes$label == proc.node, "name"]
+      line <- proc.nodes[proc.nodes$id == proc.node, "startLine"]
+      name <- proc.nodes[proc.nodes$id == proc.node, "name"]
 
       label.row <- c(line, name)
     })

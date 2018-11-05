@@ -25,7 +25,7 @@ debug.variable.type <- function(..., just.logical = F) {
 
   # Collect possible results the user could ask for
   # Remove any rows that aren't variables
-  pos.vars <- get.data.nodes()
+  pos.vars <- provParseR::get.data.nodes(.debug.env$prov)
   pos.vars <- pos.vars[pos.vars$type == "Data" | pos.vars$type == "Snapshot", ]
   pos.vars <- as.list(unique(pos.vars$name))
 
@@ -82,20 +82,21 @@ debug.variable.type <- function(..., just.logical = F) {
 #' @return A data frame that has each assignment statmenent of result as a row
 #'
 #' @name grab.instances
+#' @noRd
 .grab.instances <- function(result) {
   # The data nodes have all the information on the variables
-  data.nodes <- get.data.nodes()
-  proc.nodes <- get.proc.nodes()
-  proc.data <- get.proc.data()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
+  proc.data <- provParseR::get.proc.data(.debug.env$prov)
 
   # These data node are the rows that math with the provided result
   res.dat.nodes <- data.nodes[data.nodes$name == result, ]
 
   # These procedure labels are those that have connections with the chosen result nodes
-  res.proc.labels <- proc.data[proc.data$entity %in% res.dat.nodes$label, ]$activity
+  res.proc.labels <- proc.data[proc.data$entity %in% res.dat.nodes$id, ]$activity
 
   # These procedure nodes are the ones that have connections with the chosen result nodes
-  res.proc.rows <- proc.nodes[proc.nodes$label %in% res.proc.labels, ]
+  res.proc.rows <- proc.nodes[proc.nodes$id %in% res.proc.labels, ]
 
   # Now that the data and procedure nodes have been narrowed down to only the
   # requested information, the information that will be provided to the user

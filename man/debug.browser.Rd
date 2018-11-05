@@ -2,7 +2,7 @@
 % Please edit documentation in R/debugBrowser.R
 \name{debug.browser}
 \alias{debug.browser}
-\title{Interactive post-mortem script browser}
+\title{Interactive time traveling script browser}
 \usage{
 debug.browser()
 }

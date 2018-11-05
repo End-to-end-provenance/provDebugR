@@ -1,6 +1,7 @@
-context("Debugging Variable Type")
-
 library(provDebugR)
+library (testthat)
+
+context("Debugging Variable Type")
 
 test.data <- system.file("testdata", "test.json", package = "provDebugR")
 debug.init(test.data)
@@ -22,6 +23,8 @@ test_that("possible results can be grabbed", {
 
 test_that("all variables can be queried", {
   variable.results <- debug.variable.type(debug.variable.type())
+  print ("variable.results")
+  print (variable.results)
   expect_equal(length(variable.results), 12)
   expect_equal(variable.results$x$line[[1]], "1")
   expect_match(variable.results$y$type[[1]], "numeric")

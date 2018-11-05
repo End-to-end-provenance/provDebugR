@@ -14,6 +14,7 @@
 #' \dontrun{
 #' debug.search("object not found")
 #' }
+#' @noRd
 .debug.search <- function(search.query, order = "desc",
                     sort = "votes", tagged = "r") {
 

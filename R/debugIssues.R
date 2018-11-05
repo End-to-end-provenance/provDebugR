@@ -27,7 +27,7 @@ debug.error.trace <- function(stack.overflow = F) {
   # and there can only be one we can grab the message to
   # print to the user and if it doesn't exist then we can
   # return gracefully after telling them
-  data.nodes <- get.data.nodes()
+  data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
   message <- data.nodes[data.nodes$name == "error.msg", ]$value
 
   if(length(message) > 0){
@@ -106,15 +106,15 @@ debug.warning.trace <- function(...) {
   args <- .flatten.args(...)
 
   # Grab all the warning rows from the provenance
-  pos.vars <- get.data.nodes()
+  pos.vars <- provParseR::get.data.nodes(.debug.env$prov)
   pos.vars <- pos.vars[pos.vars$name == "warning.msg", ]
-
+  
   if(nrow(pos.vars) == 0){
     cat("There were no warnings in this script!")
   } else {
     row.names(pos.vars) <- 1:nrow(pos.vars)
 
-    node.labels <- as.list(pos.vars$label)
+    node.labels <- as.list(pos.vars$id)
 
     # Extract the warning messages to display to the user
     # as options, the length will help determine whether or
@@ -137,7 +137,7 @@ debug.warning.trace <- function(...) {
     # Any non-valid inputs will be removed as the list is subset
     # by logicals, TRUE corresponding to valid inputs
     args <- args[unlist(pos.args)]
-
+    
     # If they did not pass any arguments to the function
     # then print the possible arguments they can input
     if (length(args) == 0) {
@@ -149,13 +149,13 @@ debug.warning.trace <- function(...) {
     } else {
       # The procedure nodes are used in the .proccess.label fucntion
       # to find script and line numbers and code
-      proc.nodes <- get.proc.nodes()
+      proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
 
       # Each of the chosen warning message needs to be processed,
       dfs <- lapply(args, function(arg){
-        .process.label(pos.vars[arg, ]$label, proc.nodes, forward = F)
+        .process.label(pos.vars[arg, ]$id, proc.nodes, forward = F)
       })
-
+  
       return(dfs)
     }
   }
@@ -170,6 +170,7 @@ debug.warning.trace <- function(...) {
 #' @param error.message a character vector to be cleaned
 #' @name process.error
 #' @return character
+#' @noRd
 .process.error <- function(error.message) {
 
   split <- strsplit(error.message, ":")[[1]]
