@@ -14,10 +14,10 @@ install.packages("devtools")
 ```
 Installation of all required packages (can be copied and pasted):
 ```{r}
-devtools::install_github("ProvTools/provParseR")
-devtools::install_github("jwons/provGraphR")
+devtools::install_github("End-to-end-provenance/provParseR")
+devtools::install_github("End-to-end-provenance/provGraphR")
 devtools::install_github("End-to-end-provenance/rdtLite")
-devtools::install_github("ProvTools/provDebugR")
+devtools::install_github("End-to-end-provenance/provDebugR")
 ```
 This package also imports:
 * jsonlite
