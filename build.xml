@@ -29,6 +29,12 @@
 		</exec>
     </target>
     
+    <target name="install-no-check" depends="build">
+        <exec executable="R" >
+  			<arg line="CMD INSTALL ${tarfile}"/>
+		</exec>
+    </target>
+    
     <target name="cran-check" depends="build">
     	<exec executable="R" >
     		<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>

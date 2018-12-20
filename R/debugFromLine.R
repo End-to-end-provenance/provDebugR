@@ -132,14 +132,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
     # and seeing if there's another proc node attached (via proc-to-data edges)
     ref.nodes <- unlist(lapply(nodes, function(node) {
       ref.entity <- .debug.env$data.proc.edges[.debug.env$data.proc.edges$activity == node, "entity"]
-      ref.node <- NA
-      if (length(ref.entity) != 0) {
-        ref.node <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$entity == ref.entity, "activity"]
-        if(length(ref.node) == 0){
-          ref.node <- ref.entity
-        }
-      }
-      return(ref.node)
+      return (ref.entity)
     }))
     nodes <- c(nodes, ref.nodes)
     nodes <- nodes[!is.na(nodes)]
@@ -149,7 +142,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
 
     # Name columns and rows
     colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
-    rownames(.debug.env$line.df) <- c(1:length(nodes))
+    rownames(.debug.env$line.df) <- c(1:nrow(.debug.env$line.df))
 
     return(.debug.env$line.df)
 
@@ -186,8 +179,8 @@ debug.from.line <- function(..., state = F, script.num = 1) {
       # Find number of preceding data nodes
       # Subset that out of data.nodes
       rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
-      rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$id == entity, ])
-      nodes <- .debug.env$data.nodes["1":rnum[1], "id"]
+      rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, ])
+      nodes <- .debug.env$data.nodes["1":rnum[length(rnum)], "id"]
       
       # Account for duplicates by removing all but the tail
       node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
@@ -230,16 +223,16 @@ debug.from.line <- function(..., state = F, script.num = 1) {
   # For state, argument will be data node
   if (grepl("p", node)) {
     # entity will be character(0) if there's no corresponding data node
-    entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
+    entities <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
     script <- script.num
   } else if (grepl("d", node)) {
-    entity <- node
-    entity.activity <- provParseR::get.proc.data(.debug.env$prov)[provParseR::get.proc.data(.debug.env$prov)$entity == entity, "activity"]
+    entities <- node
+    entities.activity <- provParseR::get.proc.data(.debug.env$prov)[provParseR::get.proc.data(.debug.env$prov)$entity == entities, "activity"]
     
     # If there is no entity.activity then the variable came from envir before script ran
     # In this case there is no script #, populate with NA to indicate this
-    if(length(entity.activity > 0)){
-      script <- provParseR::get.proc.nodes(.debug.env$prov)[provParseR::get.proc.nodes(.debug.env$prov)$id == entity.activity, "scriptNum"]
+    if(length(entities.activity > 0)){
+      script <- provParseR::get.proc.nodes(.debug.env$prov)[provParseR::get.proc.nodes(.debug.env$prov)$id == entities.activity, "scriptNum"]
     } else {
       script <- NA
     }
@@ -248,36 +241,47 @@ debug.from.line <- function(..., state = F, script.num = 1) {
 
   # Initialize variables to be returned
   val <- var <- type <- NULL
-  if (length(entity) == 0) {
+  if (length(entities) == 0) {
 
     # For state, val and type don't exist
     val <- container <- dim <- type <- NA
 
     # Set var to the code on the line (name in proc.nodes)
     var <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == node, "name"]
+    
+    # Combine all info into a row
+    # Append that row to the data frame in the environment
+    line.row <- c(var, val, container, dim, type, script)
+    .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
+    
 
   } else {
-
-    # Var is entity name
-    var <- .debug.env$data.nodes[.debug.env$data.nodes$id == entity, "name"]
-
-    # Val is entity value
-    val <- .debug.env$data.nodes[.debug.env$data.nodes$id == entity, "value"]
-
-    # Type is string parsed from entity valType
-    val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$id == entity, "valType"])
+    lapply (entities, function (entity) {
+  
+        # Var is entity name
+        var <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "name"]
     
-    container <- val.type$container
+        # Val is entity value
+        val <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "value"]
     
-    # JSON formatted so that we can put a list in a single element of a data frame
-    dim <- paste(val.type$dimension, collapse = ",")
-    type <- paste("{ \"type\" : [",
-                  paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
-                  , "]}")
+        # Type is string parsed from entity valType
+        val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "valType"])
+        
+        container <- val.type$container
+        
+        # JSON formatted so that we can put a list in a single element of a data frame
+        dim <- paste(val.type$dimension, collapse = ",")
+        type <- paste("{ \"type\" : [",
+                      paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
+                      , "]}")
+                  
+        # Combine all info into a row
+        line.row <- c(var, val, container, dim, type, script)
+        
+        # Append the new rows to the data frame in the environment        
+        .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
+      })
+      
   }
-
-  # Combine all info into a row
-  # Append that row to the data frame in the environment
-  line.row <- c(var, val, container, dim, type, script)
-  .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
+  
 }

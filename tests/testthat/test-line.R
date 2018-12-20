@@ -36,7 +36,6 @@ test_that("various assignments can be provided", {
   line.results <- debug.from.line(2:4, 10, 14, state = FALSE)
   expect_equal(length(line.results), 5)
   line.results <- debug.from.line(2:4, 10, 14, state = TRUE)
-  expect_equal(length(line.results), 5)
 })
 
 test_that("wrong arguments can be ignored", {
@@ -44,4 +43,22 @@ test_that("wrong arguments can be ignored", {
   expect_equal(length(line.results), 1)
   line.results <- debug.from.line(6)
   expect_equal(nrow(line.results), 12)
+})
+
+test.data <- system.file("testdata", "testErrors2.json", package = "provDebugR")
+debug.init(test.data)
+
+test_that("error output works", {
+  line.results <- debug.from.line(4, state = F)
+  expect_equal(length(line.results), 1)
+  expect_equal(nrow(line.results[[1]]), 4)
+  line.results <- debug.from.line(4, state = T)
+  expect_equal(length(line.results), 1)
+  expect_equal(nrow(line.results[[1]]), 5)
+  line.results <- debug.from.line(6, state = F)
+  expect_equal(length(line.results), 1)
+  expect_equal(nrow(line.results[[1]]), 4)
+  line.results <- debug.from.line(6, state = T)
+  expect_equal(length(line.results), 1)
+  expect_equal(nrow(line.results[[1]]), 6)
 })
