@@ -1,0 +1,413 @@
+{
+	"prefix": {
+		"prov": "http://www.w3.org/ns/prov#",
+		"rdt": "https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md"
+	},
+
+	"agent" : {
+		// agent: this json file and the tool that produced this
+		"rdt:a1": {
+			"rdt:tool.name": "rdtLite",
+			"rdt:tool.version": "1.0.3",
+			"rdt:json.version": "2.1"
+		}
+	},
+
+	"activity" : {
+		// procedure nodes
+		"rdt:p1": {
+			"rdt:name": "testErrors2.R",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": 34.849,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"rdt:p2": {
+			"rdt:name": "w <- 4:6",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 34.859,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 1,
+			"rdt:endCol": 8
+		},
+		"rdt:p3": {
+			"rdt:name": "x <- 1:3",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 34.867,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 2,
+			"rdt:startCol": 1,
+			"rdt:endLine": 2,
+			"rdt:endCol": 8
+		},
+		"rdt:p4": {
+			"rdt:name": "y <- 1:10",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 34.873,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 3,
+			"rdt:startCol": 1,
+			"rdt:endLine": 3,
+			"rdt:endCol": 9
+		},
+		"rdt:p5": {
+			"rdt:name": "z <- w + y",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 34.88,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 4,
+			"rdt:startCol": 1,
+			"rdt:endLine": 4,
+			"rdt:endCol": 10
+		},
+		"rdt:p6": {
+			"rdt:name": "y <- c(\"a\", \"b\", \"c\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 34.89,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 5,
+			"rdt:startCol": 1,
+			"rdt:endLine": 5,
+			"rdt:endCol": 21
+		},
+		"rdt:p7": {
+			"rdt:name": "xyz <- data.frame(x, y, z)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": 34.896,
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 6,
+			"rdt:startCol": 1,
+			"rdt:endLine": 6,
+			"rdt:endCol": 27
+		},
+		"rdt:p8": {
+			"rdt:name": "testErrors2.R",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": 34.914,
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		}
+	},
+
+	"entity" : {
+		// data nodes
+		"rdt:d1": {
+			"rdt:name": "warning.msg",
+			"rdt:value": "In  w + y :  longer object length is not a multiple of shorter object length",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d2": {
+			"rdt:name": "w",
+			"rdt:value": "4 5 6",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[3], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d3": {
+			"rdt:name": "x",
+			"rdt:value": "1 2 3",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[3], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d4": {
+			"rdt:name": "y",
+			"rdt:value": " 1  2  3  4  5  6  7  8  9 10",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d5": {
+			"rdt:name": "warning.msg",
+			"rdt:value": "In  w + y :  longer object length is not a multiple of shorter object length",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d6": {
+			"rdt:name": "z",
+			"rdt:value": " 5  7  9  8 10 12 11 13 15 14",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d7": {
+			"rdt:name": "y",
+			"rdt:value": "\"a\" \"b\" \"c\"",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[3], \"type\":[\"character\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d8": {
+			"rdt:name": "error.msg",
+			"rdt:value": "Error in data.frame(x, y, z): arguments imply differing number of rows: 3, 10\n",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d9": {
+			"rdt:name": "dev.off.9.pdf",
+			"rdt:value": "data/9-dev.off.9.pdf",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "9bad5004d63020e7b2d8cd9ead2901ef",
+			"rdt:timestamp": "2018-12-20T15.39.04EST",
+			"rdt:location": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testdata/dev.off.9.pdf"
+		},
+
+		// environment
+		"rdt:environment": {
+			"rdt:name": "environment",
+			"rdt:architecture": "x86_64",
+			"rdt:operatingSystem": "darwin15.6.0",
+			"rdt:language": "R",
+			"rdt:langVersion": "R version 3.5.1 (2018-07-02)",
+			"rdt:script": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testdata/testErrors2.R",
+			"rdt:scriptTimeStamp": "2018-12-20T15.37.57EST",
+			"rdt:sourcedScripts": "",
+			"rdt:sourcedScriptTimeStamps": "",
+			"rdt:workingDirectory": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testdata",
+			"rdt:provDirectory": "~/tmp/prov/prov_testErrors2",
+			"rdt:provTimestamp": "2018-12-20T15.39.03EST",
+			"rdt:hashAlgorithm": "md5"
+		},
+
+		// library nodes - prov collections
+		"rdt:l1": {
+			"name": "archivist",
+			"version": "2.3.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l2": {
+			"name": "base",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l3": {
+			"name": "datasets",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l4": {
+			"name": "ggplot2",
+			"version": "3.0.0",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l5": {
+			"name": "graphics",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l6": {
+			"name": "grDevices",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l7": {
+			"name": "methods",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l8": {
+			"name": "provDebugR",
+			"version": "0.1.2.9000",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l9": {
+			"name": "provViz",
+			"version": "1.0.3",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l10": {
+			"name": "rdtLite",
+			"version": "1.0.3",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l11": {
+			"name": "stats",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l12": {
+			"name": "utils",
+			"version": "3.5.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		}
+	},
+
+	"wasInformedBy" : {
+		// procedure-to-procedure edges
+		"rdt:pp1": {
+			"prov:informant": "rdt:p1",
+			"prov:informed": "rdt:p2"
+		},
+		"rdt:pp2": {
+			"prov:informant": "rdt:p2",
+			"prov:informed": "rdt:p3"
+		},
+		"rdt:pp3": {
+			"prov:informant": "rdt:p3",
+			"prov:informed": "rdt:p4"
+		},
+		"rdt:pp4": {
+			"prov:informant": "rdt:p4",
+			"prov:informed": "rdt:p5"
+		},
+		"rdt:pp5": {
+			"prov:informant": "rdt:p5",
+			"prov:informed": "rdt:p6"
+		},
+		"rdt:pp6": {
+			"prov:informant": "rdt:p6",
+			"prov:informed": "rdt:p7"
+		},
+		"rdt:pp7": {
+			"prov:informant": "rdt:p7",
+			"prov:informed": "rdt:p8"
+		}
+	},
+
+	"wasGeneratedBy" : {
+		// procedure-to-data edges
+		"rdt:pd1": {
+			"prov:activity": "rdt:p2",
+			"prov:entity": "rdt:d1"
+		},
+		"rdt:pd2": {
+			"prov:activity": "rdt:p2",
+			"prov:entity": "rdt:d2"
+		},
+		"rdt:pd3": {
+			"prov:activity": "rdt:p3",
+			"prov:entity": "rdt:d3"
+		},
+		"rdt:pd4": {
+			"prov:activity": "rdt:p4",
+			"prov:entity": "rdt:d4"
+		},
+		"rdt:pd5": {
+			"prov:activity": "rdt:p5",
+			"prov:entity": "rdt:d5"
+		},
+		"rdt:pd6": {
+			"prov:activity": "rdt:p5",
+			"prov:entity": "rdt:d6"
+		},
+		"rdt:pd7": {
+			"prov:activity": "rdt:p6",
+			"prov:entity": "rdt:d7"
+		},
+		"rdt:pd8": {
+			"prov:activity": "rdt:p7",
+			"prov:entity": "rdt:d8"
+		},
+		"rdt:pd9": {
+			"prov:activity": "rdt:p8",
+			"prov:entity": "rdt:d9"
+		}
+	},
+
+	"used" : {
+		// data-to-procedure edges
+		"rdt:dp1": {
+			"prov:entity": "rdt:d2",
+			"prov:activity": "rdt:p5"
+		},
+		"rdt:dp2": {
+			"prov:entity": "rdt:d4",
+			"prov:activity": "rdt:p5"
+		},
+		"rdt:dp3": {
+			"prov:entity": "rdt:d3",
+			"prov:activity": "rdt:p7"
+		},
+		"rdt:dp4": {
+			"prov:entity": "rdt:d7",
+			"prov:activity": "rdt:p7"
+		},
+		"rdt:dp5": {
+			"prov:entity": "rdt:d6",
+			"prov:activity": "rdt:p7"
+		}
+	}
+}
