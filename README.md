@@ -14,10 +14,10 @@ install.packages("devtools")
 ```
 Installation of all required packages (can be copied and pasted):
 ```{r}
-devtools::install_github("ProvTools/provParseR")
-devtools::install_github("jwons/provGraphR")
+devtools::install_github("End-to-end-provenance/provParseR")
+devtools::install_github("End-to-end-provenance/provGraphR")
 devtools::install_github("End-to-end-provenance/rdtLite")
-devtools::install_github("ProvTools/provDebugR")
+devtools::install_github("End-to-end-provenance/provDebugR")
 ```
 This package also imports:
 * jsonlite
@@ -54,7 +54,7 @@ To find out more about what each function does, [refer to the Wiki!](https://git
 ```{r}
 debug.init(input.data)
 debug.variable.type(..., just.logical = F)
-debug.from.type(variable, type)
+debug.from.type(variable, type) -- ***GOING TO BE REMOVED***
 debug.from.line(..., state = F) 
 debug.lineage(..., forward = F) 
 debug.error.trace(stack.overflow = F)
