@@ -257,10 +257,9 @@ debug.from.line <- function(..., state = F, script.num = 1) {
 
   } else {
     lapply (entities, function (entity) {
-  
         # Var is entity name
         var <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "name"]
-    
+        
         # Val is entity value
         val <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "value"]
     
