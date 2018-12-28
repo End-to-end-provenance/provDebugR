@@ -125,7 +125,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
   if (!state) { # REFERENCE - all variables referenced on the line
 
     # Find procedure nodes with the inputted line number
-    nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "id"]
+    nodes <- .debug.env$proc.nodes[!is.na(.debug.env$proc.nodes$startLine) & .debug.env$proc.nodes$startLine == lineNumber, "id"]
 
     # Add to list of nodes those that are referenced on the line
     # by finding their corresponding data node (via data-to-proc edges)
@@ -149,7 +149,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
   } else { # STATE - state of all variables up to that line in execution
 
     # Find procedure nodes with the inputted line number
-    node <- .debug.env$proc.nodes[.debug.env$proc.nodes$startLine == lineNumber, "id"]
+    node <- .debug.env$proc.nodes[!is.na(.debug.env$proc.nodes$startLine) & .debug.env$proc.nodes$startLine == lineNumber, "id"]
 
     # Extract data entity from procedure activity via procedure-to-data edges
     entity <- .debug.env$proc.data.edges[.debug.env$proc.data.edges$activity == node, "entity"]
@@ -183,7 +183,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
       nodes <- .debug.env$data.nodes["1":rnum[length(rnum)], "id"]
       
       # Account for duplicates by removing all but the tail
-      node.names <- .debug.env$data.nodes[.debug.env$data.nodes == nodes, "name"]
+      node.names <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% nodes, "name"]
       temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
       nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
       

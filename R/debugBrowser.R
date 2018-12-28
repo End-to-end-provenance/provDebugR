@@ -91,10 +91,9 @@ debug.browser <- function() {
   #Each line will print the code for the line
   cat(paste(pos.lines[var.env$lineIndex],
             ": ",
-            proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
+            proc.nodes[!is.na(proc.nodes$startLine) & proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
             "\n",
             sep=""))
-  
 
   # Loads variables that may have been present before the script started into 
   # the recontructed environment
@@ -164,7 +163,7 @@ debug.browser <- function() {
         #Each line will print the code for the line
         cat(paste(pos.lines[var.env$lineIndex],
                   ": ",
-                  proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
+                  proc.nodes[!is.na (proc.nodes$startLine) & proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
                   "\n",
                   sep=""))
       }
@@ -247,7 +246,7 @@ debug.browser <- function() {
     # the line of code 
     cat(paste(pos.lines[var.env$lineIndex],
               ": ",
-              proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
+              proc.nodes[!is.na(proc.nodes$startLine) & proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
               "\n",
               sep=""))
   }
