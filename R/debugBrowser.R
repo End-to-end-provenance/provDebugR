@@ -448,7 +448,13 @@ load.variable <- function(row, var.env, load.env){
           if (row["dim"][[1]] > 1) strsplit (trimws (row["val"][[1]]), " +")
           else row["val"][[1]]
       type <- jsonlite::fromJSON(row["type"])$type
-      coerced.values <- lapply (values, function (value) methods::as(value, type))
+      coerced.values <- 
+          lapply (values, 
+              function (value) {
+                coerced <- methods::as(value, type)
+                if (is.na (coerced)) return (value)
+                return (coerced)
+              })
       if (row[["container"]] == "vector") {
         assign(row["var/code"][[1]], as.vector (coerced.values), envir = var.env)
       }
