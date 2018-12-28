@@ -266,13 +266,19 @@ debug.from.line <- function(..., state = F, script.num = 1) {
         # Type is string parsed from entity valType
         val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "valType"])
         
-        container <- val.type$container
+        if (is.null (val.type)) {
+          container <- dim <- type <- NULL
+        }
+        else {
         
-        # JSON formatted so that we can put a list in a single element of a data frame
-        dim <- paste(val.type$dimension, collapse = ",")
-        type <- paste("{ \"type\" : [",
-                      paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
-                      , "]}")
+          container <- val.type$container
+          
+          # JSON formatted so that we can put a list in a single element of a data frame
+          dim <- paste(val.type$dimension, collapse = ",")
+          type <- paste("{ \"type\" : [",
+                        paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
+                        , "]}")
+        }
                   
         # Combine all info into a row
         line.row <- c(var, val, container, dim, type, script)

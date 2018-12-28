@@ -435,18 +435,20 @@ load.variable <- function(row, var.env, load.env){
 
     #If the data is not a snapshot it can be loaded directly into the variable env
   } else {
-    type <- jsonlite::fromJSON(row["type"])$type
     
     # ... indicates a partial value; don't try to coerce to the actual type
     if (endsWith (row["val"][[1]], "...")) {
+      print ("Found ...")
       assign(row["var/code"][[1]], row["val"][[1]], envir = var.env)
     }
     
     # vectors and lists might have the entire value, so coerce
     else if (row[["container"]] %in% c("vector", "list")) {
+      print ("Found vector or list")
       values <- 
           if (row["dim"][[1]] > 1) strsplit (trimws (row["val"][[1]]), " +")
           else row["val"][[1]]
+      type <- jsonlite::fromJSON(row["type"])$type
       coerced.values <- lapply (values, function (value) methods::as(value, type))
       if (row[["container"]] == "vector") {
         assign(row["var/code"][[1]], as.vector (coerced.values), envir = var.env)
