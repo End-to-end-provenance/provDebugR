@@ -329,6 +329,7 @@ debug.browser <- function() {
 
 load.variable <- function(row, var.env, load.env){
   if (is.na(row["val"][[1]])){
+    assign(row["var/code"][[1]], NA , envir = var.env)
     return()
   }
 
