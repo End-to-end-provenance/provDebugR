@@ -438,13 +438,11 @@ load.variable <- function(row, var.env, load.env){
     
     # ... indicates a partial value; don't try to coerce to the actual type
     if (endsWith (row["val"][[1]], "...")) {
-      print ("Found ...")
       assign(row["var/code"][[1]], row["val"][[1]], envir = var.env)
     }
     
     # vectors and lists might have the entire value, so coerce
     else if (row[["container"]] %in% c("vector", "list")) {
-      print ("Found vector or list")
       values <- 
           if (row["dim"][[1]] > 1) strsplit (trimws (row["val"][[1]]), " +")
           else row["val"][[1]]

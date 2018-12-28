@@ -217,7 +217,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
 #' @return Nothing
 #' @noRd
 .process.node <- function(node, script.num) {
-
+  
   # Extract data entity from procedure activity via procedure-to-data edges
   # For reference, argument will be proc node
   # For state, argument will be data node
@@ -264,10 +264,20 @@ debug.from.line <- function(..., state = F, script.num = 1) {
         val <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "value"]
     
         # Type is string parsed from entity valType
-        val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "valType"])
+        valType <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "valType"]
+        val.type <- tryCatch (
+            jsonlite::fromJSON(valType),
+            error = function (e) valType
+        )
         
         if (is.null (val.type)) {
+          # This happens if the value is NULL
           container <- dim <- type <- NULL
+        }
+        else if (!is.list (val.type)) {
+          # This happens if the valType is an object, like POSIXct
+          container <- dim <- NULL
+          type <- val.type
         }
         else {
         
