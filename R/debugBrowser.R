@@ -445,17 +445,29 @@ load.variable <- function(row, var.env, load.env){
     
     # vectors and lists might have the entire value, so coerce
     else if (row[["container"]] %in% c("vector", "list")) {
-      values <- 
-          if (row["dim"][[1]] > 1) strsplit (trimws (row["val"][[1]]), " +")
-          else row["val"][[1]]
-      type <- jsonlite::fromJSON(row["type"])$type
-      coerced.values <- 
-          lapply (values, 
-              function (value) {
-                coerced <- methods::as(value, type)
-                if (is.na (coerced)) return (value)
-                return (coerced)
-              })
+      if (row["dim"][[1]] == 0) {
+        # An empty vector or list is stored as a string, like "integer(0)" so don't
+        # try to coerce to an integer
+        type <- jsonlite::fromJSON(row["type"])$type
+        coerced.values <- 
+          if (row[["container"]] == "vector") vector (mode=type)
+          else list()
+      }
+      else {
+        values <- 
+            if (row["dim"][[1]] > 1) strsplit (trimws (row["val"][[1]]), " +")[[1]]
+            else row["val"][[1]]
+        type <- jsonlite::fromJSON(row["type"])$type
+        coerced.values <-
+            # Remove starting and ending \" for strings
+          if (type == "character") sub ("\\\"$", "", sub ("^\\\"", "", values))
+          else methods::as(values, type)
+
+        if (length(coerced.values) == 1 && is.na (coerced.values)) {
+          coerced.values <- values
+        }
+      }
+      
       if (row[["container"]] == "vector") {
         assign(row["var/code"][[1]], as.vector (coerced.values), envir = var.env)
       }
