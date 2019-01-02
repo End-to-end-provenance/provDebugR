@@ -348,9 +348,10 @@ load.variable <- function(row, var.env, load.env){
     # The file ext indicates what type of data will be stored and how to 
     # read it back in for the user, the file name is also used to complete
     # the path to the final file
-    file.parts <- strsplit(row["val"][[1]], "\\.")
+    file.name <- row["val"][[1]]
+    file.parts <- strsplit(file.name, "\\.")
     file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
-    file.name <- file.parts[[1]][1]
+    file.name <- sub (paste0(".", file.ext, "$"), "", file.name)
     
     # A text file means that the data has been stored as an RObject
     # this can be loaded back in simply using load()
