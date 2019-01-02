@@ -481,7 +481,7 @@
 			"rdt:sourcedScripts": "test3.R",
 			"rdt:sourcedScriptTimeStamps": null,
 			"rdt:workingDirectory": "/Users/Wonsil/Documents/Harvard Forest/provDebugR",
-			"rdt:ddgDirectory": "inst/testdata/testScript_ddg",
+			"rdt:provDirectory": "inst/testdata/testScript_ddg",
 			"rdt:ddgTimeStamp": "2018-06-27T13.57.50EDT",
 			"rdt:rdatatrackerVersion": "2.27.0",
 			"rdt:hashAlgorithm": "md5"
