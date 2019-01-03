@@ -166,6 +166,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
       }
       node <- all.proc.nodes[new.node.index, "id"]
       entity <- all.proc.data[all.proc.data$activity == node, "entity"]
+      
       if(new.node.index == 1 & length(entity) == 0)
       {
         break
@@ -180,19 +181,29 @@ debug.from.line <- function(..., state = F, script.num = 1) {
       # Subset that out of data.nodes
       rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
       rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, ])
-      nodes <- .debug.env$data.nodes["1":rnum[length(rnum)], "id"]
       
-      # Account for duplicates by removing all but the tail
-      node.names <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% nodes, "name"]
-      temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
-      nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
-      
-      # Create row for each variable on the line, then rbind into a data frame
-      lapply(nodes, .process.node, script.num)
-      
-      # Name columns and rows
-      colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
-      rownames(.debug.env$line.df) <- c(1:length(nodes))
+      # This can happen if the only outputs are files
+      if (length(rnum) == 0) {
+        .debug.env$line.df <- rbind(rep(NA, 6))
+        # Name columns and rows
+        colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
+        rownames(.debug.env$line.df) <- c(1:nrow(.debug.env$line.df))
+      }
+      else {
+        nodes <- .debug.env$data.nodes["1":rnum[length(rnum)], "id"]
+        
+        # Account for duplicates by removing all but the tail
+        node.names <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% nodes, "name"]
+        temp.df <- cbind(as.data.frame(nodes, stringsAsFactors = FALSE), node.names, stringsAsFactors = FALSE)
+        nodes <- temp.df[!duplicated(temp.df$node.names, fromLast = T), "nodes"]
+        
+        # Create row for each variable on the line, then rbind into a data frame
+        lapply(nodes, .process.node, script.num)
+        
+        # Name columns and rows
+        colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
+        rownames(.debug.env$line.df) <- c(1:length(nodes))
+      }
     #If entity was 0, populate a data frame with NAs 
     } else {
       .debug.env$line.df <- rbind(rep(NA, 6))
