@@ -514,12 +514,11 @@ load.variable <- function(row, var.env, load.env){
 .load.r <- function (file.name, row, var.env, load.env) {
   full.path <- paste(.debug.env$prov.folder,
       "/", file.name,
-      ".R", sep = "")
+      ".Robject", sep = "")
   # Don't try and read in a file that could possibly not exist
   if(file.exists(full.path)){
-    var.name <- load("data/1-read.data.RObject", envir = load.env)
-    contents <- get (var.name, env)
-    parse(text=contents)[[1]]
+    var.name <- load(full.path, envir = load.env)
+    r.func <- get (var.name, load.env)
     assign(row["var/code"][[1]], r.func, envir = var.env)
   } else {
     assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
