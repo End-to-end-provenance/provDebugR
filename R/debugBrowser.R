@@ -196,7 +196,15 @@ debug.browser <- function() {
                 ))
     # if they supplied a variable in script, print value  
     } else if(input %in% var.env$vars){ 
-      print(get(input, envir = var.env))
+      value <- get(input, envir = var.env)
+      if (is.character (value)) {
+        # writeLines converts \n to a newline; print does not
+        # but writeLines only works for strings
+        writeLines(value)
+      }
+      else {
+        print (value)
+      }
     # pass their code to interpreter   
     } else { 
       print ("Unable to evaluate expressions within the debugger")
@@ -350,88 +358,29 @@ load.variable <- function(row, var.env, load.env){
     # the path to the final file
     file.name <- row["val"][[1]]
     file.parts <- strsplit(file.name, "\\.")
-    file.ext <- tolower(file.parts[[1]][[length(file.parts[[1]])]])
+    file.ext <- file.parts[[1]][[length(file.parts[[1]])]]
     file.name <- sub (paste0(".", file.ext, "$"), "", file.name)
+    file.ext <- tolower(file.ext)
     
     # A text file means that the data has been stored as an RObject
     # this can be loaded back in simply using load()
     if(file.ext == "txt") {
-      full.path <- paste(.debug.env$prov.folder,
-          "/", file.name,
-          ".RObject", sep = "")
-      # Don't try and read in a file that could possibly not exist
-      if(file.exists(full.path)){
-        var.name <- load(full.path, envir = load.env)
-        assign(row["var/code"][[1]], get(var.name, load.env), envir = var.env)
-      } else {
-        assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-      }
-      # csv could be matrix, array, or data_frame
-    } else if (file.ext == "csv") { 
-              
-      # a data frame can be read in using the read.csv function
-      # which creates a data frame
-      if(row[["container"]] == "data_frame"){
-                
-        full.path <- paste(.debug.env$prov.folder,
-            "/", file.name,
-            ".csv", sep = "")
-        if(file.exists(full.path)){
-          temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
-          
-          assign(row["var/code"][[1]], temp.var, envir = var.env)
-        } else {
-          assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-        }
-        # A vector can be read in using read.csv but then needs the vectors extracted
-      } else if (row[["container"]] == "vector" | row[["container"]] == "matrix") {
-                
-        full.path <- paste(.debug.env$prov.folder,
-            "/", file.name,
-            ".csv", sep = "")
-        # Grab each column out of the data frame and then bind to create matrix
-        # or just a single vector.
-        if(file.exists(full.path)){
-          temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
-          if(nrow(temp.var) == 0 ){
-            if (row[["container"]] == "vector") {
-              temp.var <- rep("", length.out = as.integer(row[["dim"]]))
-            }
-            
-          } else {
-            indexes <- 1:ncol(temp.var)
-            temp.var <- cbind(sapply(indexes, function(index) {
-                      temp.var[[index]]
-                    }))
-            # a single vector is formatted differently than a single column of a matrix
-            if(ncol(temp.var) == 1 & row[["container"]] == "vector" ){
-              temp.var <- as.vector(temp.var)
-            }
-          }
-          
-          assign(row["var/code"][[1]], temp.var, envir = var.env)
-          # No file found
-        } else {
-          assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-        }
-        # An array is very similar to a vector but can be coerced into an array post read
-      } else if (row[["container"]] == "array") {
-        if(file.exists(full.path)){
-          temp.var <- read.csv(full.path, stringsAsFactors = F)
-          indexes <- 1:ncol(temp.var)
-          temp.var <- cbind(sapply(indexes, function(index) {
-                    temp.var[[index]]
-                  }))
-          temp.var <- as.array(temp.var)
-        } else {
-          assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-        } 
-        #No identifiable container
-      } else {
-        assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
-      } 
-      # No identifiable file extension
-    } else {
+      .load.RObject (file.name, row, var.env, load.env)
+    } 
+    
+    # csv could be matrix, array, or data_frame
+    else if (file.ext == "csv") { 
+      .load.csv (file.name, row, var.env)
+    } 
+    
+    # R function
+    else if (file.ext == "r") { 
+      .load.r (file.name, row, var.env, load.env)
+    } 
+    
+    # No identifiable file extension
+    else {
+      print ("line 440")
       assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT" , envir = var.env)
     }
 
@@ -484,6 +433,100 @@ load.variable <- function(row, var.env, load.env){
     }
   }
 }
+
+.load.RObject <- function (file.name, row, var.env, load.env) {
+  full.path <- paste(.debug.env$prov.folder,
+      "/", file.name,
+      ".RObject", sep = "")
+  # Don't try and read in a file that could possibly not exist
+  if(file.exists(full.path)){
+    var.name <- load(full.path, envir = load.env)
+    assign(row["var/code"][[1]], get(var.name, load.env), envir = var.env)
+  } else {
+    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+  }
+}
+
+.load.csv <- function (file.name, row, var.env) {
+  # a data frame can be read in using the read.csv function
+  # which creates a data frame
+  if(row[["container"]] == "data_frame"){
+    
+    full.path <- paste(.debug.env$prov.folder,
+        "/", file.name,
+        ".csv", sep = "")
+    if(file.exists(full.path)){
+      temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
+      
+      assign(row["var/code"][[1]], temp.var, envir = var.env)
+    } else {
+      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+    }
+    # A vector can be read in using read.csv but then needs the vectors extracted
+  } else if (row[["container"]] == "vector" | row[["container"]] == "matrix") {
+    
+    full.path <- paste(.debug.env$prov.folder,
+        "/", file.name,
+        ".csv", sep = "")
+    # Grab each column out of the data frame and then bind to create matrix
+    # or just a single vector.
+    if(file.exists(full.path)){
+      temp.var <- utils::read.csv(full.path, stringsAsFactors = F)
+      if(nrow(temp.var) == 0 ){
+        if (row[["container"]] == "vector") {
+          temp.var <- rep("", length.out = as.integer(row[["dim"]]))
+        }
+        
+      } else {
+        indexes <- 1:ncol(temp.var)
+        temp.var <- cbind(sapply(indexes, function(index) {
+                  temp.var[[index]]
+                }))
+        # a single vector is formatted differently than a single column of a matrix
+        if(ncol(temp.var) == 1 & row[["container"]] == "vector" ){
+          temp.var <- as.vector(temp.var)
+        }
+      }
+      
+      assign(row["var/code"][[1]], temp.var, envir = var.env)
+      # No file found
+    } else {
+      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+    }
+    # An array is very similar to a vector but can be coerced into an array post read
+  } else if (row[["container"]] == "array") {
+    if(file.exists(full.path)){
+      temp.var <- read.csv(full.path, stringsAsFactors = F)
+      indexes <- 1:ncol(temp.var)
+      temp.var <- cbind(sapply(indexes, function(index) {
+                temp.var[[index]]
+              }))
+      temp.var <- as.array(temp.var)
+    } else {
+      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+    } 
+    #No identifiable container
+  } else {
+    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+  } 
+}
+
+.load.r <- function (file.name, row, var.env, load.env) {
+  full.path <- paste(.debug.env$prov.folder,
+      "/", file.name,
+      ".R", sep = "")
+  # Don't try and read in a file that could possibly not exist
+  if(file.exists(full.path)){
+    var.name <- load("data/1-read.data.RObject", envir = load.env)
+    contents <- get (var.name, env)
+    parse(text=contents)[[1]]
+    assign(row["var/code"][[1]], r.func, envir = var.env)
+  } else {
+    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+  }
+}
+
+
 
 .moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
   # Clear out the command, if a number is left then 
