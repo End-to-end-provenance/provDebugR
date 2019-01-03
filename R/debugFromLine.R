@@ -253,7 +253,6 @@ debug.from.line <- function(..., state = F, script.num = 1) {
     # Append that row to the data frame in the environment
     line.row <- c(var, val, container, dim, type, script)
     .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
-    
 
   } else {
     lapply (entities, function (entity) {
@@ -272,11 +271,11 @@ debug.from.line <- function(..., state = F, script.num = 1) {
         
         if (is.null (val.type)) {
           # This happens if the value is NULL
-          container <- dim <- type <- NULL
+          container <- dim <- type <- NA
         }
         else if (!is.list (val.type)) {
           # This happens if the valType is an object, like POSIXct
-          container <- dim <- NULL
+          container <- dim <- NA
           type <- val.type
         }
         else {
@@ -295,7 +294,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
         
         # Append the new rows to the data frame in the environment        
         .debug.env$line.df <- rbind(.debug.env$line.df, line.row, stringsAsFactors = FALSE)
-      })
+        })
       
   }
   
