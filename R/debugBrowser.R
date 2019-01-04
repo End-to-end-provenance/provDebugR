@@ -410,6 +410,7 @@ load.variable <- function(row, var.env, load.env){
         coerced.values <-
             # Remove starting and ending \" for strings
           if (type == "character") sub ("\\\"$", "", sub ("^\\\"", "", values))
+          else if (type == "NA") values
           else methods::as(values, type)
 
         if (length(coerced.values) == 1 && is.na (coerced.values)) {

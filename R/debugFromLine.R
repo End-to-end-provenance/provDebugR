@@ -295,7 +295,9 @@ debug.from.line <- function(..., state = F, script.num = 1) {
           
           # JSON formatted so that we can put a list in a single element of a data frame
           dim <- paste(val.type$dimension, collapse = ",")
-          type <- paste("{ \"type\" : [",
+          type <- 
+              if (is.null(val.type$type)) paste("{ \"type\" : \"NA\" }")
+              else paste("{ \"type\" : [",
                         paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
                         , "]}")
         }
