@@ -205,9 +205,12 @@ debug.browser <- function() {
       else {
         print (value)
       }
-    # pass their code to interpreter   
-    } else { 
+    } 
+    
+    # Ignore a line containing only whitespace
+    else if (gsub ("[[:space:]]", "", input) != ""){ 
       print ("Unable to evaluate expressions within the debugger")
+      # pass their code to interpreter   
       # This is not a good idea.  It will use the final values of the variables, not
       # the values that the variables have at this point in stepping with the debugger.
 #      tryCatch({
