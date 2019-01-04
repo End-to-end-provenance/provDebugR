@@ -349,7 +349,7 @@ load.variable <- function(row, var.env, load.env){
   if(grepl("^data", row["val"][[1]]) & grepl("^.*\\.[^\\]+$", row["val"][[1]])){
 
     if(is.na(.debug.env$prov.folder)) {
-      assign(row["var/code"][[1]], "SNAPSHOT/MISSING PROVENANCE" , envir = var.env)
+      assign(row["var/code"][[1]], "UNKNOWN PROVENANCE FOLDER" , envir = var.env)
       return ()
     } 
     
@@ -383,8 +383,7 @@ load.variable <- function(row, var.env, load.env){
     
     # No identifiable file extension
     else {
-      print ("line 440")
-      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT" , envir = var.env)
+      .load.RObject (file.name, row, var.env, load.env)
     }
 
     #If the data is not a snapshot it can be loaded directly into the variable env
@@ -447,7 +446,7 @@ load.variable <- function(row, var.env, load.env){
     var.name <- load(full.path, envir = load.env)
     assign(row["var/code"][[1]], get(var.name, load.env), envir = var.env)
   } else {
-    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+    assign(row["var/code"][[1]], paste0 ("MISSING SNAPSHOT ", file.name, ".RObject"), envir = var.env)
   }
 }
 
@@ -464,7 +463,7 @@ load.variable <- function(row, var.env, load.env){
       
       assign(row["var/code"][[1]], temp.var, envir = var.env)
     } else {
-      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+      assign(row["var/code"][[1]], paste0 ("MISSING SNAPSHOT ", file.name, ".csv"), envir = var.env)
     }
     # A vector can be read in using read.csv but then needs the vectors extracted
   } else if (row[["container"]] == "vector" | row[["container"]] == "matrix") {
@@ -495,7 +494,7 @@ load.variable <- function(row, var.env, load.env){
       assign(row["var/code"][[1]], temp.var, envir = var.env)
       # No file found
     } else {
-      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+      assign(row["var/code"][[1]], paste0 ("MISSING SNAPSHOT ", file.name, ".csv"), envir = var.env)
     }
     # An array is very similar to a vector but can be coerced into an array post read
   } else if (row[["container"]] == "array") {
@@ -507,11 +506,11 @@ load.variable <- function(row, var.env, load.env){
               }))
       temp.var <- as.array(temp.var)
     } else {
-      assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+      assign(row["var/code"][[1]], paste0 ("MISSING SNAPSHOT ", file.name, ".csv"), envir = var.env)
     } 
     #No identifiable container
   } else {
-    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+    assign(row["var/code"][[1]], paste ("UNKNOWN TYPE CONTAINER", row[["container"]]), envir = var.env)
   } 
 }
 
@@ -525,7 +524,7 @@ load.variable <- function(row, var.env, load.env){
     r.func <- get (var.name, load.env)
     assign(row["var/code"][[1]], r.func, envir = var.env)
   } else {
-    assign(row["var/code"][[1]], "INCOMPLETE SNAPSHOT", envir = var.env)
+    assign(row["var/code"][[1]], paste0 ("MISSING SNAPSHOT ", file.name, ".RObject"), envir = var.env)
   }
 }
 
