@@ -119,7 +119,7 @@ debug.browser <- function() {
     # lists variables present in "execution"
     # THey can enter one as an input and it will print it's value
     } else if(input == "ls") { 
-      print(var.env$vars)
+      print(sort (var.env$vars))
       
     # advances a line, or if a number is specified, advances
     # by the number of lines specified
