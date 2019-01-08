@@ -325,17 +325,13 @@ debug.browser <- function() {
 }
 
 .load.variables <- function(line.df, var.env) {
-  # A matrix means no variables were present at that point in execution
-  if(class(line.df) != "matrix"){
-
-    #store the name of all variables for printing out at a user's input
-    var.env$vars <- line.df$`var/code`
+  #store the name of all variables for printing out at a user's input
+  var.env$vars <- line.df$`var/code`
     
-    load.env <- new.env()
-    # Assign each variable and its value to the created environment
-    apply(line.df, 1, load.variable, var.env, load.env)
-    rm(list=ls(load.env), envir = load.env)
-  }
+  load.env <- new.env()
+  # Assign each variable and its value to the created environment
+  apply(line.df, 1, load.variable, var.env, load.env)
+  rm(list=ls(load.env), envir = load.env)
 }
 
 load.variable <- function(row, var.env, load.env){

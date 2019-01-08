@@ -45,7 +45,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
   
   # Remove 0s (for debugGadget())
   args <- args[!args %in% 0]
-
+  
   # Get procedure nodes (and thus startLine and scriptNum) from parser
   # Subset by inputted script number
   # Subset operation-type nodes to get rid of NA values
@@ -86,7 +86,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
   }, pos.line = pos.line)
 
   args <- args[unlist(pos.args)]
-
+  
   # If parameter is blank, show state of all variables at end of execution
   # Otherwise, call helper function .grab.line over each line input
   if (length(args) == 0) {
@@ -147,7 +147,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
     return(.debug.env$line.df)
 
   } else { # STATE - state of all variables up to that line in execution
-
+    
     # Find procedure nodes with the inputted line number
     node <- .debug.env$proc.nodes[!is.na(.debug.env$proc.nodes$startLine) & .debug.env$proc.nodes$startLine == lineNumber, "id"]
 
@@ -206,10 +206,9 @@ debug.from.line <- function(..., state = F, script.num = 1) {
       }
     #If entity was 0, populate a data frame with NAs 
     } else {
-      .debug.env$line.df <- rbind(rep(NA, 6))
-      # Name columns and rows
+      .debug.env$line.df <- data.frame (vector(), vector(), vector(), vector(), vector(), vector())
+      # Name columns
       colnames(.debug.env$line.df) <- c("var/code", "val", "container", "dim", "type", "script")
-      rownames(.debug.env$line.df) <- c(1:nrow(.debug.env$line.df))
     }
    
 
