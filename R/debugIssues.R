@@ -1,5 +1,5 @@
 # Copyright (C) President and Fellows of Harvard College and 
-# Trustees of Mount Holyoke College, 2018.
+# Trustees of Mount Holyoke College, 2018, 2019.
 
 # This program is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -51,46 +51,59 @@ debug.error.trace <- function(stack.overflow = F) {
     cat(paste("Your Error: ", message, "\n", sep = ""))
 
     if(stack.overflow) {
-
-      # The error message should be stripped of information that is
-      # unique to this script and be more generalized
-      error.message <- .process.error(message)
-
-      # Query the Stack Exchange API for similar results
-      result <- .debug.search(error.message)
-
-      # Grab the titles and links to the questions
-      pos.urls <- head(result$items)[, c("title", "link")]
-
-      # This serves as a "menu" of sorts since it will print the row number
-      # of each title
-      print(pos.urls[, "title"])
-
-      # They can either choose none or an index that will be matched to a row
-      cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
-      chosen.result <- readline()
-
-      if(!chosen.result == "q") {
-
-        chosen.result <- as.integer(chosen.result)
-
-        # The input needs to be an integer so it can be used to
-        # index into the rows of the data frame
-        if(is.na(chosen.result)){
-          stop("Invalid Input")
-        } else if (chosen.result > 6 || chosen.result < 1) {
-          stop ('Choose an option between 1 - 6')
-        }
-
-        # Open up the requested link in the default web browser
-        browseURL(pos.urls[chosen.result ,]$link)
-        cat("\nCode that led to error message:\n")
-      }
+      .display.stack.overflow.help (message)
     }
 
     return(debug.lineage("error.msg")$error.msg)
   } else {
     cat("There were no errors in this script!")
+  }
+}
+
+#' .display.stack.overflow.help processes an error message to remove script
+#' specific parts, like variable names.  It then searches Stack Overflow for
+#' similar posts and displays the resulting titles to the user.  The user
+#' can then pick one to explore further.  It pulls up a browser window on 
+#' that Stack Overflow page.
+#' 
+#' @name .display.stack.overflow.help
+#' @param message the string error message that the user wants to look up on Stack Overflow
+#' @noRd 
+.display.stack.overflow.help <- function(message) {
+  
+  # The error message should be stripped of information that is
+  # unique to this script and be more generalized
+  error.message <- .process.error(message)
+  
+  # Query the Stack Exchange API for similar results
+  result <- .debug.search(error.message)
+  
+  # Grab the titles and links to the questions
+  pos.urls <- head(result$items)[, c("title", "link")]
+  
+  # This serves as a "menu" of sorts since it will print the row number
+  # of each title
+  print(pos.urls[, "title"])
+  
+  # They can either choose none or an index that will be matched to a row
+  cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
+  chosen.result <- readline()
+  
+  if(!chosen.result == "q") {
+    
+    chosen.result <- as.integer(chosen.result)
+    
+    # The input needs to be an integer so it can be used to
+    # index into the rows of the data frame
+    if(is.na(chosen.result)){
+      stop("Invalid Input")
+    } else if (chosen.result > 6 || chosen.result < 1) {
+      stop ('Choose an option between 1 - 6')
+    }
+    
+    # Open up the requested link in the default web browser
+    browseURL(pos.urls[chosen.result ,]$link)
+    cat("\nCode that led to error message:\n")
   }
 }
 
@@ -118,7 +131,7 @@ debug.error.trace <- function(stack.overflow = F) {
 #'debug.warning.trace(1, 4) # returns warnings 1 and 4
 #'debug.warning.trace(1:4, 7) # returns warnings 1 through 4 and 7
 #'}
-debug.warning.trace <- function(...) {
+debug.warning.trace <- function(..., stack.overflow = FALSE) {
 
   args <- .flatten.args(...)
 
@@ -128,54 +141,98 @@ debug.warning.trace <- function(...) {
   
   if(nrow(pos.vars) == 0){
     cat("There were no warnings in this script!")
-  } else {
-    row.names(pos.vars) <- 1:nrow(pos.vars)
+    return (invisible ())
+  } 
+  
+  row.names(pos.vars) <- 1:nrow(pos.vars)
 
-    node.labels <- as.list(pos.vars$id)
+  node.labels <- as.list(pos.vars$id)
 
-    # Extract the warning messages to display to the user
-    # as options, the length will help determine whether or
-    # not a valid result was input as an arg
-    pos.results <- as.list(pos.vars$value)
-    num.results <- 1:length(pos.results)
+  # Extract the warning messages to display to the user
+  # as options, the length will help determine whether or
+  # not a valid result was input as an arg
+  pos.results <- as.list(pos.vars$value)
+  num.results <- 1:length(pos.results)
 
-    # Checks each arg to make sure it is valid
-    # producing a vector of logicals corresponding with
-    # valid/invalid input
-    pos.args <- lapply(args, function(arg){
-      if(arg %in% num.results) {
-        return(TRUE)
-      } else {
-        cat(paste(arg, "is not a possible result\n"))
-        return(FALSE)
-      }
-    })
+  # Checks each arg to make sure it is valid
+  # producing a vector of logicals corresponding with
+  # valid/invalid input
+  pos.args <- lapply(args, function(arg){
+    if(arg %in% num.results) {
+      return(TRUE)
+    } else {
+      cat(paste(arg, "is not a possible result\n"))
+      return(FALSE)
+    }
+  })
 
-    # Any non-valid inputs will be removed as the list is subset
-    # by logicals, TRUE corresponding to valid inputs
-    args <- args[unlist(pos.args)]
+  # Any non-valid inputs will be removed as the list is subset
+  # by logicals, TRUE corresponding to valid inputs
+  args <- args[unlist(pos.args)]
+  
+  # If they did not pass any arguments to the function
+  # then print the possible arguments they can input
+  if (length(args) == 0) {
+    results.df <- as.data.frame(pos.vars$value)
     
-    # If they did not pass any arguments to the function
-    # then print the possible arguments they can input
-    if (length(args) == 0) {
+    # If there is just one warning, use it instead of prompting
+    if (nrow(results.df) == 1) {
+      args <- 1
+    }
+    
+    else {
       cat("Possible results: \n")
-      results.df <- as.data.frame(pos.vars$value)
       colnames(results.df) <- NULL
       print(results.df)
-      cat("\nPass the corresponding numeric value to the function for info on that warning\n")
-    } else {
-      # The procedure nodes are used in the .proccess.label fucntion
-      # to find script and line numbers and code
-      proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
-
-      # Each of the chosen warning message needs to be processed,
-      dfs <- lapply(args, function(arg){
-        .process.label(pos.vars[arg, ]$id, proc.nodes, forward = F)
+      
+      # They can either choose none or an index that will be matched to a row
+      cat("\nChoose a numeric value that matches the warning you want to explore or q to quit: \n")
+      chosen.result <- readline()
+      
+      if (chosen.result == "q") {
+        return(invisible())
+      }
+        
+      chosen.result <- as.integer(chosen.result)
+        
+      # The input needs to be an integer so it can be used to
+      # index into the rows of the data frame
+      if(is.na(chosen.result)){
+        stop("Invalid Input")
+      } else if (chosen.result > nrow(results.df) || chosen.result < 1) {
+        stop ('Choose an option between 1 and ', nrow(results.df))
+      }
+      
+      args <- chosen.result
+    }
+      
+  }      
+    
+  # The procedure nodes are used in the .proccess.label fucntion
+  # to find script and line numbers and code
+  proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
+  
+  # Each of the chosen warning message needs to be processed,
+  msgs <- lapply(args, function(arg){
+        msg <- .process.label(pos.vars[arg, ]$id, proc.nodes, forward = F)
+        
+        # Print message and stack overflow help
+        if (stack.overflow) {
+          print (msg)
+          cat ("\n")  
+          .display.stack.overflow.help (pos.vars[arg,]$value)
+        }
+        return (msg)
       })
   
-      return(dfs)
-    }
+  # If stack.overflow is TRUE, we will see each message before its stack overflow
+  # help.  If stack.overflow is FALSE, print here so it comes out as one table.
+  # If the print is done above outside of the stack.overflow check, we will 
+  # a sequence of 1-liners instead of a table.
+  if (!stack.overflow) {
+    return (plyr::rbind.fill(msgs))
   }
+  invisible()
 }
 
 #' Process error message strings
