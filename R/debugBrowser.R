@@ -159,11 +159,10 @@ debug.browser <- function() {
       pos.lines <- new.info$new.lines
       
     } else if (input[1] == "l") {
-      # Clear out the command, if a number is left then 
+      # If a number is provided then 
       # modify behavior to use the number
-      new.in <- gsub("l", "", input)
-      if(grepl("[[:digit:]]", new.in)) {
-        var.env$lineIndex <- findInterval(as.integer(new.in), pos.lines)
+      if (length (input) > 1  && grepl("[[:digit:]]", input[2])) {
+        var.env$lineIndex <- findInterval(as.integer(input[2]), pos.lines)
         .change.line(var.env, pos.lines, proc.nodes, current.script)
       } else {
         #Each line will print the code for the line
@@ -201,16 +200,21 @@ debug.browser <- function() {
                 "Q - quits the debugger\n"
                 ))
     # if they supplied a variable in script, print value  
-    } else if(input[1] == "p" && input[2] %in% var.env$vars){ 
-      value <- get(input[2], envir = var.env)
-      if (is.character (value)) {
-        # writeLines converts \n to a newline; print does not
-        # but writeLines only works for strings
-        writeLines(value)
-      }
-      else {
-        print (value)
-      }
+    } else if(input[1] == "p") {
+        if (input[2] %in% var.env$vars){ 
+          value <- get(input[2], envir = var.env)
+          if (is.character (value)) {
+            # writeLines converts \n to a newline; print does not
+            # but writeLines only works for strings
+            writeLines(value)
+          }
+          else {
+            print (value)
+          }
+        }
+        else {
+          print (paste (input[2], "is not set"))
+        }
     } 
     
     # Ignore a line containing only whitespace
@@ -535,19 +539,12 @@ load.variable <- function(row, var.env, load.env){
 
 
 .moveForward <- function(forw.by, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
-  print (paste ("Moving forward", forw.by, "lines"))
-  # Clear out the command, if a number is left then 
-  # modify behavior to use the number
-#  new.in <- gsub("n", "", input)
-#  if(grepl("[[:digit:]]", new.in)){
-#    forw.by <- as.integer(new.in)
-    # Find the index closest value to what was specified 
-    # in lines and then change execution to go there 
-    var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] + forw.by, pos.lines)
-    print(paste("var.env$lineIndex =", var.env$lineIndex))
-#  } else {
-#    var.env$lineIndex <- var.env$lineIndex + 1
-#  }
+  # Find the index closest value to what was specified 
+  # in lines and then change execution to go there 
+  next.line <- findInterval(pos.lines[var.env$lineIndex] + forw.by, pos.lines)
+  var.env$lineIndex <- 
+        if (next.line == var.env$lineIndex) next.line + 1
+        else next.line
   
   # In the event they are ending a source()ed script
   # then the exectuion needs to shift to a new set of proc.nodes
@@ -585,17 +582,9 @@ load.variable <- function(row, var.env, load.env){
 }
 
 .moveBackward <- function(back.by, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
-  # Clear out the command, if a number is left then 
-  # modify behavior to use the number
-#  new.in <- gsub("b", "", input)
-#  if(grepl("[[:digit:]]", new.in)) {
-#    back.by <- as.integer(new.in)
-    # Find the index closest value to what was specified 
-    # in lines andthen change execution to go there 
-    var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] - back.by, pos.lines)
-#  } else {
-#    var.env$lineIndex <- var.env$lineIndex - 1
-#  }
+  # Find the index closest value to what was specified 
+  # in lines andthen change execution to go there 
+  var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] - back.by, pos.lines)
   
   # In the event they are ending a source()ed script
   # then the exectuion needs to shift to a new set of proc.nodes
