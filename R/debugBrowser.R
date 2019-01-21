@@ -110,27 +110,30 @@ debug.browser <- function() {
   # it will repeatedly prompt for an input until the user quits
   # It operates similarly to the R browser() function
   while(TRUE) {
-    input <- readline(prompt = "Debug> ")
-    
+    input <- strsplit(readline(prompt = "Debug> "), "\\s+")[[1]]
+
     # If they enter a Q the loop breaks
-    if (input == "Q") { 
+    if (input[1] == "Q") { 
       print("Quitting")
       break
     # lists variables present in "execution"
     # THey can enter one as an input and it will print it's value
-    } else if(input == "ls") { 
+    } else if(input[1] == "ls") { 
       print(sort (var.env$vars))
       
     # advances a line, or if a number is specified, advances
     # by the number of lines specified
-    } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-      new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    } else if (input[1] == "n")  {
+      num.lines <- 
+          if (length(input) == 1) 1
+          else as.integer(input[2])
+      new.info <- .moveForward(num.lines, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
       current.script <- new.info$new.script
       proc.nodes <- new.info$new.nodes
       pos.lines <- new.info$new.lines
       
     # moves "execution" to the end of the script
-    } else if (input == "c") { 
+    } else if (input[1] == "c") { 
       # Continue until the "end" of execution
       var.env$lineIndex <- length(pos.lines)
       
@@ -138,21 +141,24 @@ debug.browser <- function() {
       
     # Moves back by the number of line specified by the user
     # If no lines are specified, moves back one line
-    } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
-      new.info <- .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    } else if (input[1] == "b") { 
+      num.lines <- 
+          if (length(input) == 1) 1
+          else as.integer(input[2])
+      new.info <- .moveBackward(num.lines, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
       current.script <- new.info$new.script
       proc.nodes <- new.info$new.nodes
       pos.lines <- new.info$new.lines
       
     # This function will print the line that the "execution" is 
     # currently on or if they specify a number will jump to that line
-    } else if (input == "s") {
+    } else if (input[1] == "s") {
       new.info <- .stepIn(var.env, current.script, pos.lines, proc.nodes, step.in, scripts)
       current.script <- new.info$new.script
       proc.nodes <- new.info$new.nodes
       pos.lines <- new.info$new.lines
       
-    } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
+    } else if (input[1] == "l") {
       # Clear out the command, if a number is left then 
       # modify behavior to use the number
       new.in <- gsub("l", "", input)
@@ -168,7 +174,7 @@ debug.browser <- function() {
                   sep=""))
       }
     # moves the reconstructed execution environment over to the global environment
-    } else if (input == "mv") { 
+    } else if (input[1] == "mv") { 
       #transfer environment
       if(!is.na(var.env$vars[1])){
         lapply(var.env$vars, function(var){
@@ -179,7 +185,7 @@ debug.browser <- function() {
         cat("Environment empty, nothing to move\n")
       }
     # print information on how to use the debugger
-    } else if (input == "help") { 
+    } else if (input[1] == "help") { 
       cat(paste("This is a time-traveling debugger for R \n", 
                 "n - Move forward one line\n",
                 "n* - Move forward * number of times (where * is an integer) \n",
@@ -195,8 +201,8 @@ debug.browser <- function() {
                 "Q - quits the debugger\n"
                 ))
     # if they supplied a variable in script, print value  
-    } else if(input %in% var.env$vars){ 
-      value <- get(input, envir = var.env)
+    } else if(input[1] == "p" && input[2] %in% var.env$vars){ 
+      value <- get(input[2], envir = var.env)
       if (is.character (value)) {
         # writeLines converts \n to a newline; print does not
         # but writeLines only works for strings
@@ -273,7 +279,9 @@ debug.browser <- function() {
     # possible to tell pre-execution variables
     pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
     pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
-    .load.variables(pre.data.nodes, var.env)
+    if (nrow (pre.data.nodes) > 0) {
+      .load.variables(pre.data.nodes, var.env)
+    }
   } else {
     # This seems redundant, but if index is 1 but we're NOT in the main script
     # (as checked above) then this MUST be a source()ed script. Therefor we have
@@ -526,18 +534,20 @@ load.variable <- function(row, var.env, load.env){
 
 
 
-.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+.moveForward <- function(forw.by, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+  print (paste ("Moving forward", forw.by, "lines"))
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
-  new.in <- gsub("n", "", input)
-  if(grepl("[[:digit:]]", new.in)){
-    forw.by <- as.integer(new.in)
+#  new.in <- gsub("n", "", input)
+#  if(grepl("[[:digit:]]", new.in)){
+#    forw.by <- as.integer(new.in)
     # Find the index closest value to what was specified 
-    # in lines andthen change execution to go there 
+    # in lines and then change execution to go there 
     var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] + forw.by, pos.lines)
-  } else {
-    var.env$lineIndex <- var.env$lineIndex + 1
-  }
+    print(paste("var.env$lineIndex =", var.env$lineIndex))
+#  } else {
+#    var.env$lineIndex <- var.env$lineIndex + 1
+#  }
   
   # In the event they are ending a source()ed script
   # then the exectuion needs to shift to a new set of proc.nodes
@@ -574,18 +584,18 @@ load.variable <- function(row, var.env, load.env){
   return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
-.moveBackward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+.moveBackward <- function(back.by, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
-  new.in <- gsub("b", "", input)
-  if(grepl("[[:digit:]]", new.in)) {
-    back.by <- as.integer(new.in)
+#  new.in <- gsub("b", "", input)
+#  if(grepl("[[:digit:]]", new.in)) {
+#    back.by <- as.integer(new.in)
     # Find the index closest value to what was specified 
     # in lines andthen change execution to go there 
     var.env$lineIndex <- findInterval(pos.lines[var.env$lineIndex] - back.by, pos.lines)
-  } else {
-    var.env$lineIndex <- var.env$lineIndex - 1
-  }
+#  } else {
+#    var.env$lineIndex <- var.env$lineIndex - 1
+#  }
   
   # In the event they are ending a source()ed script
   # then the exectuion needs to shift to a new set of proc.nodes
