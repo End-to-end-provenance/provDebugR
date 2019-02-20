@@ -49,29 +49,32 @@ debug.browser <- function() {
   #script.name <- proc.nodes[1,]$name
   script.name <- scripts$script[1]
   
+  # EF EDITS
   # A table needs to be created to inform the debugger when it is possible for a 
   # user to be able to step into a sourced script
   # Finish nodes provide the necesssary information for when it is
   # possible to step-in and where to step back out to 
-  finish.nodes <- proc.nodes[proc.nodes$type == "Finish", ]
+  #finish.nodes <- proc.nodes[proc.nodes$type == "Finish", ]
   # The indexes are where in proc.nodes the debugger needs to look around 
-  f.node.indexes <- as.integer(rownames(finish.nodes))
-  step.in <- data.frame()
-  
+  #f.node.indexes <- as.integer(rownames(finish.nodes))
+  #step.in <- data.frame()
+  #
   # Each instance of finish can identify what script the step-in will
   # occur from, where it goes, and which line it's possible to step on
-  for(f.index in f.node.indexes) {
-    if(!f.index + 1 > nrow(proc.nodes)){
-      curr.script <- proc.nodes[f.index + 1, ]$scriptNum
-      line.number <- proc.nodes[f.index + 1, ]$startLine
-      next.script <- proc.nodes[f.index - 1, ]$scriptNum
-
-      step.in <- rbind(step.in, c(curr.script, line.number, next.script))
-    }
-  }
-  if(length(step.in) != 0){
-    names(step.in) <- c("cur.script", "line.number", "next.script")
-  } 
+  #for(f.index in f.node.indexes) {
+  #  if(!f.index + 1 > nrow(proc.nodes)){
+  #    curr.script <- proc.nodes[f.index + 1, ]$scriptNum
+  #    line.number <- proc.nodes[f.index + 1, ]$startLine
+  #    next.script <- proc.nodes[f.index - 1, ]$scriptNum
+  #
+  #    step.in <- rbind(step.in, c(curr.script, line.number, next.script))
+  #  }
+  #}
+  #if(length(step.in) != 0){
+  #  names(step.in) <- c("cur.script", "line.number", "next.script")
+  #}
+  # EF EDITS
+  step.in <- .get.step.in.table(proc.nodes)
     
   # The main script is script 1, and flow of control starts there
   current.script = 1
@@ -209,6 +212,35 @@ debug.browser <- function() {
       
     }
   }
+}
+
+# EF EDITS
+.get.step.in.table <- function(proc.nodes) {
+  # A table needs to be created to inform the debugger when it is possible for a 
+  # user to be able to step into a sourced script
+  # Finish nodes provide the necesssary information for when it is
+  # possible to step-in and where to step back out to 
+  finish.nodes <- proc.nodes[proc.nodes$type == "Finish", ]
+  # The indexes are where in proc.nodes the debugger needs to look around 
+  f.node.indexes <- as.integer(rownames(finish.nodes))
+  step.in <- data.frame()
+  
+  # Each instance of finish can identify what script the step-in will
+  # occur from, where it goes, and which line it's possible to step on
+  for(f.index in f.node.indexes) {
+    if(!f.index + 1 > nrow(proc.nodes)){
+      curr.script <- proc.nodes[f.index + 1, ]$scriptNum
+      line.number <- proc.nodes[f.index + 1, ]$startLine
+      next.script <- proc.nodes[f.index - 1, ]$scriptNum
+
+      step.in <- rbind(step.in, c(curr.script, line.number, next.script))
+    }
+  }
+  if(length(step.in) != 0){
+    names(step.in) <- c("cur.script", "line.number", "next.script")
+  }
+  
+  return(step.in)
 }
 
 #' This function uses debug.from.line to reconstruct the execution environment 
