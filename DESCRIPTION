@@ -1,10 +1,11 @@
 Package: provDebugR
-Title: An R Post-Mortem Debugger
+Title: An R Time-Traveling Debugger
 Version: 0.1.2.9000
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
     person("Joseph", "Wonsil", email = "jwonsil@carthage.edu", role = "aut"),
-    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre") 
+    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "aut"),
+    person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "cre") 
     )
 Description: provDebugR is a debugger that works post script execution. Users can query 
     variables to discover what their types and values were throughout the exectuion of the script.
@@ -20,6 +21,7 @@ Imports:
   jsonlite, 
   methods, 
   miniUI, 
+  plyr,
   provGraphR,
   provParseR,
   rstudioapi, 

@@ -8,22 +8,23 @@ debug.init(test.data)
 
 test_that("all variables can be queried", {
   warning.results <- debug.warning.trace(1:2)
-  expect_equal(length(warning.results), 2)
-  expect_match(warning.results[[1]]$code, "warning(\"this is a test\")", fixed = T)
+  expect_equal(nrow(warning.results), 2)
+  expect_match(warning.results[1, "code"], "warning(\"this is a test\")", fixed = T)
 })
 
 test_that("various arguments can be provided", {
   warning.results <- debug.warning.trace(1)
-  expect_equal(length(warning.results), 1)
+  expect_equal(nrow(warning.results), 1)
   warning.results <- debug.warning.trace(list(1, 2))
-  expect_equal(length(warning.results), 2)
+  expect_equal(nrow(warning.results), 2)
 })
 
 test_that("wrong arguments can be ignored", {
   warning.results <- debug.warning.trace(1, 4)
-  expect_equal(length(warning.results), 1)
+  expect_equal(nrow(warning.results), 1)
+  skip("The following test needs user input")
   warning.results <- debug.warning.trace(4)
-  expect_equal(length(warning.results), 0)
+  expect_equal(nrow(warning.results), 0)
 })
 
 test_that("debug error does something", {
@@ -34,8 +35,9 @@ test_that("debug error does something", {
 })
 
 test_that("possible results can be grabbed", {
+      skip ("The following test requires user input")
       warning.results <- capture.output(debug.warning.trace())
-      expect_equal(length(warning.results), 6)
+      expect_equal(nrow(warning.results), 6)
       expect_match(warning.results[[3]] ,
           "1      In  eval(annot, environ, NULL) :  this is a test", fixed = T)
     })

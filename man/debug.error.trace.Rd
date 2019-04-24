@@ -7,7 +7,7 @@
 \usage{
 debug.error.trace(stack.overflow = F)
 
-debug.warning.trace(...)
+debug.warning.trace(..., stack.overflow = FALSE)
 }
 \arguments{
 \item{stack.overflow}{Determines whether or not the

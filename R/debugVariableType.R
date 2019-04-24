@@ -74,11 +74,11 @@ debug.variable.type <- function(..., just.logical = F) {
     # or not based off the data returned from before
     if(just.logical) {
       ret.val <- lapply(ret.val, function(df) {
-        return.value <- FALSE
+        return.value <- "Type did not change"
         # If there is more than a single unique value in the column
         # that means there were at least two types
         if(length(unique(df$type)) > 1) {
-          return.value <- TRUE
+          return.value <- "Type changed"
         }
         return(return.value)
       })
