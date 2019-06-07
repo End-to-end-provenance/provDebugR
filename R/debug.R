@@ -137,6 +137,7 @@ debug.init <- function(input.data = NA, dir = NULL) {
   
   # empty case
   if(is.null(.debug.env$graph)) {
+    .debug.env$has.graph = FALSE
     stop("The provenance is empty.")
   }
   
