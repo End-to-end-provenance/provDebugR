@@ -134,20 +134,25 @@ debug.init <- function(input.data = NA, dir = NULL) {
 .debug.prov <- function(input.prov, is.file = T) {
   .debug.env$prov <- provParseR::prov.parse(input.prov, isFile = is.file)
   .debug.env$graph <- provGraphR::create.graph(input.prov, isFile = is.file)
+  
+  # empty case
+  if(is.null(.debug.env$graph)) {
+    stop("The provenance is empty.")
+  }
+  
   .debug.env$has.graph = TRUE
   
-   # Check for the prov folder which will have information for scripts and 
-   # snapshot data later on
-   prov.env <- provParseR::get.environment(.debug.env$prov)
-   prov.folder <- prov.env [prov.env$label == "provDirectory", ]$value
-   
-   # If it was found save it's location in the environment to be used later
-   # Otherwise save an NA value to indicate it is missing to prevent
-   # reading in from a file that does not exist
-   if(dir.exists(prov.folder)) {
-     .debug.env$prov.folder <- prov.folder
-   }
+  # Check for the prov folder which will have information for scripts and 
+  # snapshot data later on
+  prov.env <- provParseR::get.environment(.debug.env$prov)
+  prov.folder <- prov.env [prov.env$label == "provDirectory", ]$value
   
+  # If it was found save it's location in the environment to be used later
+  # Otherwise save an NA value to indicate it is missing to prevent
+  # reading in from a file that does not exist
+  if(dir.exists(prov.folder)) {
+    .debug.env$prov.folder <- prov.folder
+  }
 }
 
 #' This helper function is used in almost all functions of the interface
