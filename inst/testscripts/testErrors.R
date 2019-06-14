@@ -14,7 +14,7 @@ names(df1) <- c("script", "line", "code")
 
 warning.trace <- function(x, forward = F) {return(df1)}
 
-source("./inst/testdata/test3.R")
+source("test3.R")
 
 write.csv(df1, "df1.csv")
 

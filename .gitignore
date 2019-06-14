@@ -6,3 +6,4 @@ df1.csv
 /.project
 provDebugR.Rcheck
 *.tar.gz
+/.DS_Store
