@@ -14,9 +14,9 @@
 
 	"activity" : {
 		"rdt:p1": {
-			"rdt:name": "specialChar.R",
+			"rdt:name": "test_exercise.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.834",
+			"rdt:elapsedTime": "0.812",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -24,49 +24,19 @@
 			"rdt:endCol": "NA"
 		},
 		"rdt:p2": {
-			"rdt:name": "y <- \"1\"",
+			"rdt:name": "a <- x",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.045",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 1,
-			"rdt:startCol": 1,
-			"rdt:endLine": 1,
-			"rdt:endCol": 8
-		},
-		"rdt:p3": {
-			"rdt:name": "y <- as.factor(y)",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.007",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 2,
-			"rdt:startCol": 1,
-			"rdt:endLine": 2,
-			"rdt:endCol": 17
-		},
-		"rdt:p4": {
-			"rdt:name": "y <- new.env()",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.007",
+			"rdt:elapsedTime": "0.06",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
 			"rdt:endLine": 3,
-			"rdt:endCol": 14
+			"rdt:endCol": 6
 		},
-		"rdt:p5": {
-			"rdt:name": "y <- expression(\"y <- 3\")",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.006",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 4,
-			"rdt:startCol": 1,
-			"rdt:endLine": 4,
-			"rdt:endCol": 26
-		},
-		"rdt:p6": {
-			"rdt:name": "specialChar.R",
+		"rdt:p3": {
+			"rdt:name": "test_exercise.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.004",
+			"rdt:elapsedTime": "0.006",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -77,44 +47,11 @@
 
 	"entity" : {
 		"rdt:d1": {
-			"rdt:name": "y",
-			"rdt:value": "\"1\"",
+			"rdt:name": "error.msg",
+			"rdt:value": "Error in eval(annot, environ, NULL): object 'x' not found\n",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
-			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
-		},
-		"rdt:d2": {
-			"rdt:name": "y",
-			"rdt:value": "1...",
-			"rdt:valType": "factor",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
-			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
-		},
-		"rdt:d3": {
-			"rdt:name": "y",
-			"rdt:value": "<environment: 0x7ffb95541520>",
-			"rdt:valType": "environment",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
-			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
-		},
-		"rdt:d4": {
-			"rdt:name": "y",
-			"rdt:value": "expression(\"y <- 3\")",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"expression\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
 			"rdt:timestamp": "",
@@ -127,14 +64,14 @@
 			"rdt:operatingSystem": "darwin15.6.0",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
-			"rdt:script": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts/specialChar.R",
-			"rdt:scriptTimeStamp": "2019-06-14T15.17.06EDT",
-			"rdt:totalElapsedTime": "0.903",
+			"rdt:script": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts/test_exercise.R",
+			"rdt:scriptTimeStamp": "2018-10-01T13.45.42EDT",
+			"rdt:totalElapsedTime": "0.878",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts",
-			"rdt:provDirectory": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts/prov_specialChar",
-			"rdt:provTimestamp": "2019-06-14T15.21.01EDT",
+			"rdt:provDirectory": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts/prov_test_exercise",
+			"rdt:provTimestamp": "2019-06-14T15.21.02EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -212,18 +149,6 @@
 		"rdt:pp2": {
 			"prov:informant": "rdt:p2",
 			"prov:informed": "rdt:p3"
-		},
-		"rdt:pp3": {
-			"prov:informant": "rdt:p3",
-			"prov:informed": "rdt:p4"
-		},
-		"rdt:pp4": {
-			"prov:informant": "rdt:p4",
-			"prov:informed": "rdt:p5"
-		},
-		"rdt:pp5": {
-			"prov:informant": "rdt:p5",
-			"prov:informed": "rdt:p6"
 		}
 	},
 
@@ -231,25 +156,6 @@
 		"rdt:pd1": {
 			"prov:activity": "rdt:p2",
 			"prov:entity": "rdt:d1"
-		},
-		"rdt:pd2": {
-			"prov:activity": "rdt:p3",
-			"prov:entity": "rdt:d2"
-		},
-		"rdt:pd3": {
-			"prov:activity": "rdt:p4",
-			"prov:entity": "rdt:d3"
-		},
-		"rdt:pd4": {
-			"prov:activity": "rdt:p5",
-			"prov:entity": "rdt:d4"
-		}
-	},
-
-	"used" : {
-		"rdt:dp1": {
-			"prov:entity": "rdt:d1",
-			"prov:activity": "rdt:p3"
 		}
 	}
 }
