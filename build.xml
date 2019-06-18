@@ -21,6 +21,9 @@
 		<!-- Note that test3.R does not need to be here.  It is sourced by
 		     other scripts but never run independently. -->
 		<antcall target="json">
+			<param name="theFile" value="empty.R"/>
+		</antcall>
+		<antcall target="json">
 			<param name="theFile" value="specialChar.R"/>
 		</antcall>
 		<antcall target="json">
