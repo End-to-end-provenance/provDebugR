@@ -145,6 +145,13 @@ debug.init <- function(input.data = NA, dir = NULL) {
 .debug.prov <- function(input.prov, is.file = T) {
   .debug.env$prov <- provParseR::prov.parse(input.prov, isFile = is.file)
   .debug.env$graph <- provGraphR::create.graph(input.prov, isFile = is.file)
+  
+  # empty case
+  if(is.null(.debug.env$graph)) {
+    .debug.env$has.graph = FALSE
+    stop("The provenance is empty.")
+  }
+  
   .debug.env$has.graph = TRUE
 }
 
