@@ -15,14 +15,14 @@ test_that("the correct types are being returned", {
 
 test_that("possible results can be grabbed", {
   lineage.results <- debug.lineage()
-  expect_equal(length(lineage.results), 12)
+  expect_equal(length(lineage.results), 9)
   expect_match(lineage.results[1], "x")
-  expect_match(lineage.results[12], "test.product")
+  expect_match(lineage.results[9], "df1")
 })
 
 test_that("all variables can be queried", {
   lineage.results <- debug.lineage(debug.lineage())
-  expect_equal(length(lineage.results), 12)
+  expect_equal(length(lineage.results), 9)
   expect_equal(lineage.results$x$line[[1]], 3)
   expect_match(lineage.results$z$code[[1]], "z <- 6:67")
 })
@@ -40,7 +40,7 @@ test_that("wrong arguments can be ignored", {
   lineage.results <- debug.lineage("x", "y", "test")
   expect_equal(length(lineage.results), 2)
   lineage.results <- debug.lineage("test")
-  expect_equal(length(lineage.results), 12)
+  expect_equal(length(lineage.results), 9)
 })
 
 
