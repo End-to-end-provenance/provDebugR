@@ -28,7 +28,8 @@
 #' @param script.num If 1, only examine variables from the main script.
 #' If 2 or higher, examine variables from further nested source scripts.
 #' @return A list of one data frame per line, containing information about
-#' the variables on that line. If no parameters were passed, returns a
+#' the variables on that line. If no parameters were passed or if none
+#' of the line numbers are valid, it returns a
 #' data frame containing the state of all variables at the end of execution.
 #' @export
 #' @examples

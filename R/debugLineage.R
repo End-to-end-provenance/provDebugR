@@ -22,7 +22,8 @@
 #'
 #'@param ... Variables to find the lineage for. Can be single elements or vectors/lists.
 #'@param forward Determines whether to look for lineage forward in the script or backward
-#'@return Returns one of two things. If no parameters were passed to the function
+#'@return Returns one of two things. If no parameters were passed to the function,
+#' or the arguments passed in do not match variables, 
 #'then a vector of possible variables will be returned. If variables were passed to the
 #'function then a list of data frames is returned. Each data frame corresponds to one
 #'of the variables. The names of the list will correspond to the variable passed
