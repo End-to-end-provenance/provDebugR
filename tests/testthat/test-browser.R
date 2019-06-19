@@ -37,5 +37,5 @@ test_that("step-in table", {
 	# test
 	expect_true(nrow(.get.step.in.table(proc.nodes)) == 0)
 	#expect_equivalent(t1, e1)
-	e#xpect_equivalent(t3, e3)
+	#expect_equivalent(t3, e3)
 })
