@@ -18,8 +18,10 @@
     </target>
 	
 	<target name="create-json">
-		<!-- Note that test3.R does not need to be here.  It is sourced by
-		     other scripts but never run independently. -->
+		<!-- Note that test3.R, source1.r, source2.r, source3.r 
+			 do not need to be here. They are sourced by
+		     other scripts but never run independently. 
+		 -->
 		<antcall target="json">
 			<param name="theFile" value="empty.R"/>
 		</antcall>
