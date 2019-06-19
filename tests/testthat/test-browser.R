@@ -16,3 +16,13 @@ test_that("no/empty provenance", {
 	expect_error(debug.init(json))
 	expect_error(debug.browser())
 })
+
+test_that("step-in table", {
+	
+	# no step-in locations
+	json <- system.file("testdata", "stepin0.json", package = "provDebugR")
+	proc.nodes <- get.proc.nodes(prov.parse(json))
+	expect_true(nrow(.get.step.in.table(proc.nodes)) == 0)
+	
+	
+})
