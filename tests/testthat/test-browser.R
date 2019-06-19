@@ -35,7 +35,7 @@ test_that("step-in table", {
 	#e3 <- read.csv(system.file("testexpected", "stepin3.csv", package = "provDebugR"))
 	
 	# test
-	expect_true(nrow(.get.step.in.table(proc.nodes)) == 0)
+	expect_true(nrow(t0) == 0)
 	#expect_equivalent(t1, e1)
 	#expect_equivalent(t3, e3)
 })
