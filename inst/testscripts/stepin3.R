@@ -1,3 +1,5 @@
+library(rdtLite)
+
 b <- 15
 prov.source("source1.r")
 prov.source("source2.r")
