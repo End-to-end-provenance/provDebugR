@@ -38,6 +38,15 @@
 		<antcall target="json">
 			<param name="theFile" value="testErrors2.R"/>
 		</antcall>
+		<antcall target="json">
+			<param name="theFile" value="stepin0.R"/>
+		</antcall>
+		<antcall target="json">
+			<param name="theFile" value="stepin1.R"/>
+		</antcall>
+		<antcall target="json">
+			<param name="theFile" value="stepin3.R"/>
+		</antcall>
 	</target>
 	
 	<target name="json">
