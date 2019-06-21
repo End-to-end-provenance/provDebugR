@@ -121,7 +121,6 @@ debug.browser <- function() {
   # If they enter a Q the loop breaks
   if (input == "Q") { 
     print("Quitting")
-    break
   # lists variables present in "execution"
   # They can enter one as an input and it will print it's value
   } else if(input == "ls") { 
@@ -130,7 +129,7 @@ debug.browser <- function() {
   # advances a line, or if a number is specified, advances
   # by the number of lines specified
   } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts)
+    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name)
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
@@ -475,7 +474,7 @@ debug.browser <- function() {
   }
 }
 
-.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
   new.in <- gsub("n", "", input)
