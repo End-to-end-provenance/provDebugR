@@ -129,7 +129,7 @@ debug.browser <- function() {
   # advances a line, or if a number is specified, advances
   # by the number of lines specified
   } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name)
+    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, scripts)
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
@@ -144,7 +144,7 @@ debug.browser <- function() {
   # Moves back by the number of line specified by the user
   # If no lines are specified, moves back one line
   } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
-    new.info <- .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    new.info <- .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, scripts)
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
