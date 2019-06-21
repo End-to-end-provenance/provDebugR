@@ -95,7 +95,7 @@ debug.browser <- function() {
   # It operates similarly to the R browser() function
   while(TRUE) {
     input <- readline(prompt = "Debug> ")
-    .read.input(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    .read.input(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts)
   }
 }
 
@@ -110,6 +110,7 @@ debug.browser <- function() {
 #' @param current.script in the even of sourced scripts this will change to reflect the current
 #' @param pos.lines A vector of line numbers corresponding to lines of the script that had code
 #' @param proc.nodes The procedure nodes, used for extracting the code on a line
+#' @param step.in The step-in table
 #' @param script.name Name of the main script
 #' @param scripts List of all scripts sourced.
 #'
@@ -129,7 +130,7 @@ debug.browser <- function() {
   # advances a line, or if a number is specified, advances
   # by the number of lines specified
   } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts)
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
