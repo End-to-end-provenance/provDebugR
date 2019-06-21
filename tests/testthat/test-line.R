@@ -62,3 +62,12 @@ test_that("error output works", {
   expect_equal(length(line.results), 1)
   expect_equal(nrow(line.results[[1]]), 6)
 })
+
+test.data <- system.file("testdata", "stepin3.json", package = "provDebugR")
+debug.init(test.data)
+
+test_that("no data nodes associated with line", {
+  line.results <- debug.from.line(1, state = T)
+  expect_equal(typeof(line.results) == "list")
+  expect_equivalent(line.results, as.list(rep("NA", 6)))
+})
