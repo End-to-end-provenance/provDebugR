@@ -76,9 +76,11 @@ debug.browser <- function() {
   # Loads variables that may have been present before the script started into 
   # the recontructed environment
   pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
-  if(as.vector(pre.data.nodes)) {
-    pre.data.nodes <- as.list(pre.data.nodes)
+  
+  if(is.atomic(pre.data.nodes)) {
+    pre.data.nodes <- as.data.frame(pre.data.nodes)
   }
+  
   pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
   
   if(nrow(pre.data.nodes) > 0) {
