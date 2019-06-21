@@ -71,6 +71,6 @@ test_that("no data nodes associated with line", {
   expect_equal(typeof(line.results) == "list")
   
   expected <- as.list(rep(NA, 6))
-  names(expected) <- c("var/code", "val", "container" "dim", "type", "script")
+  names(expected) <- c("var/code", "val", "container", "dim", "type", "script")
   expect_equal(line.results, expected)
 })
