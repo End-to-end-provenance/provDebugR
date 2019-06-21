@@ -93,16 +93,12 @@ debug.from.line <- function(..., state = F, script.num = 1) {
   if (length(args) == 0) {
     print("State of all variables at end of execution:")
     ret.val <- .grab.line(max(pos.line), state = T, script.num = 1)
+    return(ret.val)
   } else {
     ret.val <- lapply(args, .grab.line, state, script.num)
     names(ret.val) <- args
+    return(ret.val)
   }
-  
-  # ensure type of returned value is a list
-  if(is.vector(ret.val)) {
-    return(as.list(ret.val))
-  }
-  return(ret.val)
 }
 
 #' This helper function is used to find all procedure or data nodes
