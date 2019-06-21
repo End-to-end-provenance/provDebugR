@@ -474,7 +474,7 @@ debug.browser <- function() {
   }
 }
 
-.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name) {
+.moveForward <- function(input, var.env, current.script, pos.lines, proc.nodes, scripts) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
   new.in <- gsub("n", "", input)
@@ -522,7 +522,7 @@ debug.browser <- function() {
   return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
-.moveBackward <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+.moveBackward <- function(input, var.env, current.script, pos.lines, proc.nodes, scripts) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
   new.in <- gsub("b", "", input)
