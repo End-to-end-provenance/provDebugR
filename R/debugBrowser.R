@@ -279,6 +279,9 @@ debug.browser <- function() {
     # when state is true, but their script nubmer is NA, that's how it is 
     # possible to tell pre-execution variables
     pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
+    if(is.atomic(pre.data.nodes)) {
+      pre.data.nodes <- as.data.frame(pre.data.nodes)
+    }
     pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
     .load.variables(pre.data.nodes, var.env)
   } else {
