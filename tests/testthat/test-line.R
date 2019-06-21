@@ -62,3 +62,19 @@ test_that("error output works", {
   expect_equal(length(line.results), 1)
   expect_equal(nrow(line.results[[1]]), 6)
 })
+
+# case when called from debug.browser
+# and when the first line has no data nodes associated
+test.data <- system.file("testdata", "stepin3.json", package = "provDebugR")
+debug.init(test.data)
+
+test_that("when called from debug.browser", {
+  line.results <- debug.from.line(1, state = T)[[1]]
+  
+  # test dimensions and type
+  expect_true(is.matrix(line.results))
+  expect_equal(dim(line.results), c(1,6))
+  
+  # test content
+  expect_equivalent(as.vector(line.results), rep(NA, 6))
+})

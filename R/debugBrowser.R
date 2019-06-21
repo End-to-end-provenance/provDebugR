@@ -73,18 +73,23 @@ debug.browser <- function() {
             "\n",
             sep=""))
   
-
   # Loads variables that may have been present before the script started into 
   # the recontructed environment
   pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
+  
+  if(is.atomic(pre.data.nodes)) {
+    pre.data.nodes <- as.data.frame(pre.data.nodes)
+  }
+  
   pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
+  
   if(nrow(pre.data.nodes) > 0) {
     .load.variables(pre.data.nodes, var.env)
   } else {
     var.env$vars <- NA
   }
-  
-  
+
+    
   # This loop is the "interactive console" of the program
   # it will repeatedly prompt for an input until the user quits
   # It operates similarly to the R browser() function
@@ -96,7 +101,7 @@ debug.browser <- function() {
       print("Quitting")
       break
     # lists variables present in "execution"
-    # THey can enter one as an input and it will print it's value
+    # They can enter one as an input and it will print it's value
     } else if(input == "ls") { 
       print(var.env$vars)
       
@@ -274,6 +279,9 @@ debug.browser <- function() {
     # when state is true, but their script nubmer is NA, that's how it is 
     # possible to tell pre-execution variables
     pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
+    if(is.atomic(pre.data.nodes)) {
+      pre.data.nodes <- as.data.frame(pre.data.nodes)
+    }
     pre.data.nodes <- pre.data.nodes[is.na(pre.data.nodes$script), ]
     .load.variables(pre.data.nodes, var.env)
   } else {
