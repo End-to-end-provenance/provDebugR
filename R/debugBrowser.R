@@ -95,7 +95,7 @@ debug.browser <- function() {
   # It operates similarly to the R browser() function
   while(TRUE) {
     input <- readline(prompt = "Debug> ")
-    .read.input(input)
+    .read.input(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
   }
 }
 
@@ -103,11 +103,20 @@ debug.browser <- function() {
 #' Operates similarly to the R browser() function
 #'
 #' @name .read.input
-#' @param line A line of user input.
+#'
+#' @param input The user's input.
+#' @param var.env the environment that stores the variables and current line
+#' of "execution"
+#' @param current.script in the even of sourced scripts this will change to reflect the current
+#' @param pos.lines A vector of line numbers corresponding to lines of the script that had code
+#' @param proc.nodes The procedure nodes, used for extracting the code on a line
+#' @param script.name Name of the main script
+#' @param scripts List of all scripts sourced.
+#'
 #' @return nothing
 #'
 #' @noRd
-.read.input <- function(line) {
+.read.input <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
   # If they enter a Q the loop breaks
   if (input == "Q") { 
     print("Quitting")
