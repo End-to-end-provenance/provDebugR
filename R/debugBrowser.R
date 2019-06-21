@@ -117,7 +117,7 @@ debug.browser <- function() {
 #' @return nothing
 #'
 #' @noRd
-.read.input <- function(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts) {
+.read.input <- function(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts) {
   # If they enter a Q the loop breaks
   if (input == "Q") { 
     print("Quitting")
