@@ -95,102 +95,112 @@ debug.browser <- function() {
   # It operates similarly to the R browser() function
   while(TRUE) {
     input <- readline(prompt = "Debug> ")
+    .read.input(input)
+  }
+}
+
+#' This reads a line of user input and acts according to the command received.
+#' Operates similarly to the R browser() function
+#'
+#' @name .read.input
+#' @param line A line of user input.
+#' @return nothing
+#'
+#' @noRd
+.read.input <- function(line) {
+  # If they enter a Q the loop breaks
+  if (input == "Q") { 
+    print("Quitting")
+    break
+  # lists variables present in "execution"
+  # They can enter one as an input and it will print it's value
+  } else if(input == "ls") { 
+    print(var.env$vars)
     
-    # If they enter a Q the loop breaks
-    if (input == "Q") { 
-      print("Quitting")
-      break
-    # lists variables present in "execution"
-    # They can enter one as an input and it will print it's value
-    } else if(input == "ls") { 
-      print(var.env$vars)
-      
-    # advances a line, or if a number is specified, advances
-    # by the number of lines specified
-    } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
-      new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
-      current.script <- new.info$new.script
-      proc.nodes <- new.info$new.nodes
-      pos.lines <- new.info$new.lines
-      
-    # moves "execution" to the end of the script
-    } else if (input == "c") { 
-      # Continue until the "end" of execution
-      var.env$lineIndex <- length(pos.lines)
-      
-      .change.line(var.env, pos.lines, proc.nodes,  current.script)
-      
-    # Moves back by the number of line specified by the user
-    # If no lines are specified, moves back one line
-    } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
-      new.info <- .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
-      current.script <- new.info$new.script
-      proc.nodes <- new.info$new.nodes
-      pos.lines <- new.info$new.lines
-      
-    # This function will print the line that the "execution" is 
-    # currently on or if they specify a number will jump to that line
-    } else if (input == "s") {
-      new.info <- .stepIn(var.env, current.script, pos.lines, proc.nodes, step.in, scripts)
-      current.script <- new.info$new.script
-      proc.nodes <- new.info$new.nodes
-      pos.lines <- new.info$new.lines
-      
-    } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
-      # Clear out the command, if a number is left then 
-      # modify behavior to use the number
-      new.in <- gsub("l", "", input)
-      if(grepl("[[:digit:]]", new.in)) {
-        var.env$lineIndex <- findInterval(as.integer(new.in), pos.lines)
-        .change.line(var.env, pos.lines, proc.nodes, current.script)
-      } else {
-        #Each line will print the code for the line
-        cat(paste(pos.lines[var.env$lineIndex],
-                  ": ",
-                  proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
-                  "\n",
-                  sep=""))
-      }
-    # moves the reconstructed execution environment over to the global environment
-    } else if (input == "mv") { 
-      #transfer environment
-      if(!is.na(var.env$vars[1])){
-        lapply(var.env$vars, function(var){
-          # n = 3 sends to environment that called debug.browser
-          assign(var, get(var, envir = var.env), envir = .GlobalEnv)
-        })
-      } else {
-        cat("Environment empty, nothing to move\n")
-      }
-    # print information on how to use the debugger
-    } else if (input == "help") { 
-      cat(paste("This is a time-traveling debugger for R \n", 
-                "n - Move forward one line\n",
-                "n* - Move forward * number of times (where * is an integer) \n",
-                "b - Move backward one line\n",
-                "b* - Move backward * number of times (where * is an integer)\n",
-                "s - step into a source() call \n",
-                "c - moves to end of \'execution\'\n",
-                "ls - prints name of variables at the current point of \'execution\'\n",
-                "l - print the current line\n",
-                "l* - Move to line * (where * is an integer)\n",
-                "mv - moves the current debugging environment to the Global Environment\n",
-                "help - brings up this dialog \n",
-                "Q - quits the debugger\n"
-                ))
-    # if they supplied a variable in script, print value  
-    } else if(input %in% var.env$vars){ 
-      print(get(input, envir = var.env))
-    # pass their code to interpreter   
-    } else { 
-      tryCatch({
-        testthat::capture_output(ret.val <- eval(parse(text = input), envir = parent.frame(3)))
-        print(ret.val)
-      }, error = function(error.message) {
-        cat(paste("Error: \n", error.message, "\n", sep = ""))
-      })
-      
+  # advances a line, or if a number is specified, advances
+  # by the number of lines specified
+  } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
+    new.info <- .moveForward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    current.script <- new.info$new.script
+    proc.nodes <- new.info$new.nodes
+    pos.lines <- new.info$new.lines
+    
+  # moves "execution" to the end of the script
+  } else if (input == "c") { 
+    # Continue until the "end" of execution
+    var.env$lineIndex <- length(pos.lines)
+    
+    .change.line(var.env, pos.lines, proc.nodes,  current.script)
+    
+  # Moves back by the number of line specified by the user
+  # If no lines are specified, moves back one line
+  } else if (input == "b" | grepl("^b[[:digit:]]", input)) { 
+    new.info <- .moveBackward(input, var.env, current.script, pos.lines, proc.nodes, script.name, scripts)
+    current.script <- new.info$new.script
+    proc.nodes <- new.info$new.nodes
+    pos.lines <- new.info$new.lines
+    
+  # This function will print the line that the "execution" is 
+  # currently on or if they specify a number will jump to that line
+  } else if (input == "s") {
+    new.info <- .stepIn(var.env, current.script, pos.lines, proc.nodes, step.in, scripts)
+    current.script <- new.info$new.script
+    proc.nodes <- new.info$new.nodes
+    pos.lines <- new.info$new.lines
+    
+  } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
+    # Clear out the command, if a number is left then 
+    # modify behavior to use the number
+    new.in <- gsub("l", "", input)
+    if(grepl("[[:digit:]]", new.in)) {
+      var.env$lineIndex <- findInterval(as.integer(new.in), pos.lines)
+      .change.line(var.env, pos.lines, proc.nodes, current.script)
+    } else {
+      #Each line will print the code for the line
+      cat(paste(pos.lines[var.env$lineIndex],
+                ": ",
+                proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
+                "\n",
+                sep=""))
     }
+  # moves the reconstructed execution environment over to the global environment
+  } else if (input == "mv") { 
+    #transfer environment
+    if(!is.na(var.env$vars[1])){
+      lapply(var.env$vars, function(var){
+        # n = 3 sends to environment that called debug.browser
+        assign(var, get(var, envir = var.env), envir = .GlobalEnv)
+      })
+    } else {
+      cat("Environment empty, nothing to move\n")
+    }
+  # print information on how to use the debugger
+  } else if (input == "help") { 
+    cat(paste("This is a time-traveling debugger for R \n", 
+              "n - Move forward one line\n",
+              "n* - Move forward * number of times (where * is an integer) \n",
+              "b - Move backward one line\n",
+              "b* - Move backward * number of times (where * is an integer)\n",
+              "s - step into a source() call \n",
+              "c - moves to end of \'execution\'\n",
+              "ls - prints name of variables at the current point of \'execution\'\n",
+              "l - print the current line\n",
+              "l* - Move to line * (where * is an integer)\n",
+              "mv - moves the current debugging environment to the Global Environment\n",
+              "help - brings up this dialog \n",
+              "Q - quits the debugger\n"
+              ))
+  # if they supplied a variable in script, print value  
+  } else if(input %in% var.env$vars){ 
+    print(get(input, envir = var.env))
+  # pass their code to interpreter   
+  } else { 
+    tryCatch({
+      testthat::capture_output(ret.val <- eval(parse(text = input), envir = parent.frame(3)))
+      print(ret.val)
+    }, error = function(error.message) {
+      cat(paste("Error: \n", error.message, "\n", sep = ""))
+    })  
   }
 }
 
