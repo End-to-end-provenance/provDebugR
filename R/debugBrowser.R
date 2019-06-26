@@ -88,14 +88,16 @@ debug.browser <- function() {
   } else {
     var.env$vars <- NA
   }
-
     
   # This loop is the "interactive console" of the program
   # it will repeatedly prompt for an input until the user quits
   # It operates similarly to the R browser() function
   while(TRUE) {
     input <- readline(prompt = "Debug> ")
-    .read.input(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts)
+    quit <- .read.input(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts)
+    
+    if(quit)
+      break
   }
 }
 
@@ -114,17 +116,20 @@ debug.browser <- function() {
 #' @param script.name Name of the main script
 #' @param scripts List of all scripts sourced.
 #'
-#' @return nothing
+#' @return TRUE if the browser should quit, FALSE otherwise.
 #'
 #' @noRd
 .read.input <- function(input, var.env, current.script, pos.lines, proc.nodes, step.in, script.name, scripts) {
   # If they enter a Q the loop breaks
   if (input == "Q") { 
     print("Quitting")
+    return(TRUE)
+    
   # lists variables present in "execution"
   # They can enter one as an input and it will print it's value
   } else if(input == "ls") { 
     print(var.env$vars)
+    return(FALSE)
     
   # advances a line, or if a number is specified, advances
   # by the number of lines specified
@@ -133,13 +138,14 @@ debug.browser <- function() {
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
+    return(FALSE)
     
   # moves "execution" to the end of the script
   } else if (input == "c") { 
     # Continue until the "end" of execution
     var.env$lineIndex <- length(pos.lines)
-    
     .change.line(var.env, pos.lines, proc.nodes,  current.script)
+    return(FALSE)
     
   # Moves back by the number of line specified by the user
   # If no lines are specified, moves back one line
@@ -148,6 +154,7 @@ debug.browser <- function() {
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
+    return(FALSE)
     
   # This function will print the line that the "execution" is 
   # currently on or if they specify a number will jump to that line
@@ -156,6 +163,7 @@ debug.browser <- function() {
     current.script <- new.info$new.script
     proc.nodes <- new.info$new.nodes
     pos.lines <- new.info$new.lines
+    return(FALSE)
     
   } else if (input == "l" | grepl("^l[[:digit:]]", input)) {
     # Clear out the command, if a number is left then 
@@ -172,6 +180,8 @@ debug.browser <- function() {
                 "\n",
                 sep=""))
     }
+    return(FALSE)
+    
   # moves the reconstructed execution environment over to the global environment
   } else if (input == "mv") { 
     #transfer environment
@@ -183,6 +193,8 @@ debug.browser <- function() {
     } else {
       cat("Environment empty, nothing to move\n")
     }
+    return(FALSE)
+    
   # print information on how to use the debugger
   } else if (input == "help") { 
     cat(paste("This is a time-traveling debugger for R \n", 
@@ -199,16 +211,23 @@ debug.browser <- function() {
               "help - brings up this dialog \n",
               "Q - quits the debugger\n"
               ))
+    return(FALSE)
+    
   # if they supplied a variable in script, print value  
   } else if(input %in% var.env$vars){ 
     print(get(input, envir = var.env))
+    return(FALSE)
+    
   # pass their code to interpreter   
   } else { 
     tryCatch({
       testthat::capture_output(ret.val <- eval(parse(text = input), envir = parent.frame(3)))
       print(ret.val)
+      return(FALSE)
+      
     }, error = function(error.message) {
       cat(paste("Error: \n", error.message, "\n", sep = ""))
+      return(TRUE)
     })  
   }
 }
