@@ -88,7 +88,7 @@ debug.browser <- function() {
   } else {
     var.env$vars <- NA
   }
-    
+  
   # This loop is the "interactive console" of the program
   # it will repeatedly prompt for an input until the user quits
   # It operates similarly to the R browser() function
@@ -538,7 +538,7 @@ debug.browser <- function() {
   
   .change.line(var.env, pos.lines, proc.nodes,  current.script)
   
-  return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
+  invisible(list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
 .moveBackward <- function(input, var.env, current.script, pos.lines, proc.nodes, scripts) {
@@ -585,7 +585,7 @@ debug.browser <- function() {
   }
   
   .change.line(var.env, pos.lines, proc.nodes, current.script)
-  return (list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
+  invisible(list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
 .stepIn <- function(var.env, current.script, pos.lines, proc.nodes, step.in, scripts) {
