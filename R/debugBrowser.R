@@ -300,11 +300,9 @@ debug.browser <- function() {
   } else {
     # Print the line number they are on as well as 
     # the line of code 
-    cat(paste(pos.lines[var.env$lineIndex],
-              ": ",
-              proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name,
-              "\n",
-              sep=""))
+    line <- na.omit(proc.nodes[proc.nodes$startLine == pos.lines[var.env$lineIndex], ]$name)[[1]]
+    cat(paste(pos.lines[var.env$lineIndex], ": ", line, "\n", sep=""))
+    
   }
   # The environment will likely have variables from past line of execution 
   # clear it but keep the index of lines
@@ -537,7 +535,6 @@ debug.browser <- function() {
   }
   
   .change.line(var.env, pos.lines, proc.nodes,  current.script)
-  
   invisible(list (new.script=current.script, new.nodes=proc.nodes, new.lines=pos.lines))
 }
 
