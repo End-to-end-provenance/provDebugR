@@ -157,7 +157,7 @@ debug.browser <- function() {
   # moves "execution" to the end of the script
   } else if (input == "c") { 
     # Continue until the "end" of execution
-    var.env$lineIndex <- length(pos.lines)
+    var.env$lineIndex <- length(line.info$pos.lines)
     .change.line(var.env, line.info)
     return(FALSE)
     
