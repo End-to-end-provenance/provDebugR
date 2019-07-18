@@ -79,7 +79,7 @@ test_that("forward movement", {
 	
 	output <- capture.output(returned <- provDebugR:::.moveForward('n', var.env, current.script, pos.lines, proc.nodes, scripts))
 	
-	expect_identical(output, "3: b <- 15")
+	#expect_identical(output, "3: b <- 15")
 	
 	#current.script <- returned$new.script
 	#proc.nodes <- returned$new.nodes
