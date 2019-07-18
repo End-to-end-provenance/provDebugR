@@ -59,25 +59,25 @@ test_that( "change line", {
 # TODO: also need to check returned table as well!
 test_that("forward movement", {
 	
-	test.file <- system.file("testdata", "stepin3.json", package = "provDebugR")
-	debug.init(test.file)
+	#test.file <- system.file("testdata", "stepin3.json", package = "provDebugR")
+	#debug.init(test.file)
 
-	prov <- provParseR::prov.parse(test.file)
-	current.script <- 1
+	#prov <- provParseR::prov.parse(test.file)
+	#current.script <- 1
 
-	proc.nodes <- provParseR::get.proc.nodes(provParseR::prov.parse(test.file))
-	pos.lines <- stats::na.omit(proc.nodes$startLine)
+	#proc.nodes <- provParseR::get.proc.nodes(provParseR::prov.parse(test.file))
+	#pos.lines <- stats::na.omit(proc.nodes$startLine)
 
-	scripts <- provParseR::get.scripts(prov)
+	#scripts <- provParseR::get.scripts(prov)
 
-	var.env <- new.env(parent = emptyenv())
-	var.env$call.stack <- list()
-	var.env$lineIndex <- 2		# mirroring value of var.env in .read.input (it's 2, not 1)
-	var.env$vars <- NA
+	#var.env <- new.env(parent = emptyenv())
+	#var.env$call.stack <- list()
+	#var.env$lineIndex <- 2		# mirroring value of var.env in .read.input (it's 2, not 1)
+	#var.env$vars <- NA
 	
-	returned <- NULL
+	#returned <- NULL
 	
-	output <- capture.output(returned <- provDebugR:::.moveForward('n', var.env, current.script, pos.lines, proc.nodes, scripts))
+	#output <- capture.output(returned <- provDebugR:::.moveForward('n', var.env, current.script, pos.lines, proc.nodes, scripts))
 	
 	#expect_identical(output, "3: b <- 15")
 	
