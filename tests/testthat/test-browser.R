@@ -41,21 +41,15 @@ test_that("step-in table", {
 })
 
 
-test.file <- system.file("testdata", "stepin3.json", package = "provDebugR")
-debug.init(test.file)
+test_that( "change line", {
+	
+	
+	
+})
 
-prov <- provParseR::prov.parse(test.file)
-current.script <- 1
 
-proc.nodes <- provParseR::get.proc.nodes(provParseR::prov.parse(test.file))
-pos.lines <- stats::na.omit(proc.nodes$startLine)
 
-scripts <- provParseR::get.scripts(prov)
 
-var.env <- new.env(parent = emptyenv())
-var.env$call.stack <- list()
-var.env$lineIndex <- 1
-var.env$vars <- NA
 
 
 # params:
@@ -65,11 +59,41 @@ var.env$vars <- NA
 # TODO: also need to check returned table as well!
 test_that("forward movement", {
 	
+	test.file <- system.file("testdata", "stepin3.json", package = "provDebugR")
+	debug.init(test.file)
+
+	prov <- provParseR::prov.parse(test.file)
+	current.script <- 1
+
+	proc.nodes <- provParseR::get.proc.nodes(provParseR::prov.parse(test.file))
+	pos.lines <- stats::na.omit(proc.nodes$startLine)
+
+	scripts <- provParseR::get.scripts(prov)
+
+	var.env <- new.env(parent = emptyenv())
+	var.env$call.stack <- list()
+	var.env$lineIndex <- 2		# mirroring value of var.env in .read.input (it's 2, not 1)
+	var.env$vars <- NA
+	
 	returned <- NULL
 	
 	output <- capture.output(returned <- provDebugR:::.moveForward('n', var.env, current.script, pos.lines, proc.nodes, scripts))
+	
 	expect_identical(output, "3: b <- 15")
 	
+	#current.script <- returned$new.script
+	#proc.nodes <- returned$new.nodes
+	#pos.lines <- returned$new.lines
+	
+	#var.env$b <- 15
+	#var.env$lineIndex <- 6
+	#var.env$vars <- 'b'
+	
+	#output <- capture.output(returned <- provDebugR:::.moveForward('n', var.env, current.script, pos.lines, proc.nodes, scripts))
+	
+	#output.2 <<- output
+	
+	#expect_identical(output, "6: d <- 35")
 	
 })
 
