@@ -58,7 +58,57 @@ debug.browser <- function()
 
 .read.input <- function(input, var.env)
 {
-	# TODO
+	# Quit
+	if(input == "Q")
+	{
+		print("Quitting")
+		return(TRUE)
+	}
+	
+	# TODO - MOVEMENT HERE
+	
+	# move forward - TODO implementation of .move.forward
+	else if(input == "n" || grepl("^n[[:digit:]]", input))
+	{
+		.move.forward(input, var.env)
+		return(FALSE)
+	}
+	
+	# TODO - move to end of script
+	
+	# move backwards - TODO implementation of .move.backwards
+	else if(input == "b" || grepl("^n[[:digit:]]", input))
+	{
+		.move.backwards(input, var.env)
+		return(FALSE)
+	}
+	
+	# list variables present in "execution"
+	# users can then enter a variable name and its value will be printed
+	else if(input == "ls")
+	{
+		print(ls(var.env$vars))
+		return(FALSE)
+	}
+	
+	else if(input %in% ls(var.env$vars))
+	{
+		print(get(input, envir = var.env$vars))
+		return(FALSE)
+	}
+	
+	# help
+	else if(input == "help")
+	{
+		.print.help()
+		return(FALSE)
+	}
+	
+	# TODO - else block
+	else
+	{
+		
+	}
 }
 
 
@@ -226,4 +276,24 @@ debug.browser <- function()
 .get.line.num <- function(proc.node.id, proc.nodes)
 {
 	return( proc.nodes$startLine[proc.nodes$id == proc.node.id] )
+}
+
+# prints help for debugger
+.print.help <- function()
+{
+	str <- paste("This is a time-traveling debugger for R \n", 
+				 "n - Move forward one line\n",
+				 "n* - Move forward * number of times (where * is an integer) \n",
+				 "b - Move backward one line\n",
+				 "b* - Move backward * number of times (where * is an integer)\n",
+				 "s - step into a source() call \n",
+				 "c - moves to end of \'execution\'\n",
+				 "ls - prints name of variables at the current point of \'execution\'\n",
+				 "l - print the current line\n",
+				 "l* - Move to line * (where * is an integer)\n",
+				 "mv - moves the current debugging environment to the Global Environment\n",
+				 "help - brings up this dialog \n",
+				 "Q - quits the debugger\n"
+			))
+	cat(str)
 }
