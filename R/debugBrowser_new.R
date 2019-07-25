@@ -71,37 +71,57 @@ debug.browser <- function()
 	else if(input == "n" || grepl("^n[[:digit:]]", input))
 	{
 		.move.forward(input, var.env)
-		return(FALSE)
 	}
-	
-	# TODO - move to end of script
 	
 	# move backwards - TODO implementation of .move.backwards
 	else if(input == "b" || grepl("^n[[:digit:]]", input))
 	{
 		.move.backwards(input, var.env)
-		return(FALSE)
 	}
+	
+	# TODO - continue until end of script
+	else if(input == "c")
+	{
+		# TODO
+	}
+	
+	# TODO - step in
+	else if(input == "s")
+	{
+		.step.in(var.env)
+	}
+	
+	# TODO - l, code to interpretor
 	
 	# list variables present in "execution"
 	# users can then enter a variable name and its value will be printed
 	else if(input == "ls")
 	{
 		print(ls(var.env$vars))
-		return(FALSE)
 	}
 	
 	else if(input %in% ls(var.env$vars))
 	{
 		print(get(input, envir = var.env$vars))
-		return(FALSE)
+	}
+	
+	# move variables to global
+	else if(input == "mv")
+	{
+		if(length(ls(var.env$vars)) == 0)
+		{
+			cat("Environment is empty, nothing to move.\n")
+		}
+		else
+		{
+			# TODO
+		}
 	}
 	
 	# help
 	else if(input == "help")
 	{
 		.print.help()
-		return(FALSE)
 	}
 	
 	# TODO - else block
@@ -109,6 +129,9 @@ debug.browser <- function()
 	{
 		
 	}
+	
+	# continue interactive loop
+	return(FALSE)
 }
 
 
@@ -254,6 +277,12 @@ debug.browser <- function()
 
 	# remove the temporary loading environment. the loaded variables are in vars.
 	rm(list=ls(load.env), envir = load.env)
+}
+
+# clears the environment of loaded variables
+.clear.environment <- function(var.env)
+{
+	var.env$vars <- new.env(parent = var.env)
 }
 
 # for this current execution level, get the list of procedure nodes to step through
