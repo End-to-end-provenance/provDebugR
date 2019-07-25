@@ -77,6 +77,9 @@ debug.browser <- function() {
   # the recontructed environment
   pre.data.nodes <- debug.from.line(pos.lines[1], state = T)[[1]]
   
+  # EF EDITS
+  pre.data.nodes <<- pre.data.nodes
+  
   if(is.atomic(pre.data.nodes)) {
     pre.data.nodes <- as.data.frame(pre.data.nodes)
   }
@@ -150,7 +153,14 @@ debug.browser <- function() {
     
   # advances a line, or if a number is specified, advances
   # by the number of lines specified
-  } else if (input == "n" | grepl("^n[[:digit:]]", input))  { 
+  } else if (input == "n" | grepl("^n[[:digit:]]", input))  {
+  	
+  	# EF EDITS
+  	var.env <<- var.env
+  	line.info <<- line.info
+  	scripts <<- scripts
+  	
+  	
     .moveForward(input, var.env, line.info, scripts)
     return(FALSE)
     
@@ -315,6 +325,9 @@ debug.browser <- function() {
     # the line of code 
     line <- na.omit(line.info$proc.nodes[line.info$proc.nodes$startLine == line.info$pos.lines[var.env$lineIndex], ]$name)[[1]]
     cat(paste(line.info$pos.lines[var.env$lineIndex], ": ", line, "\n", sep=""))
+    
+    # EF EDITS
+    line.1 <<- line
     
   }
   # The environment will likely have variables from past line of execution 
