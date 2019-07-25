@@ -10,9 +10,7 @@
 debug.browser <- function()
 {
 	if(!.debug.env$has.graph)
-	{
 		stop("debug.init must be run first")
-	}
 	
 	# the variable environment
 	# contains the following:
@@ -104,18 +102,6 @@ debug.browser <- function()
 	
 	# TODO - l, code to interpretor
 	
-	# list variables present in "execution"
-	# users can then enter a variable name and its value will be printed
-	else if(input == "ls")
-	{
-		print(ls(var.env$vars))
-	}
-	
-	else if(input %in% ls(var.env$vars))
-	{
-		print(get(input, envir = var.env$vars))
-	}
-	
 	# move variables to global
 	else if(input == "mv")
 	{
@@ -128,6 +114,20 @@ debug.browser <- function()
 			# TODO
 		}
 	}
+	
+	# list variables present in "execution"
+	# users can then enter a variable name and its value will be printed
+	else if(input == "ls")
+	{
+		print(ls(var.env$vars))
+	}
+	
+	else if(input %in% ls(var.env$vars))
+	{
+		print(get(input, envir = var.env$vars))
+	}
+	
+
 	
 	# TODO - else block
 	else
@@ -164,6 +164,9 @@ debug.browser <- function()
 .load.variables <- function(vars, line.num, script.num)
 {
 	data.nodes <- debug.from.line(line.num, state = T, script.num = script.num)[[1]]
+	
+	# clear environment first!
+	rm(list = ls(vars), envir = vars)
 	
 	# convert to data frame if resulting table is a matrix (all cells have the same type)
 	if(is.atomic(data.nodes))

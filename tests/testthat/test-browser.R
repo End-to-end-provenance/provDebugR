@@ -64,3 +64,29 @@ test_that(".read.input (moving to correct branch)", {
 	# TODO - code to interpreter
 	
 })
+
+# .load.variables - WIP
+test_that(".load.variables", {
+	
+	json <- system.file("testdata", "stepin3.json", package = "provDebugR")
+	debug.init(json)
+	
+	vars <- new.env()
+	
+	# no variables to load
+	.load.variables(vars, 1, 1)
+	expect_equal(length(ls(vars)), 0)
+	
+	# not a snapshot
+	
+	# CASE: ENVIRONMENT NEEDS TO BE CLEARED BEFORE LOADING VARIABLES!!!
+})
+
+
+# TODO - .clear.environment
+
+# TODO - .get.line.num
+
+# TODO - .print.line
+
+# TODO -  .get.step.list
