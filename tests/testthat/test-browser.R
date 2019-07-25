@@ -23,11 +23,10 @@ test_that(".read.input (moving to correct branch)", {
 	# TMP - dummy var.env
 	var.env = new.env()
 	
-	# quit variable (determines if interactive loop of browser should terminate)
 	quit <- FALSE
 	
 	# quit
 	printed <- capture_output( quit <- .read.input("Q", var.env) )
-	expect_equivalent("printed", "Quitting")
+	expect_equivalent(printed, "Quitting")
 	expect_true(quit)
 })

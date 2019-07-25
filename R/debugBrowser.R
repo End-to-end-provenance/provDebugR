@@ -66,8 +66,8 @@ debug.browser <- function()
 	# Quit
 	if(input == "Q")
 	{
-		print("Quitting")
-		invisible(TRUE)
+		cat("Quitting")
+		return(invisible(TRUE))
 	}
 	
 	# TODO - MOVEMENT HERE
@@ -136,7 +136,7 @@ debug.browser <- function()
 	}
 	
 	# continue interactive loop
-	invisible(FALSE)
+	return(invisible(FALSE))
 }
 
 .move.forward <- function(input, var.env)
