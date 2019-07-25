@@ -9,6 +9,11 @@
 # main function!
 debug.browser <- function()
 {
+	if(!.debug.env$has.graph)
+	{
+		stop("debug.init must be run first")
+	}
+	
 	# the variable environment
 	# contains the following:
 	var.env <- new.env(parent = emptyenv())
