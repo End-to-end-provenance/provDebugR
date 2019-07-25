@@ -69,6 +69,12 @@ debug.browser <- function()
 		cat("Quitting")
 		return(invisible(TRUE))
 	}
+
+	# help
+	else if(input == "help")
+	{
+		.print.help()
+	}
 	
 	# TODO - MOVEMENT HERE
 	
@@ -121,12 +127,6 @@ debug.browser <- function()
 		{
 			# TODO
 		}
-	}
-	
-	# help
-	else if(input == "help")
-	{
-		.print.help()
 	}
 	
 	# TODO - else block
