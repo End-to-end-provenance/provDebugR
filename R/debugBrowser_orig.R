@@ -29,7 +29,7 @@
 #' \dontrun{
 #' debug.browser()
 #' }
-debug.browser <- function() {
+debug.browser.0 <- function() {
   if(!.debug.env$has.graph) {
     stop("debug.init must be run first")
   }
@@ -139,7 +139,7 @@ debug.browser <- function() {
 #' @return TRUE if the browser should quit, FALSE otherwise.
 #'
 #' @noRd
-.read.input <- function(input, var.env, line.info, step.in, script.name, scripts) {
+.read.input.0 <- function(input, var.env, line.info, step.in, script.name, scripts) {
   # If they enter a Q the loop breaks
   if (input == "Q") { 
     print("Quitting")
@@ -258,7 +258,7 @@ debug.browser <- function() {
 #' @return The step-in table, or an empty data frame if there are no step-in locations.
 #'
 #' @noRd
-.get.step.in.table <- function(proc.nodes) {
+.get.step.in.table.0 <- function(proc.nodes) {
   
   # Finish nodes provide the necesssary information for when it is
   # possible to step-in and where to step back out to 
@@ -308,7 +308,7 @@ debug.browser <- function() {
 #' @return nothing
 #' @noRd
 #'
-.change.line <- function(var.env, line.info) {
+.change.line.0 <- function(var.env, line.info) {
   
   # if they choose to go past the amount of lines for execution
   # set it to the end and print they've reached the end
@@ -386,7 +386,7 @@ debug.browser <- function() {
 #' @return nothing
 #'
 #' @noRd
-.clear.environment <- function(var.env) {
+.clear.environment.0 <- function(var.env) {
   temp.index <- var.env$lineIndex
   temp.stack <- var.env$call.stack
   rm(list=ls(var.env), envir = var.env)
@@ -396,7 +396,7 @@ debug.browser <- function() {
 }
 
 # TODO documentation
-.load.variables <- function(line.df, var.env) {
+.load.variables.0 <- function(line.df, var.env) {
   # A matrix means no variables were present at that point in execution
   if(class(line.df) != "matrix"){
 
@@ -518,7 +518,7 @@ debug.browser <- function() {
 }
 
 # TODO documentation
-.moveForward <- function(input, var.env, line.info, scripts) {
+.moveForward.0 <- function(input, var.env, line.info, scripts) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
   new.in <- gsub("n", "", input)
@@ -565,7 +565,7 @@ debug.browser <- function() {
 }
 
 # TODO documentation
-.moveBackward <- function(input, var.env, line.info, scripts) {
+.moveBackward.0 <- function(input, var.env, line.info, scripts) {
   # Clear out the command, if a number is left then 
   # modify behavior to use the number
   new.in <- gsub("b", "", input)
@@ -613,7 +613,7 @@ debug.browser <- function() {
 
 # TODO documentation
 # Step into a sourced script. 
-.stepIn <- function(var.env, line.info, step.in, scripts) {
+.stepIn.0 <- function(var.env, line.info, step.in, scripts) {
   if(length(step.in) != 0) {
     
     # Grab the possible step-in places for the current script only
