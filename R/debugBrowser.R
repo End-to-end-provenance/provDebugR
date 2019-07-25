@@ -179,7 +179,7 @@ debug.browser <- function()
 	# load variables!
 	# the rest of this function is from the original verision of .load.variables
 	# the load process uses a temporary environment, which is later removed.
-	load.env <- new env()
+	load.env <- new.env()
 	
 	# Assign each variable and it's value to the created environment
 	apply(data.nodes, 1, function(row)
@@ -343,6 +343,6 @@ debug.browser <- function()
 				 "mv - moves the current debugging environment to the Global Environment\n",
 				 "help - brings up this dialog \n",
 				 "Q - quits the debugger\n"
-			))
+			)
 	cat(str)
 }
