@@ -44,7 +44,7 @@ debug.browser <- function()
 	cat("Debugger initialized, type \"help\" for more information or Q to quit\n")
 	cat(paste(var.env$scripts$script[1L]), "\n", sep="")
 	
-	# Print out the code for the firstt procedure node
+	# Print out the code for the first procedure node
 	.print.line(var.env$current.proc, var.env$proc.nodes)
 	
 	# Start "interactive conole" loop!
@@ -67,7 +67,7 @@ debug.browser <- function()
 	if(input == "Q")
 	{
 		print("Quitting")
-		return(TRUE)
+		invisible(TRUE)
 	}
 	
 	# TODO - MOVEMENT HERE
@@ -136,7 +136,22 @@ debug.browser <- function()
 	}
 	
 	# continue interactive loop
-	return(FALSE)
+	invisible(FALSE)
+}
+
+.move.forward <- function(input, var.env)
+{
+	cat("in .move.forward")
+}
+
+.move.backwards <- function(input, var.env)
+{
+	cat("in .move.backwards")
+}
+
+.step.in <- function(var.env)
+{
+	cat("in .step.in")
 }
 
 
