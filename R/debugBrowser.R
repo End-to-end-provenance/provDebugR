@@ -165,7 +165,7 @@ debug.browser <- function()
 {
 	data.nodes <- debug.from.line(line.num, state = T, script.num = script.num)[[1]]
 	
-	# clear environment first!
+	# clear environment before loading variables!
 	rm(list = ls(vars), envir = vars)
 	
 	# convert to data frame if resulting table is a matrix (all cells have the same type)
