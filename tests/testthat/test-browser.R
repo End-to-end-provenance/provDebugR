@@ -26,28 +26,28 @@ test_that(".read.input (moving to correct branch)", {
 	quit <- FALSE
 	
 	# quit
-	printed <- capture_output( quit <- .read.input("Q", var.env) )
+	printed <- capture_output( quit <- provDebugR:::.read.input("Q", var.env) )
 	expect_equivalent(printed, "Quitting")
 	expect_true(quit)
 	
 	# help
-	printed <- capture_output( quit <- .read.input("help", var.env) )
+	printed <- capture_output( quit <- provDebugR:::.read.input("help", var.env) )
 	expect_false(quit)
 	
 	# TODO - move forward
-	printed <- capture_output( quit <- .read.input("n", var.env) )
+	printed <- capture_output( quit <- provDebugR:::.read.input("n", var.env) )
 	expect_equivalent(printed, "in .move.forward")
 	expect_false(quit)
 	
 	# TODO - move backwards
-	printed <- capture_output( quit <- .read.input("b", var.env) )
+	printed <- capture_output( quit <- provDebugR:::.read.input("b", var.env) )
 	expect_equivalent(printed, "in .move.backwards")
 	expect_false(quit)
 	
 	# TODO - continue to end of script
 	
 	# TODO - step in
-	printed <- capture_output( quit <- .read.input("s", var.env) )
+	printed <- capture_output( quit <- provDebugR:::.read.input("s", var.env) )
 	expect_equivalent(printed, "in .step.in")
 	expect_false(quit)
 	
@@ -68,19 +68,28 @@ test_that(".read.input (moving to correct branch)", {
 # .load.variables - WIP
 test_that(".load.variables", {
 	
+	vars <- new.env()
+	
 	json <- system.file("testdata", "stepin3.json", package = "provDebugR")
 	debug.init(json)
 	
-	vars <- new.env()
-	
 	# no variables to load
-	.load.variables(vars, 1, 1)
+	provDebugR:::.load.variables(vars, 1, 1)
 	expect_equal(length(ls(vars)), 0)
 	
 	# not a snapshot
-	.load.variables(vars, 3, 1)
+	provDebugR:::.load.variables(vars, 3, 1)
 	expect_equal(length(ls(vars)), 1)
 	expect_equal(vars$b, 15)
+	
+	# prov folder can not be found
+	# also tests that environment is cleared before loading variables
+	json <- system.file("testdata", "noProvDir.json", package = "provDebugR")
+	debug.init(json)
+	
+	provDebugR:::.load.variables(vars, 2, 1)
+	expect_equal(length(ls(vars)), 1)
+	expect_equal(vars$a, "SNAPSHOT/MISSING PROVENANCE")
 	
 	# TO TEST: CASE: ENVIRONMENT NEEDS TO BE CLEARED BEFORE LOADING VARIABLES!!!
 	
