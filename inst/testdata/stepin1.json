@@ -7,7 +7,7 @@
 	"agent" : {
 		"rdt:a1": {
 			"rdt:tool.name": "rdtLite",
-			"rdt:tool.version": "1.1.0",
+			"rdt:tool.version": "1.1.1",
 			"rdt:json.version": "2.2"
 		}
 	},
@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "stepin1.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.91",
+			"rdt:elapsedTime": "0.98",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(rdtLite)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.03",
+			"rdt:elapsedTime": "0.05",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "source1.r",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.04",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -56,7 +56,7 @@
 		"rdt:p5": {
 			"rdt:name": "source1.r",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -77,17 +77,6 @@
 
 	"entity" : {
 		"rdt:d1": {
-			"rdt:name": "source1.r",
-			"rdt:value": "data/1-source1.r",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
-			"rdt:type": "File",
-			"rdt:scope": "undefined",
-			"rdt:fromEnv": false,
-			"rdt:hash": "75a1bc24bb03528521bcf3a08e5534a8",
-			"rdt:timestamp": "2019-06-19T09.58.26EDT",
-			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/source1.r"
-		},
-		"rdt:d2": {
 			"rdt:name": "x",
 			"rdt:value": "10",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
@@ -107,12 +96,12 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/stepin1.R",
 			"rdt:scriptTimeStamp": "2019-06-19T09.57.33EDT",
-			"rdt:totalElapsedTime": "1.04",
+			"rdt:totalElapsedTime": "1.09",
 			"rdt:sourcedScripts": "source1.r",
 			"rdt:sourcedScriptTimeStamps": "2019-06-19T09.34.47EDT",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
 			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_stepin1",
-			"rdt:provTimestamp": "2019-06-19T09.58.25EDT",
+			"rdt:provTimestamp": "2019-07-26T11.25.29EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -166,7 +155,7 @@
 		},
 		"rdt:l7": {
 			"name": "rdtLite",
-			"version": "1.1.0",
+			"version": "1.1.1",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -216,14 +205,7 @@
 	"wasGeneratedBy" : {
 		"rdt:pd1": {
 			"prov:activity": "rdt:p4",
-			"prov:entity": "rdt:d2"
-		}
-	},
-
-	"used" : {
-		"rdt:dp1": {
-			"prov:entity": "rdt:d1",
-			"prov:activity": "rdt:p4"
+			"prov:entity": "rdt:d1"
 		}
 	}
 }

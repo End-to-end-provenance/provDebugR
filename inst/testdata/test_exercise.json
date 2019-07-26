@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "test_exercise.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.812",
+			"rdt:elapsedTime": "1.08",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "a <- x",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.06",
+			"rdt:elapsedTime": "0.03",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "test_exercise.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.006",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -61,17 +61,17 @@
 		"rdt:environment": {
 			"rdt:name": "environment",
 			"rdt:architecture": "x86_64",
-			"rdt:operatingSystem": "darwin15.6.0",
+			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
-			"rdt:script": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts/test_exercise.R",
-			"rdt:scriptTimeStamp": "2018-10-01T13.45.42EDT",
-			"rdt:totalElapsedTime": "0.878",
+			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/test_exercise.R",
+			"rdt:scriptTimeStamp": "2019-06-18T15.55.03EDT",
+			"rdt:totalElapsedTime": "1.11",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
-			"rdt:workingDirectory": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts",
-			"rdt:provDirectory": "/Users/blerner/Documents/Process/DataProvenance/workspace/provDebugR/inst/testscripts/prov_test_exercise",
-			"rdt:provTimestamp": "2019-06-14T15.21.02EDT",
+			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
+			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_test_exercise",
+			"rdt:provTimestamp": "2019-07-26T11.25.15EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

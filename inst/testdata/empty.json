@@ -7,7 +7,7 @@
 	"agent" : {
 		"rdt:a1": {
 			"rdt:tool.name": "rdtLite",
-			"rdt:tool.version": "1.1.0",
+			"rdt:tool.version": "1.1.1",
 			"rdt:json.version": "2.2"
 		}
 	},
@@ -26,7 +26,7 @@
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
 			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_empty",
-			"rdt:provTimestamp": "2019-06-18T16.01.40EDT",
+			"rdt:provTimestamp": "2019-07-26T11.25.09EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -79,14 +79,6 @@
 			}
 		},
 		"rdt:l7": {
-			"name": "rdtLite",
-			"version": "1.1.0",
-			"prov:type": {
-				"$": "prov:Collection",
-				"type": "xsd:QName"
-			}
-		},
-		"rdt:l8": {
 			"name": "stats",
 			"version": "3.6.0",
 			"prov:type": {
@@ -94,7 +86,7 @@
 				"type": "xsd:QName"
 			}
 		},
-		"rdt:l9": {
+		"rdt:l8": {
 			"name": "utils",
 			"version": "3.6.0",
 			"prov:type": {

@@ -14,9 +14,9 @@
 
 	"activity" : {
 		"rdt:p1": {
-			"rdt:name": "stepin0.R",
+			"rdt:name": "noProvDir.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "1.34",
+			"rdt:elapsedTime": "1.09",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -24,17 +24,17 @@
 			"rdt:endCol": "NA"
 		},
 		"rdt:p2": {
-			"rdt:name": "a <- 5",
+			"rdt:name": "a <- matrix(2,5,5)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 1,
+			"rdt:startLine": 2,
 			"rdt:startCol": 1,
-			"rdt:endLine": 1,
-			"rdt:endCol": 6
+			"rdt:endLine": 2,
+			"rdt:endCol": 18
 		},
 		"rdt:p3": {
-			"rdt:name": "stepin0.R",
+			"rdt:name": "noProvDir.R",
 			"rdt:type": "Finish",
 			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
@@ -48,8 +48,8 @@
 	"entity" : {
 		"rdt:d1": {
 			"rdt:name": "a",
-			"rdt:value": "5",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
+			"rdt:value": "[1,]\t2\t2\t2\t2\t2",
+			"rdt:valType": "{\"container\":\"matrix\", \"dimension\":[5,5], \"type\":[\"numeric\"]}",
 			"rdt:type": "Data",
 			"rdt:scope": "R_GlobalEnv",
 			"rdt:fromEnv": false,
@@ -64,14 +64,14 @@
 			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
-			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/stepin0.R",
-			"rdt:scriptTimeStamp": "2019-06-19T09.51.49EDT",
-			"rdt:totalElapsedTime": "1.36",
+			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/noProvDir.R",
+			"rdt:scriptTimeStamp": "2019-07-26T11.18.27EDT",
+			"rdt:totalElapsedTime": "1.1",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
-			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_stepin0",
-			"rdt:provTimestamp": "2019-07-26T11.25.26EDT",
+			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_noProvDir",
+			"rdt:provTimestamp": "2019-07-26T11.25.35EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
