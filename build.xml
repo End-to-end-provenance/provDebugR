@@ -53,13 +53,15 @@
 			<param name="theFile" value="noProvDir.R"/>
 			<param name="snapshot.size" value='5'/>
 		</antcall>
+		<antcall target="json">
+			<param name="theFile" value="loadVars.R"/>
+			<param name="snapshot.size" value='5'/>
+			<param name="delete.dir" value="false"/>
+		</antcall>
 	</target>
 	
 	<target name="json">
 		<!-- default values of parameters to prov.run -->
-		<condition property="prov.dir" value='.'>
-			<not><isset property="prov.dir"/></not>
-		</condition>
 		<condition property="snapshot.size" value='0'>
 			<not><isset property="snapshot.size"/></not>
 		</condition>
@@ -71,11 +73,11 @@
 		
 		<!-- call rdtLite::prov.run, move prov.json file to testdata folder -->
 		<echo message="${theFile}"/>
-		<exec executable="Rscript" dir="inst/testscripts">
-			<arg line="-e &quot;rdtLite::prov.run('${theFile}', prov.dir='${prov.dir}', snapshot.size=${snapshot.size})&quot;"/>
+		<exec executable="Rscript" dir="inst">
+			<arg line="-e &quot;rdtLite::prov.run('testscripts/${theFile}', prov.dir='testdata', snapshot.size=${snapshot.size})&quot;"/>
 		</exec>
 		<basename property="scriptname" file="${theFile}" suffix="R" />
-		<move file="inst/testscripts/prov_${scriptname}/prov.json" tofile="inst/testdata/${scriptname}.json" />
+		<move file="inst/testdata/prov_${scriptname}/prov.json" tofile="inst/testdata/${scriptname}.json" />
 		
 		<!-- delete prov directory if it is not needed anymore -->
 		<antcall if:true="${delete.dir}" target="delete.prov.dir"/>
@@ -83,7 +85,7 @@
 	
 	<!-- delete prov directory -->
 	<target name="delete.prov.dir">
-		<delete dir="inst/testscripts/prov_${scriptname}" />
+		<delete dir="inst/testdata/prov_${scriptname}" />
 	</target>
 	
 	<target name="check" depends="build">

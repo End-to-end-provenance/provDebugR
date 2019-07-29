@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "test.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.78",
+			"rdt:elapsedTime": "0.96",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "a <- 5",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -46,7 +46,7 @@
 		"rdt:p4": {
 			"rdt:name": "y <- 2",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -86,7 +86,7 @@
 		"rdt:p8": {
 			"rdt:name": "j <- i",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 8,
 			"rdt:startCol": 1,
@@ -136,7 +136,7 @@
 		"rdt:p13": {
 			"rdt:name": "names(j) <- c(\"name\", \"length\", \"value\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 18,
 			"rdt:startCol": 1,
@@ -194,19 +194,9 @@
 			"rdt:endCol": 17
 		},
 		"rdt:p19": {
-			"rdt:name": "y <- 9",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 34,
-			"rdt:startCol": 1,
-			"rdt:endLine": 34,
-			"rdt:endCol": 6
-		},
-		"rdt:p20": {
 			"rdt:name": "test.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.03",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -393,11 +383,11 @@
 			"rdt:location": ""
 		},
 		"rdt:d17": {
-			"rdt:name": "y",
-			"rdt:value": "9",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
+			"rdt:name": "error.msg",
+			"rdt:value": "Error in file(filename, \"r\", encoding = encoding): cannot open the connection\n",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
 			"rdt:timestamp": "",
@@ -412,12 +402,12 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/test.R",
 			"rdt:scriptTimeStamp": "2019-06-18T15.55.03EDT",
-			"rdt:totalElapsedTime": "0.9",
+			"rdt:totalElapsedTime": "1.1",
 			"rdt:sourcedScripts": "test3.R",
-			"rdt:sourcedScriptTimeStamps": "2019-06-18T15.55.03EDT",
-			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
-			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_test",
-			"rdt:provTimestamp": "2019-07-26T13.45.50EDT",
+			"rdt:sourcedScriptTimeStamps": null,
+			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
+			"rdt:provDirectory": "testdata/prov_test",
+			"rdt:provTimestamp": "2019-07-29T12.00.56EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -559,10 +549,6 @@
 		"rdt:pp18": {
 			"prov:informant": "rdt:p18",
 			"prov:informed": "rdt:p19"
-		},
-		"rdt:pp19": {
-			"prov:informant": "rdt:p19",
-			"prov:informed": "rdt:p20"
 		}
 	},
 
@@ -632,7 +618,7 @@
 			"prov:entity": "rdt:d16"
 		},
 		"rdt:pd17": {
-			"prov:activity": "rdt:p19",
+			"prov:activity": "rdt:p18",
 			"prov:entity": "rdt:d17"
 		}
 	},

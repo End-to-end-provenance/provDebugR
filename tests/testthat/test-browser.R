@@ -91,8 +91,6 @@ test_that(".load.variables", {
 	expect_equal(length(ls(vars)), 1)
 	expect_equal(vars$a, "SNAPSHOT/MISSING PROVENANCE")
 	
-	# TO TEST: CASE: ENVIRONMENT NEEDS TO BE CLEARED BEFORE LOADING VARIABLES!!!
-	
 	# load variables also take an option to specify proc node number?
 })
 

@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "specialChar.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.83",
+			"rdt:elapsedTime": "0.79",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "y <- \"1\"",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.03",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "y <- as.factor(y)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -46,7 +46,7 @@
 		"rdt:p4": {
 			"rdt:name": "y <- new.env()",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -56,7 +56,7 @@
 		"rdt:p5": {
 			"rdt:name": "y <- expression (\"y <- 3\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 4,
 			"rdt:startCol": 1,
@@ -129,12 +129,12 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/specialChar.R",
 			"rdt:scriptTimeStamp": "2019-06-18T15.55.03EDT",
-			"rdt:totalElapsedTime": "0.88",
+			"rdt:totalElapsedTime": "0.84",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
-			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
-			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_specialChar",
-			"rdt:provTimestamp": "2019-07-26T13.45.47EDT",
+			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
+			"rdt:provDirectory": "testdata/prov_specialChar",
+			"rdt:provTimestamp": "2019-07-29T12.00.52EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

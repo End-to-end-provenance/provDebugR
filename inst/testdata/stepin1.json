@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "stepin1.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.81",
+			"rdt:elapsedTime": "0.8",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -34,36 +34,16 @@
 			"rdt:endCol": 16
 		},
 		"rdt:p3": {
-			"rdt:name": "source1.r",
-			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.05",
-			"rdt:scriptNum": "NA",
-			"rdt:startLine": "NA",
-			"rdt:startCol": "NA",
-			"rdt:endLine": "NA",
-			"rdt:endCol": "NA"
+			"rdt:name": "prov.source(\"source1.r\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.02",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 2,
+			"rdt:startCol": 1,
+			"rdt:endLine": 2,
+			"rdt:endCol": 24
 		},
 		"rdt:p4": {
-			"rdt:name": "x <- 10",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
-			"rdt:scriptNum": 2,
-			"rdt:startLine": 1,
-			"rdt:startCol": 1,
-			"rdt:endLine": 1,
-			"rdt:endCol": 7
-		},
-		"rdt:p5": {
-			"rdt:name": "source1.r",
-			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
-			"rdt:scriptNum": "NA",
-			"rdt:startLine": "NA",
-			"rdt:startCol": "NA",
-			"rdt:endLine": "NA",
-			"rdt:endCol": "NA"
-		},
-		"rdt:p6": {
 			"rdt:name": "stepin1.R",
 			"rdt:type": "Finish",
 			"rdt:elapsedTime": "0.0",
@@ -77,11 +57,11 @@
 
 	"entity" : {
 		"rdt:d1": {
-			"rdt:name": "x",
-			"rdt:value": "10",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
+			"rdt:name": "error.msg",
+			"rdt:value": "Error in file(filename, \"r\", encoding = encoding): cannot open the connection\n",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
 			"rdt:timestamp": "",
@@ -96,12 +76,12 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/stepin1.R",
 			"rdt:scriptTimeStamp": "2019-06-19T09.57.33EDT",
-			"rdt:totalElapsedTime": "0.89",
+			"rdt:totalElapsedTime": "0.85",
 			"rdt:sourcedScripts": "source1.r",
-			"rdt:sourcedScriptTimeStamps": "2019-06-19T09.34.47EDT",
-			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts",
-			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/prov_stepin1",
-			"rdt:provTimestamp": "2019-07-26T13.45.57EDT",
+			"rdt:sourcedScriptTimeStamps": null,
+			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
+			"rdt:provDirectory": "testdata/prov_stepin1",
+			"rdt:provTimestamp": "2019-07-29T12.01.04EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -176,6 +156,10 @@
 				"$": "prov:Collection",
 				"type": "xsd:QName"
 			}
+		},
+
+		"rdt:f1": {
+			"name": "prov.source"
 		}
 	},
 
@@ -191,21 +175,27 @@
 		"rdt:pp3": {
 			"prov:informant": "rdt:p3",
 			"prov:informed": "rdt:p4"
-		},
-		"rdt:pp4": {
-			"prov:informant": "rdt:p4",
-			"prov:informed": "rdt:p5"
-		},
-		"rdt:pp5": {
-			"prov:informant": "rdt:p5",
-			"prov:informed": "rdt:p6"
 		}
 	},
 
 	"wasGeneratedBy" : {
 		"rdt:pd1": {
-			"prov:activity": "rdt:p4",
+			"prov:activity": "rdt:p3",
 			"prov:entity": "rdt:d1"
+		}
+	},
+
+	"used" : {
+		"rdt:fp1": {
+			"prov:entity": "rdt:f1",
+			"prov:activity": "rdt:p3"
+		}
+	},
+
+	"hadMember" : {
+		"rdt:m1": {
+			"prov:collection": "rdt:l7",
+			"prov:entity": "rdt:f1"
 		}
 	}
 }

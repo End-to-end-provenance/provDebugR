@@ -14,9 +14,9 @@
 
 	"activity" : {
 		"rdt:p1": {
-			"rdt:name": "stepin3.R",
+			"rdt:name": "loadVars.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.87",
+			"rdt:elapsedTime": "0.75",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -24,39 +24,49 @@
 			"rdt:endCol": "NA"
 		},
 		"rdt:p2": {
-			"rdt:name": "library(rdtLite)",
+			"rdt:name": "pdf(\"plot.pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.03",
+			"rdt:elapsedTime": "0.1",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 1,
+			"rdt:startLine": 2,
 			"rdt:startCol": 1,
-			"rdt:endLine": 1,
-			"rdt:endCol": 16
+			"rdt:endLine": 2,
+			"rdt:endCol": 15
 		},
 		"rdt:p3": {
-			"rdt:name": "b <- 15",
+			"rdt:name": "plot(c(1:5), c(11:15))",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
 			"rdt:endLine": 3,
-			"rdt:endCol": 7
+			"rdt:endCol": 22
 		},
 		"rdt:p4": {
-			"rdt:name": "prov.source(\"source1.r\")",
+			"rdt:name": "title(\"plot.pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 4,
 			"rdt:startCol": 1,
 			"rdt:endLine": 4,
-			"rdt:endCol": 24
+			"rdt:endCol": 17
 		},
 		"rdt:p5": {
-			"rdt:name": "stepin3.R",
+			"rdt:name": "dev.off()",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.01",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 5,
+			"rdt:startCol": 1,
+			"rdt:endLine": 5,
+			"rdt:endCol": 9
+		},
+		"rdt:p6": {
+			"rdt:name": "loadVars.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -67,26 +77,48 @@
 
 	"entity" : {
 		"rdt:d1": {
-			"rdt:name": "b",
-			"rdt:value": "15",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
+			"rdt:name": "dev.2",
+			"rdt:value": "",
+			"rdt:valType": "Device",
+			"rdt:type": "Device",
+			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
 			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
 		"rdt:d2": {
-			"rdt:name": "error.msg",
-			"rdt:value": "Error in file(filename, \"r\", encoding = encoding): cannot open the connection\n",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
-			"rdt:type": "Exception",
-			"rdt:scope": "ddg.library",
+			"rdt:name": "dev.2",
+			"rdt:value": "",
+			"rdt:valType": "Device",
+			"rdt:type": "Device",
+			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
 			"rdt:timestamp": "",
 			"rdt:location": ""
+		},
+		"rdt:d3": {
+			"rdt:name": "dev.2",
+			"rdt:value": "",
+			"rdt:valType": "Device",
+			"rdt:type": "Device",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d4": {
+			"rdt:name": "plot.pdf",
+			"rdt:value": "data/4-plot.pdf",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "6ed61b0e8b50b3ab6bc1811888451ab9",
+			"rdt:timestamp": "2019-07-29T12.01.11EDT",
+			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/plot.pdf"
 		},
 
 		"rdt:environment": {
@@ -95,14 +127,14 @@
 			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
-			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/stepin3.R",
-			"rdt:scriptTimeStamp": "2019-06-19T09.57.42EDT",
-			"rdt:totalElapsedTime": "0.91",
-			"rdt:sourcedScripts": "source1.r",
-			"rdt:sourcedScriptTimeStamps": null,
+			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/loadVars.R",
+			"rdt:scriptTimeStamp": "2019-07-29T11.41.58EDT",
+			"rdt:totalElapsedTime": "0.9",
+			"rdt:sourcedScripts": "",
+			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
-			"rdt:provDirectory": "testdata/prov_stepin3",
-			"rdt:provTimestamp": "2019-07-29T12.01.06EDT",
+			"rdt:provDirectory": "testdata/prov_loadVars",
+			"rdt:provTimestamp": "2019-07-29T12.01.10EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -155,14 +187,6 @@
 			}
 		},
 		"rdt:l7": {
-			"name": "rdtLite",
-			"version": "1.1.1",
-			"prov:type": {
-				"$": "prov:Collection",
-				"type": "xsd:QName"
-			}
-		},
-		"rdt:l8": {
 			"name": "stats",
 			"version": "3.6.0",
 			"prov:type": {
@@ -170,7 +194,7 @@
 				"type": "xsd:QName"
 			}
 		},
-		"rdt:l9": {
+		"rdt:l8": {
 			"name": "utils",
 			"version": "3.6.0",
 			"prov:type": {
@@ -180,7 +204,16 @@
 		},
 
 		"rdt:f1": {
-			"name": "prov.source"
+			"name": "pdf"
+		},
+		"rdt:f2": {
+			"name": "plot"
+		},
+		"rdt:f3": {
+			"name": "title"
+		},
+		"rdt:f4": {
+			"name": "dev.off"
 		}
 	},
 
@@ -200,31 +233,80 @@
 		"rdt:pp4": {
 			"prov:informant": "rdt:p4",
 			"prov:informed": "rdt:p5"
+		},
+		"rdt:pp5": {
+			"prov:informant": "rdt:p5",
+			"prov:informed": "rdt:p6"
 		}
 	},
 
 	"wasGeneratedBy" : {
 		"rdt:pd1": {
-			"prov:activity": "rdt:p3",
+			"prov:activity": "rdt:p2",
 			"prov:entity": "rdt:d1"
 		},
 		"rdt:pd2": {
-			"prov:activity": "rdt:p4",
+			"prov:activity": "rdt:p3",
 			"prov:entity": "rdt:d2"
+		},
+		"rdt:pd3": {
+			"prov:activity": "rdt:p4",
+			"prov:entity": "rdt:d3"
+		},
+		"rdt:pd4": {
+			"prov:activity": "rdt:p5",
+			"prov:entity": "rdt:d4"
 		}
 	},
 
 	"used" : {
+		"rdt:dp1": {
+			"prov:entity": "rdt:d1",
+			"prov:activity": "rdt:p3"
+		},
+		"rdt:dp2": {
+			"prov:entity": "rdt:d2",
+			"prov:activity": "rdt:p4"
+		},
+		"rdt:dp3": {
+			"prov:entity": "rdt:d3",
+			"prov:activity": "rdt:p5"
+		},
+
 		"rdt:fp1": {
 			"prov:entity": "rdt:f1",
+			"prov:activity": "rdt:p2"
+		},
+		"rdt:fp2": {
+			"prov:entity": "rdt:f2",
+			"prov:activity": "rdt:p3"
+		},
+		"rdt:fp3": {
+			"prov:entity": "rdt:f3",
 			"prov:activity": "rdt:p4"
+		},
+		"rdt:fp4": {
+			"prov:entity": "rdt:f4",
+			"prov:activity": "rdt:p5"
 		}
 	},
 
 	"hadMember" : {
 		"rdt:m1": {
-			"prov:collection": "rdt:l7",
+			"prov:collection": "rdt:l4",
+			"prov:entity": "rdt:f2"
+		},
+		"rdt:m2": {
+			"prov:collection": "rdt:l4",
+			"prov:entity": "rdt:f3"
+		},
+		"rdt:m3": {
+			"prov:collection": "rdt:l5",
 			"prov:entity": "rdt:f1"
+		},
+		"rdt:m4": {
+			"prov:collection": "rdt:l5",
+			"prov:entity": "rdt:f4"
 		}
 	}
 }
