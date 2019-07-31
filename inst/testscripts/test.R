@@ -24,9 +24,9 @@ df1 <- data.frame(c(0, 0, 0, 0), c(1, 3, 5, 8), c("x <- 1", "y <- 2",
 
 names(df1) <- c("script", "line", "code")
 
-#warning.trace <- function(x, forward = F) {
-#  return(df1)
-#}
+warning.trace <- function(x, forward = F) {
+  return(df1)
+}
 
 
 source("test3.R")

@@ -14,9 +14,9 @@ names(df1) <- c("script", "line", "code")
 
 warning.trace <- function(x, forward = F) {return(df1)}
 
-source("test3.R")
+source("testscripts/test3.R")
 
-write.csv(df1, "df1.csv")
+write.csv(df1, "testscripts/df1.csv")
 
 warning("this is a test")
 warning("this is also a test")

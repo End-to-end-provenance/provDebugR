@@ -1,2 +1,2 @@
 library(rdtLite)
-prov.source("source1.r")
+prov.source("testscripts/source1.r")

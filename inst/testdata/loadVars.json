@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "loadVars.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.75",
+			"rdt:elapsedTime": "1.6",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "pdf(\"plot.pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.1",
+			"rdt:elapsedTime": "0.12",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "plot(c(1:5), c(11:15))",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -46,7 +46,7 @@
 		"rdt:p4": {
 			"rdt:name": "title(\"plot.pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 4,
 			"rdt:startCol": 1,
@@ -64,9 +64,19 @@
 			"rdt:endCol": 9
 		},
 		"rdt:p6": {
+			"rdt:name": "missing <- mtcars",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.03",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 8,
+			"rdt:startCol": 1,
+			"rdt:endLine": 8,
+			"rdt:endCol": 17
+		},
+		"rdt:p7": {
 			"rdt:name": "loadVars.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.03",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -116,9 +126,20 @@
 			"rdt:type": "File",
 			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "6ed61b0e8b50b3ab6bc1811888451ab9",
-			"rdt:timestamp": "2019-07-29T12.01.11EDT",
+			"rdt:hash": "115929fc17f409ed5cdbe85472c6890c",
+			"rdt:timestamp": "2019-07-31T11.49.35EDT",
 			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/plot.pdf"
+		},
+		"rdt:d5": {
+			"rdt:name": "missing",
+			"rdt:value": "data/5-missing-PARTIAL.csv",
+			"rdt:valType": "{\"container\":\"data_frame\", \"dimension\":[32,11], \"type\":[\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\"]}",
+			"rdt:type": "Snapshot",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "2019-07-31T11.49.35EDT",
+			"rdt:location": ""
 		},
 
 		"rdt:environment": {
@@ -128,13 +149,13 @@
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/loadVars.R",
-			"rdt:scriptTimeStamp": "2019-07-29T11.41.58EDT",
-			"rdt:totalElapsedTime": "0.9",
+			"rdt:scriptTimeStamp": "2019-07-31T10.56.49EDT",
+			"rdt:totalElapsedTime": "1.81",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
 			"rdt:provDirectory": "testdata/prov_loadVars",
-			"rdt:provTimestamp": "2019-07-29T12.01.10EDT",
+			"rdt:provTimestamp": "2019-07-31T11.49.33EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -237,6 +258,10 @@
 		"rdt:pp5": {
 			"prov:informant": "rdt:p5",
 			"prov:informed": "rdt:p6"
+		},
+		"rdt:pp6": {
+			"prov:informant": "rdt:p6",
+			"prov:informed": "rdt:p7"
 		}
 	},
 
@@ -256,6 +281,10 @@
 		"rdt:pd4": {
 			"prov:activity": "rdt:p5",
 			"prov:entity": "rdt:d4"
+		},
+		"rdt:pd5": {
+			"prov:activity": "rdt:p6",
+			"prov:entity": "rdt:d5"
 		}
 	},
 
