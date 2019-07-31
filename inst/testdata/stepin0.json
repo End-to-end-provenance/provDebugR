@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "stepin0.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "1.5",
+			"rdt:elapsedTime": "0.82",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "a <- 5",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "stepin0.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -66,12 +66,12 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/stepin0.R",
 			"rdt:scriptTimeStamp": "2019-06-19T09.51.49EDT",
-			"rdt:totalElapsedTime": "1.53",
+			"rdt:totalElapsedTime": "0.83",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
 			"rdt:provDirectory": "testdata/prov_stepin0",
-			"rdt:provTimestamp": "2019-07-31T11.49.23EDT",
+			"rdt:provTimestamp": "2019-07-31T13.46.08EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

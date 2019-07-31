@@ -29,7 +29,7 @@ warning.trace <- function(x, forward = F) {
 }
 
 
-source("test3.R")
+source("testscripts/test3.R")
 
 y <- 9
 

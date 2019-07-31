@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "noProvDir.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.8",
+			"rdt:elapsedTime": "0.82",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "a <- mtcars",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "noProvDir.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -54,7 +54,7 @@
 			"rdt:scope": "R_GlobalEnv",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
-			"rdt:timestamp": "2019-07-29T14.54.19EDT",
+			"rdt:timestamp": "2019-07-31T13.46.14EDT",
 			"rdt:location": ""
 		},
 
@@ -66,12 +66,12 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/noProvDir.R",
 			"rdt:scriptTimeStamp": "2019-07-26T12.28.30EDT",
-			"rdt:totalElapsedTime": "0.82",
+			"rdt:totalElapsedTime": "0.83",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
 			"rdt:provDirectory": "testdata/prov_noProvDir",
-			"rdt:provTimestamp": "2019-07-29T14.54.18EDT",
+			"rdt:provTimestamp": "2019-07-31T13.46.13EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

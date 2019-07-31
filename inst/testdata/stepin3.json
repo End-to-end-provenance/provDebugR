@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "stepin3.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "1.62",
+			"rdt:elapsedTime": "0.81",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(rdtLite)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.1",
+			"rdt:elapsedTime": "0.04",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "b <- 15",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -46,7 +46,7 @@
 		"rdt:p4": {
 			"rdt:name": "source1.r",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.05",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -66,7 +66,7 @@
 		"rdt:p6": {
 			"rdt:name": "source1.r",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -76,7 +76,7 @@
 		"rdt:p7": {
 			"rdt:name": "source2.r",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.06",
+			"rdt:elapsedTime": "0.05",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -96,7 +96,7 @@
 		"rdt:p9": {
 			"rdt:name": "source2.r",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -116,7 +116,7 @@
 		"rdt:p11": {
 			"rdt:name": "source3.r",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.04",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -241,7 +241,7 @@
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/stepin3.R",
 			"rdt:scriptTimeStamp": "2019-07-29T15.17.01EDT",
-			"rdt:totalElapsedTime": "1.97",
+			"rdt:totalElapsedTime": "1.02",
 			"rdt:sourcedScripts": [
 				"source1.r",
 				"source2.r",
@@ -254,7 +254,7 @@
 			],
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
 			"rdt:provDirectory": "testdata/prov_stepin3",
-			"rdt:provTimestamp": "2019-07-31T11.49.30EDT",
+			"rdt:provTimestamp": "2019-07-31T13.46.11EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
