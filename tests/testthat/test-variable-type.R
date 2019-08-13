@@ -48,11 +48,12 @@ test.data <- system.file("testdata", "specialChar.json", package = "provDebugR")
 debug.init(test.data)
 
 test_that("special values are being grabbed", {
-  skip ("factor valtypes are not working")
   variable.results <- debug.variable.type("y")
-  expect_match(variable.results$y$type[2], "object")
+  expect_match(variable.results$y$type[1], "character")
+  expect_match(variable.results$y$type[2], "factor")
   expect_match(variable.results$y$type[3], "environment")
-  #expect_match(variable.results$y$type[2], "language")  #**NOT currently supported by RDT
+  expect_match(variable.results$y$type[4], "function")
+  expect_match(variable.results$y$type[5], "expression")
 })
 
 

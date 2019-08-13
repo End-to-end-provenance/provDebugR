@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "specialChar.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.81",
+			"rdt:elapsedTime": "0.79",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -26,7 +26,7 @@
 		"rdt:p2": {
 			"rdt:name": "y <- \"1\"",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.03",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -36,7 +36,7 @@
 		"rdt:p3": {
 			"rdt:name": "y <- as.factor(y)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -54,16 +54,26 @@
 			"rdt:endCol": 14
 		},
 		"rdt:p5": {
-			"rdt:name": "y <- expression (\"y <- 3\")",
+			"rdt:name": "y <- function(x) {\n\tprint(x)\n}",
 			"rdt:type": "Operation",
 			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 4,
 			"rdt:startCol": 1,
-			"rdt:endLine": 4,
-			"rdt:endCol": 26
+			"rdt:endLine": 6,
+			"rdt:endCol": 1
 		},
 		"rdt:p6": {
+			"rdt:name": "y <- expression (\"y <- 3\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.0",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 7,
+			"rdt:startCol": 1,
+			"rdt:endLine": 7,
+			"rdt:endCol": 26
+		},
+		"rdt:p7": {
 			"rdt:name": "specialChar.R",
 			"rdt:type": "Finish",
 			"rdt:elapsedTime": "0.0",
@@ -111,6 +121,17 @@
 		},
 		"rdt:d4": {
 			"rdt:name": "y",
+			"rdt:value": "function(x) {...",
+			"rdt:valType": "function",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d5": {
+			"rdt:name": "y",
 			"rdt:value": "expression(\"y <- 3\")",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"expression\"]}",
 			"rdt:type": "Data",
@@ -128,13 +149,13 @@
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/specialChar.R",
-			"rdt:scriptTimeStamp": "2019-06-18T15.55.03EDT",
-			"rdt:totalElapsedTime": "0.86",
+			"rdt:scriptTimeStamp": "2019-08-13T01.51.18EDT",
+			"rdt:totalElapsedTime": "0.84",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
 			"rdt:provDirectory": "testdata/prov_specialChar",
-			"rdt:provTimestamp": "2019-07-31T13.46.01EDT",
+			"rdt:provTimestamp": "2019-08-13T01.53.01EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -224,6 +245,10 @@
 		"rdt:pp5": {
 			"prov:informant": "rdt:p5",
 			"prov:informed": "rdt:p6"
+		},
+		"rdt:pp6": {
+			"prov:informant": "rdt:p6",
+			"prov:informed": "rdt:p7"
 		}
 	},
 
@@ -243,6 +268,10 @@
 		"rdt:pd4": {
 			"prov:activity": "rdt:p5",
 			"prov:entity": "rdt:d4"
+		},
+		"rdt:pd5": {
+			"prov:activity": "rdt:p6",
+			"prov:entity": "rdt:d5"
 		}
 	},
 
