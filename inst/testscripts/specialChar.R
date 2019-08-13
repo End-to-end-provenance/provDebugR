@@ -4,4 +4,4 @@ y <- new.env()
 y <- function(x) {
 	print(x)
 }
-y <- expression ("y <- 3")
+y <- expression("y <- 3")
