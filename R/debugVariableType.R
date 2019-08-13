@@ -141,7 +141,7 @@ debug.variable.type <- function(..., just.logical = F) {
   val.type <- provParseR::get.val.type(.debug.env$prov, res.dat.nodes$id)
   
   # Combine all the data and return to the user
-  df <- data.frame(script, line, scope
+  df <- data.frame(script, line, scope,
                    container = val.type$container,
                    dim = val.type$dim,
                    type = val.type$type,
