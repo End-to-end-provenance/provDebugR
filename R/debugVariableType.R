@@ -108,7 +108,19 @@ debug.variable.type <- function(..., just.logical = F) {
 
   # These data node are the rows that math with the provided result
   res.dat.nodes <- data.nodes[data.nodes$name == result, ]
-
+  
+  
+  
+  # EF EDITS - script, line, scope, container, dim, type
+  # data nodes can not be found/no data nodes - return empty data frame
+  if(nrow(res.dat.nodes) == 0) {
+    return(data.frame(script=integer(), line=integer(), scope=character(),
+                      container=character(), dim=character(), type=container(),
+                      stringsAsFactors=FALSE))
+  }
+  
+  
+  
   # These procedure labels are those that have connections with the chosen result nodes
   res.proc.labels <- proc.data[proc.data$entity %in% res.dat.nodes$id, ]$activity
 
@@ -121,44 +133,61 @@ debug.variable.type <- function(..., just.logical = F) {
   script <- res.proc.rows$scriptNum
   line <- res.proc.rows$startLine
   scope <- res.dat.nodes$scope
-  container <- NULL
-  dim <- NULL
-  type <- NULL
-
+  
+  
+  
+  # EF EDITS
+  # get valType
+  val.type <- provParseR::get.val.type(.debug.env$prov, res.dat.nodes$id)
+  
+  # Combine all the data and return to the user
+  df <- data.frame(script, line, scope
+                   container = val.type$container,
+                   dim = val.type$dim,
+                   type = val.type$type,
+                   stringsAsFactors = FALSE)
+  return(df)
+  
+  
+  
+  #container <- NULL
+  #dim <- NULL
+  #type <- NULL
+  #
   # valType is a string that contains the container, dim, and type info
   # This string is stored (almost always) as a JSON object that needs 
   # to be parsed before the information can be grabbed
-  for (val in res.dat.nodes$valType) {
-    # The instances where it's not a JSON string is as follows,
-    # object, environment, language, and function
-    # For now make the type equal to what is in valType and NA the rest
-    if(val == "\"object\""){
-      container <- append(container, NA)
-      dim <- append(dim, NA)
-      type <- append(type, "object")
-    } else if (val == "\"environment\"") {
-      container <- append(container, NA)
-      dim <- append(dim, NA)
-      type <- append(type, "environment")
-    } else if (val == "\"language\"") {
-      container <- append(container, NA)
-      dim <- append(dim, NA)
-      type <- append(type, "language")
-    } else if (val == "\"function\"") {
-      container <- append(container, NA)
-      dim <- append(dim, NA)
-      type <- append(type, "function")
-    } else {
-      parsed.val <- jsonlite::fromJSON(val)
-      container <- append(container, parsed.val$container)
-      
-      # Dimensions and type can be vectors when there are multiple 
-      # dimensions to a variable. Type will have each columns type.
-      dim <- append(dim, paste(parsed.val$dimension, collapse = ","))
-      type <- append(type, paste(parsed.val$type, collapse = ","))
-    }
-  }
-
+  #for (val in res.dat.nodes$valType) {
+  #  # The instances where it's not a JSON string is as follows,
+  #  # object, environment, language, and function
+  #  # For now make the type equal to what is in valType and NA the rest
+  #  if(val == "\"object\""){
+  #    container <- append(container, NA)
+  #    dim <- append(dim, NA)
+  #    type <- append(type, "object")
+  #  } else if (val == "\"environment\"") {
+  #    container <- append(container, NA)
+  #    dim <- append(dim, NA)
+  #    type <- append(type, "environment")
+  #  } else if (val == "\"language\"") {
+  #    container <- append(container, NA)
+  #    dim <- append(dim, NA)
+  #    type <- append(type, "language")
+  #  } else if (val == "\"function\"") {
+  #    container <- append(container, NA)
+  #    dim <- append(dim, NA)
+  #    type <- append(type, "function")
+  #  } else {
+  #    parsed.val <- jsonlite::fromJSON(val)
+  #    container <- append(container, parsed.val$container)
+  #    
+  #    # Dimensions and type can be vectors when there are multiple 
+  #    # dimensions to a variable. Type will have each columns type.
+  #    dim <- append(dim, paste(parsed.val$dimension, collapse = ","))
+  #    type <- append(type, paste(parsed.val$type, collapse = ","))
+  #  }
+  #}
+  #
   # Combine all the data and return to the user
-  df <- as.data.frame(cbind(script, line, scope, container, dim, type), stringsAsFactors = F)
+  #df <- as.data.frame(cbind(script, line, scope, container, dim, type), stringsAsFactors = F)
 }

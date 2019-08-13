@@ -179,7 +179,7 @@ debug.from.line <- function(..., state = F, script.num = 1) {
     {
       # Find number of preceding data nodes
       # Subset that out of data.nodes
-      rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)
+      rownames(.debug.env$data.nodes) <- 1:nrow(.debug.env$data.nodes)      
       rnum <- rownames(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, ])
       nodes <- .debug.env$data.nodes["1":rnum[length(rnum)], "id"]
       
@@ -264,18 +264,18 @@ debug.from.line <- function(..., state = F, script.num = 1) {
     
         # Val is entity value
         val <- .debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "value"]
-    
-        # Type is string parsed from entity valType
-        val.type <- jsonlite::fromJSON(.debug.env$data.nodes[.debug.env$data.nodes$id %in% entity, "valType"])
         
-        container <- val.type$container
         
-        # JSON formatted so that we can put a list in a single element of a data frame
-        dim <- paste(val.type$dimension, collapse = ",")
-        type <- paste("{ \"type\" : [",
-                      paste("\"", paste(val.type$type, collapse= "\", \""), "\"", sep ="")
-                      , "]}")
-                  
+        # EF EDITS
+        # get parsed valType
+        val.type <- provParseR::get.val.type(.debug.env$prov, entity)
+        
+        container <- val.type$container[1]
+        dim <- val.type$dimension[1]
+        type <- val.type$type[1]
+        
+        
+        
         # Combine all info into a row
         line.row <- c(var, val, container, dim, type, script)
         
