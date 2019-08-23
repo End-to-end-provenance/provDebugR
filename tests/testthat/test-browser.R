@@ -91,6 +91,13 @@ test_that(".load.variables", {
 	expect_equal(length(ls(vars)), 1)
 	expect_equal(vars$a, "SNAPSHOT/MISSING PROVENANCE")
 	
+	# non txt or csv file as data
+	json <- system.file("testdata", "loadVars.json", package = "provDebugR")
+	debug.init(json)
+	
+	provDebugR:::.load.variables(vars, 5, 1)
+	vars <<- vars
+	
 	# load variables also take an option to specify proc node number?
 })
 

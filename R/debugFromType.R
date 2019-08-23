@@ -33,6 +33,13 @@
 
 debug.from.type <- function(var, type) {
 
+  
+  # EF EDITS
+  val.types <- provParseR::get.val.type(.debug.env$prov)
+  
+  
+  
+
   # Load data from parser
   data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
   proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)

@@ -22,7 +22,7 @@
 			 do not need to be here. They are sourced by
 		     other scripts but never run independently. 
 		 -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="empty.R"/>
 		</antcall>
 		<antcall target="json">
@@ -45,20 +45,20 @@
 		</antcall>
 		<antcall target="json">
 			<param name="theFile" value="stepin3.R"/>
-		</antcall>
+		</antcall>-->
 		
 		<!-- load variables test -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="noProvDir.R"/>
 			<param name="snapshot.size" value='5'/>
-		</antcall>
-		<antcall target="json">
+		</antcall>-->
+		<!--<antcall target="json">
 			<param name="theFile" value="loadVars.R"/>
 			<param name="snapshot.size" value='5'/>
 			<param name="delete.dir" value="false"/>
 		</antcall>
 		<delete file="inst/plot.pdf"/>
-		<delete file="inst/testdata/prov_loadVars/data/5-missing-PARTIAL.csv"/>
+		<delete file="inst/testdata/prov_loadVars/data/5-missing-PARTIAL.csv"/>-->
 	</target>
 	
 	<target name="json">

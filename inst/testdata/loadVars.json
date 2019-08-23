@@ -16,7 +16,7 @@
 		"rdt:p1": {
 			"rdt:name": "loadVars.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.83",
+			"rdt:elapsedTime": "0.74",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -24,59 +24,29 @@
 			"rdt:endCol": "NA"
 		},
 		"rdt:p2": {
-			"rdt:name": "pdf(\"plot.pdf\")",
+			"rdt:name": "fn1 <- function(x)\n{\n\treturn(x+2)\n}",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.06",
+			"rdt:elapsedTime": "0.03",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 2,
+			"rdt:startLine": 11,
 			"rdt:startCol": 1,
-			"rdt:endLine": 2,
-			"rdt:endCol": 15
+			"rdt:endLine": 14,
+			"rdt:endCol": 1
 		},
 		"rdt:p3": {
-			"rdt:name": "plot(c(1:5), c(11:15))",
+			"rdt:name": "a <- fn1(5)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 3,
+			"rdt:startLine": 16,
 			"rdt:startCol": 1,
-			"rdt:endLine": 3,
-			"rdt:endCol": 22
+			"rdt:endLine": 16,
+			"rdt:endCol": 11
 		},
 		"rdt:p4": {
-			"rdt:name": "title(\"plot.pdf\")",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.01",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 4,
-			"rdt:startCol": 1,
-			"rdt:endLine": 4,
-			"rdt:endCol": 17
-		},
-		"rdt:p5": {
-			"rdt:name": "dev.off()",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.0",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 5,
-			"rdt:startCol": 1,
-			"rdt:endLine": 5,
-			"rdt:endCol": 9
-		},
-		"rdt:p6": {
-			"rdt:name": "missing <- mtcars",
-			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.04",
-			"rdt:scriptNum": 1,
-			"rdt:startLine": 8,
-			"rdt:startCol": 1,
-			"rdt:endLine": 8,
-			"rdt:endCol": 17
-		},
-		"rdt:p7": {
 			"rdt:name": "loadVars.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -87,58 +57,25 @@
 
 	"entity" : {
 		"rdt:d1": {
-			"rdt:name": "dev.2",
-			"rdt:value": "",
-			"rdt:valType": "Device",
-			"rdt:type": "Device",
-			"rdt:scope": "undefined",
-			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
-		},
-		"rdt:d2": {
-			"rdt:name": "dev.2",
-			"rdt:value": "",
-			"rdt:valType": "Device",
-			"rdt:type": "Device",
-			"rdt:scope": "undefined",
-			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
-		},
-		"rdt:d3": {
-			"rdt:name": "dev.2",
-			"rdt:value": "",
-			"rdt:valType": "Device",
-			"rdt:type": "Device",
-			"rdt:scope": "undefined",
-			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
-		},
-		"rdt:d4": {
-			"rdt:name": "plot.pdf",
-			"rdt:value": "data/4-plot.pdf",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
-			"rdt:type": "File",
-			"rdt:scope": "undefined",
-			"rdt:fromEnv": false,
-			"rdt:hash": "f83100b33640011b2220408f58d1e39b",
-			"rdt:timestamp": "2019-07-31T13.46.16EDT",
-			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/plot.pdf"
-		},
-		"rdt:d5": {
-			"rdt:name": "missing",
-			"rdt:value": "data/5-missing-PARTIAL.csv",
-			"rdt:valType": "{\"container\":\"data_frame\", \"dimension\":[32,11], \"type\":[\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\",\"numeric\"]}",
+			"rdt:name": "fn1",
+			"rdt:value": "data/1-fn1.R",
+			"rdt:valType": "function",
 			"rdt:type": "Snapshot",
 			"rdt:scope": "R_GlobalEnv",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
-			"rdt:timestamp": "2019-07-31T13.46.16EDT",
+			"rdt:timestamp": "2019-07-31T14.03.26EDT",
+			"rdt:location": ""
+		},
+		"rdt:d2": {
+			"rdt:name": "a",
+			"rdt:value": "7",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
 
@@ -149,13 +86,13 @@
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.0 (2019-04-26)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst/testscripts/loadVars.R",
-			"rdt:scriptTimeStamp": "2019-07-31T10.56.49EDT",
-			"rdt:totalElapsedTime": "0.94",
+			"rdt:scriptTimeStamp": "2019-07-31T14.02.28EDT",
+			"rdt:totalElapsedTime": "0.81",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_testBrowser/inst",
 			"rdt:provDirectory": "testdata/prov_loadVars",
-			"rdt:provTimestamp": "2019-07-31T13.46.15EDT",
+			"rdt:provTimestamp": "2019-07-31T14.03.25EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -222,19 +159,6 @@
 				"$": "prov:Collection",
 				"type": "xsd:QName"
 			}
-		},
-
-		"rdt:f1": {
-			"name": "pdf"
-		},
-		"rdt:f2": {
-			"name": "plot"
-		},
-		"rdt:f3": {
-			"name": "title"
-		},
-		"rdt:f4": {
-			"name": "dev.off"
 		}
 	},
 
@@ -250,18 +174,6 @@
 		"rdt:pp3": {
 			"prov:informant": "rdt:p3",
 			"prov:informed": "rdt:p4"
-		},
-		"rdt:pp4": {
-			"prov:informant": "rdt:p4",
-			"prov:informed": "rdt:p5"
-		},
-		"rdt:pp5": {
-			"prov:informant": "rdt:p5",
-			"prov:informed": "rdt:p6"
-		},
-		"rdt:pp6": {
-			"prov:informant": "rdt:p6",
-			"prov:informed": "rdt:p7"
 		}
 	},
 
@@ -273,18 +185,6 @@
 		"rdt:pd2": {
 			"prov:activity": "rdt:p3",
 			"prov:entity": "rdt:d2"
-		},
-		"rdt:pd3": {
-			"prov:activity": "rdt:p4",
-			"prov:entity": "rdt:d3"
-		},
-		"rdt:pd4": {
-			"prov:activity": "rdt:p5",
-			"prov:entity": "rdt:d4"
-		},
-		"rdt:pd5": {
-			"prov:activity": "rdt:p6",
-			"prov:entity": "rdt:d5"
 		}
 	},
 
@@ -292,50 +192,6 @@
 		"rdt:dp1": {
 			"prov:entity": "rdt:d1",
 			"prov:activity": "rdt:p3"
-		},
-		"rdt:dp2": {
-			"prov:entity": "rdt:d2",
-			"prov:activity": "rdt:p4"
-		},
-		"rdt:dp3": {
-			"prov:entity": "rdt:d3",
-			"prov:activity": "rdt:p5"
-		},
-
-		"rdt:fp1": {
-			"prov:entity": "rdt:f1",
-			"prov:activity": "rdt:p2"
-		},
-		"rdt:fp2": {
-			"prov:entity": "rdt:f2",
-			"prov:activity": "rdt:p3"
-		},
-		"rdt:fp3": {
-			"prov:entity": "rdt:f3",
-			"prov:activity": "rdt:p4"
-		},
-		"rdt:fp4": {
-			"prov:entity": "rdt:f4",
-			"prov:activity": "rdt:p5"
-		}
-	},
-
-	"hadMember" : {
-		"rdt:m1": {
-			"prov:collection": "rdt:l4",
-			"prov:entity": "rdt:f2"
-		},
-		"rdt:m2": {
-			"prov:collection": "rdt:l4",
-			"prov:entity": "rdt:f3"
-		},
-		"rdt:m3": {
-			"prov:collection": "rdt:l5",
-			"prov:entity": "rdt:f1"
-		},
-		"rdt:m4": {
-			"prov:collection": "rdt:l5",
-			"prov:entity": "rdt:f4"
 		}
 	}
 }
