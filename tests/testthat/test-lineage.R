@@ -1,47 +1,47 @@
-context("Debugging Lineage")
-
+library(testthat)
 library(provDebugR)
 
-test.data <- system.file("testdata", "test.json", package = "provDebugR")
-debug.init(test.data)
+context("Lineage")
 
-test_that("the correct types are being returned", {
-  lineage.results <- debug.lineage()
-  expect_match(class(lineage.results), "character")
-  lineage.results <- debug.lineage("x")
-  expect_match(class(lineage.results), "list")
-  expect_match(class(lineage.results[[1]]), "data.frame")
+json <- system.file("testdata", "test.json", package = "provDebugR")
+prov.debug.file(json)
+
+data.nodes <- provDebugR:::.debug.env$data.nodes
+
+# .get.valid.args
+test_that(".get.valid.args", 
+{
+	.get.valid.args <- provDebugR:::.get.valid.args
+	pos.args <- as.list(unique(data.nodes$name))
+	
+	# all invalid arguments
+	expect_null(.get.valid.args(pos.args, "invalid"))
+	expect_null(.get.valid.args(pos.args, "invalid.1", c("invalid.2", "invalid.3")))
+	
+	# no arguments specified
+	expect_equivalent(.get.valid.args(pos.args), pos.args)
+	
+	# all valid arguments
+	expect_equivalent(.get.valid.args(pos.args, "x"), "x")
+	expect_equivalent(.get.valid.args(pos.args, c("a", "x")), c("a", "x"))
+	expect_equivalent(.get.valid.args(pos.args, "f", c("a", "x")), c("f", "a", "x"))
+	expect_equivalent(.get.valid.args(pos.args, "x", c("a", "x")), c("a", "x"))  # remove duplicates 
+	
+	# some valid, some invalid arguments
+	expect_equivalent(.get.valid.args(pos.args, "x", "invalid"), "x")
+	expect_equivalent(.get.valid.args(pos.args, "x", c("invalid", "g")), c("x", "g"))
 })
 
-test_that("possible results can be grabbed", {
-  lineage.results <- debug.lineage()
-  expect_equal(length(lineage.results), 9)
-  expect_match(lineage.results[1], "x")
-  expect_match(lineage.results[9], "df1")
+# .get.lineage
+test_that(".get.lineage"
+{
+	.get.lineage <- provDebugR:::.get.lineage
+	
+	# backwards lineage
+	expect_equivalent(.get.lineage("a", forward = FALSE), "p17")
+	expect_equivalent(.get.lineage("x", forward = FALSE), c("p15", "p3"))
+	
+	# forwards lineage
+	expect_equivalent(.get.lineage("val", forward = TRUE), "p14")
+	expect_equivalent(.get.lineage("x", forward = TRUE), c("p4", "p6", "p14", "p7"))
 })
-
-test_that("all variables can be queried", {
-  lineage.results <- debug.lineage(debug.lineage())
-  expect_equal(length(lineage.results), 9)
-  expect_equal(lineage.results$x$line[[1]], 3)
-  expect_match(lineage.results$z$code[[1]], "z <- 6:67")
-})
-
-test_that("various arguments can be provided", {
-  lineage.results <- debug.lineage("x")
-  expect_equal(length(lineage.results), 1)
-  lineage.results <- debug.lineage("x", "y", "z")
-  expect_equal(length(lineage.results), 3)
-  lineage.results <- debug.lineage("x", list("y", "z"), "df1")
-  expect_equal(length(lineage.results), 4)
-})
-
-test_that("wrong arguments can be ignored", {
-  lineage.results <- debug.lineage("x", "y", "test")
-  expect_equal(length(lineage.results), 2)
-  lineage.results <- debug.lineage("test")
-  expect_equal(length(lineage.results), 9)
-})
-
-
-
