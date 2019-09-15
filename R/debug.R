@@ -9,8 +9,10 @@
 
 .debug.env$proc.nodes <- NULL
 .debug.env$data.nodes <- NULL
+
+.debug.env$data.proc <- NULL
 .debug.env$proc.data <- NULL
-#.debug.env$data.proc <- NULL
+
 
 
 # === INIT =================================================================== #
@@ -65,6 +67,7 @@ prov.debug.run <- function(script)
 	.debug.env$proc.nodes <- provParseR::get.proc.nodes(.debug.env$prov)
 	.debug.env$data.nodes <- provParseR::get.data.nodes(.debug.env$prov)
 	
+	.debug.env$data.proc <- provParseR::get.data.proc(.debug.env$prov)
 	.debug.env$proc.data <- provParseR::get.proc.data(.debug.env$prov)
 	
 	# empty case
@@ -120,19 +123,90 @@ debug.line <- function(..., script.num = 1)
 	if(!.debug.env$has.graph)
 		stop("No provenance is available.")
 	
-	# collect line numbers from arguments
-	args <- .flatten.args(...)
-	
 	# proc nodes of interest: subset by type = Operation, scriptNum
-	proc.nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$type == "Operation", ]
+	proc.nodes <- .debug.env$proc.nodes
+	proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
 	proc.nodes <- proc.nodes[proc.nodes$scriptNum == script.num, ]
 	
-	# extract valid line numbers
+	# get valid lines the user could query
+	pos.lines <- unique(proc.nodes$startLine)
+	valid.lines <- .get.valid.args(pos.lines, ...)
+	
+	if(is.null(valid.lines))
+		return(invisible(NULL))
+	
+	# TODO - check!
+	result <- lapply(valid.lines, function(line)
+	{
+		activity.id <- proc.nodes$id[proc.nodes$startLine == line]
+		data <- list()
+		
+		# get input data, if any - TODO
+		input <- .debug.env$data.proc$entity[.debug.env$data.proc$activity == activity.id]
+		
+		if(length(input) == 0)
+			data$input <- NA
+		else
+			data$input <- input
+		
+		# get output data, if any - TODO
+		output <- .debug.env$proc.data$entity[.debug.env$proc.data$activity == activity.id]
+		
+		if(length(output) == 0)
+			data$output <- NA
+		else
+			data$output <- output
+		
+		# null case
+		if(length(input) == 0 && length(output) == 0)
+		{
+			cat(paste("There are no data nodes associated with line", line, "\n"))
+			return(NULL)
+		}
+		
+		return(data)
+	})
+	
+	# rename with start line numbers
+	names(result) <- valid.lines
+	
+	# remove NULL rows - TODO - check!
+	indices <- 1:length(result)
+	indices <- sapply(indices, function(i)
+	{
+		if(is.null(result[[i]]))
+			return(NULL)
+		else
+			return(i)
+	})
+	
+	if(! is.null(indices))
+		result <- result[indices]
+	
+	# TODO
+	return(result)
 }
 
 debug.state <- function()
 {
+	if(!.debug.env$has.graph)
+		stop("No provenance is available.")
 	
+	# proc nodes of interest: subset by type = Operation, scriptNum
+	proc.nodes <- .debug.env$proc.nodes
+	proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+	proc.nodes <- proc.nodes[proc.nodes$scriptNum == script.num, ]
+	
+	# get valid lines the user could query
+	pos.lines <- unique(proc.nodes$startLine)
+	valid.lines <- .get.valid.args(pos.lines, ...)
+	
+	# TODO - continue
+	result <- unlist(lapply(valid.lines, function(line)
+	{
+		return(proc.nodes$id[proc.nodes$startLine == line])
+	}))
+	return(result)
 }
 
 # TODO - start.line NA for now
@@ -141,13 +215,9 @@ debug.lineage <- function(..., start.line = NA, forward = FALSE)
 	if(!.debug.env$has.graph)
 		stop("No provenance is available.")
 	
-	args <- .flatten.args(...)
-	
-	# get the list of all possible variables the user could query
-	pos.vars <- as.list(unique(.debug.env$data.nodes$name))
-	
-	# get valid arguments
-	valid.args <- .get.valid.args(pos.vars, args)
+	# get valid arguments the user could query
+	pos.vars <- unique(.debug.env$data.nodes$name)
+	valid.vars <- .get.valid.args(pos.vars, ...)
 	
 	if(is.null(valid.args))
 		return(invisible(NULL))
@@ -233,6 +303,7 @@ debug.warning.trace <- function()
 	return(unlist(list(...)))
 }
 
+
 .get.valid.args <- function(pos.args, ...)
 {
 	# unnest list of arguments
@@ -245,29 +316,29 @@ debug.warning.trace <- function()
 	# Make sure all the results passed by the user are valid
 	# this produces a list of logicals, where TRUES
 	#correspond to valid inputs
-	pos.args <- lapply(args, function(arg)
+	valid.args <- lapply(args, function(arg)
 	{
 		if(arg %in% pos.args) {
 			return(TRUE)
 		} else {
-			cat(paste(arg, "is not a possible result\n"))
+			cat(paste(arg, "is not a possible input.\n"))
 			return(FALSE)
 		}
 	})
 
 	# Any non-valid inputs will be removed as the list is subset
 	# by logicals, TRUE corresponding to valid inputs
-	args <- args[unlist(pos.args)]
+	valid.args <- args[unlist(valid.args)]
 	
 	# list out possible results if none are valid
-	if(length(args) == 0)
+	if(length(valid.args) == 0)
 	{
 		cat("Options:\n")
 		print(unlist(pos.args))
 		return(NULL)
 	}
 	
-	return(args)
+	return(valid.args)
 }
 
 
