@@ -232,7 +232,39 @@ debug.lineage <- function(..., start.line = NA, forward = FALSE)
 
 debug.type.changes <- function()
 {
+	if(!.debug.env$has.graph)
+		stop("No provenance is available.")
 	
+	# all possible variables
+	data.nodes <- .debug.env$data.nodes
+	data.nodes <- data.nodes[data.nodes$type == "Data" || data.nodes$type == "Snapshot", ]
+	
+	# get type changes for each possible var
+	var.names <- unique(data.nodes$name)
+	result <- lapply(var.names, function(var)
+	{
+		nodes <- data.nodes$id[data.nodes$name == var]
+		
+		# no type changes if there are less than 2 data nodes with the same var name
+		if(length(nodes) < 2)
+			return(NULL)
+		
+		return(nodes)
+	})
+	
+	names(result) <- var.names
+	
+	# remove entries with no type changes
+	indices <- sapply(1:length(var.names), function(i)
+	{
+		if(is.null(result[[i]]))
+			return(FALSE)
+		else
+			return(TRUE)
+	})
+	result <- result[indices]
+	
+	return(result)
 }
 
 # TODO - type param
