@@ -187,7 +187,7 @@ debug.line <- function(..., script.num = 1)
 	return(result)
 }
 
-debug.state <- function()
+debug.state <- function(..., script.num = 1)
 {
 	if(!.debug.env$has.graph)
 		stop("No provenance is available.")
@@ -202,10 +202,10 @@ debug.state <- function()
 	valid.lines <- .get.valid.args(pos.lines, ...)
 	
 	# TODO - continue
-	result <- unlist(lapply(valid.lines, function(line)
+	result <- lapply(valid.lines, function(line)
 	{
 		return(proc.nodes$id[proc.nodes$startLine == line])
-	}))
+	})
 	return(result)
 }
 
@@ -235,18 +235,40 @@ debug.type.changes <- function()
 	
 }
 
-debug.variable <- function()
-{
-	
-}
-
-debug.error.trace <- function()
+# TODO - type param
+debug.variable <- function(...)
 {
 	# null case
 	if(!.debug.env$has.graph)
 		stop("No provenance is available.")
 	
-	# 
+	# null case
+	if(!.debug.env$has.graph)
+		stop("No provenance is available.")
+	
+	# get all possible variables (Data and Snapshot types only)
+	data.nodes <- .debug.env$data.nodes
+	data.nodes <- data.nodes[data.nodes$type == "Data" || data.nodes$type == "Snapshot", ]
+	
+	# get valid vars
+	valid.vars <- .get.valid.args(unique(data.nodes$names), ...)
+	
+	if(is.null(valid.vars))
+		return(invisible(NULL))
+	
+	# for each valid variable searched, obtain data node - TODO
+	result <- lapply(valid.vars, function(var)
+	{
+		return(data.nodes$id[data.nodes$name == var])
+	})
+	
+	name(result) <- valid.vars
+	return(result)
+}
+
+debug.error.trace <- function()
+{
+	
 }
 
 #' Process error message strings
