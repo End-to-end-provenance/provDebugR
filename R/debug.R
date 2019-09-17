@@ -341,22 +341,6 @@ debug.warning.trace <- function()
 
 # === UTILITY ================================================================ #
 
-#' This helper function is used in almost all functions of the interface
-#' to make sure only a list of un-nested elements
-#'
-#' @param ... A list (possibly of lists) that the user input as arguments
-#' to one of the functions
-#'
-#' @return A list of unnested elements
-#'
-#' @name flatten.args
-#' @noRd
-.flatten.args <- function(...) 
-{
-	# TODO - do i need this function?
-	return(unlist(list(...)))
-}
-
 
 .get.valid.args <- function(pos.args, ...)
 {
@@ -365,7 +349,10 @@ debug.warning.trace <- function()
 	
 	# if there are no arguments, get all possible arguments.
 	if(is.null(args))
+	{
+		.print.pos.options(pos.args)
 		return(pos.args)
+	}
 	
 	# Make sure all the results passed by the user are valid
 	# this produces a list of logicals, where TRUES
@@ -387,12 +374,17 @@ debug.warning.trace <- function()
 	# list out possible results if none are valid
 	if(length(valid.args) == 0)
 	{
-		cat("Options:\n")
-		print(unlist(pos.args))
+		.print.pos.options(pos.args)
 		return(NULL)
 	}
 	
 	return(valid.args)
+}
+
+.print.pos.options <- function(pos.args)
+{
+	cat("Options:\n")
+	print(unlist(pos.args))
 }
 
 
@@ -408,7 +400,13 @@ debug.warning.trace <- function()
 		node.id <- utils::head(n=1,data.nodes[data.nodes$name == arg, ])$id
 	else
 		node.id <- utils::tail(n=1,data.nodes[data.nodes$name == arg, ])$id
-		
+	
+	# call helper function
+	return(.get.lineage.id(node.id), forward = forward)
+}
+
+.get.lineage.id <- function(node.id, forward = FALSE)
+{	
 	# get lineage
 	lineage <- provGraphR::get.lineage(.debug.env$graph, node.id, forward = forward)
 	lineage <- lineage[grep('^p[[:digit:]]+', lineage)]
