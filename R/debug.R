@@ -78,6 +78,9 @@ prov.debug.run <- function(script)
 	}
 	
 	.debug.env$has.graph <- TRUE
+	
+	# get full code for each proc node - TODO error catching
+	.debug.env$proc.nodes$name <- .get.full.code()
 }
 
 #' .get.tool determines whether to use rdt or rdtLite to get the provenance.
@@ -111,6 +114,52 @@ prov.debug.run <- function(script)
 	
 	# nether rdt nor rdt are available: stop
 	stop("One of rdtLite or rdt must be installed.")
+}
+
+# TODO error catching
+.get.full.code <- function()
+{
+	proc.nodes <- .debug.env$proc.nodes
+	
+	# get code lines for each script
+	scripts <- provParseR::get.saved.scripts(prov)$script
+	lines <- lapply(scripts, .get.script.lines)
+	
+	# get full code for each proc node
+	codes <- sapply(1:nrow(proc.nodes), function(i)
+	{
+		node <- proc.nodes[i, ]
+		
+		# case: not an operation
+		if(node$type != "Operation")
+			return(node$name)
+		
+		# get full code
+		# if procedure has more than 1 line, collapse the lines into 1 before returning
+		if(node$endLine - node$startLine == 0)
+			return(lines[[node$scriptNum]][node$startLine])
+		
+		code <- lines[[node$scriptNum]][node$startLine:node$endLine]
+		return(paste(code, sep="", collapse = "\n"))
+	})
+	
+	return(unname(codes))
+}
+
+# TODO error catching
+.get.script.lines <- function(file.name)
+{
+	# TODO - find encoding
+	encoding <- getOption("encoding")
+	
+	# TODO - find file - error catching
+	
+	# read file
+	file <- file(file.name, "r", encoding = encoding)
+	lines <- readLines(file, warn = FALSE)
+	close(file)
+	
+	return(lines)
 }
 
 
