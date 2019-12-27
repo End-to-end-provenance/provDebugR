@@ -129,10 +129,10 @@ prov.debug.run <- function(script)
 	{
 		# read file
 		file <- file(script, "r", encoding = getOption("encoding"))
-		lines <- readLines(file, warn = FALSE)
+		line.list <- readLines(file, warn = FALSE)
 		close(file)
 		
-		return(lines)
+		return(line.list)
 	})
 	
 	# get full code for each proc node
