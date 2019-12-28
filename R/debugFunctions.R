@@ -1171,7 +1171,7 @@ debug.warning <- function(..., all = FALSE)
 		
 		# line query
 		if(is.null(invalid$name)) {
-			output <- paste("Line", invalid$startLine[i], ", ", sep='')
+			output <- paste("Line ", invalid$startLine[i], ", ", sep='')
 		}
 		else {	# lineage query
 			# variable/object name
