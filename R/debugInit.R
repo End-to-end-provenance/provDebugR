@@ -55,12 +55,14 @@ prov.debug.run <- function(script)
 	}
 	
 	# collect provenance
-	tryCatch(
+	tryCatch({
 		prov.run(script)
-	)
-	
-	# initialise debugger
-	.debug.init(prov.json(), is.file = FALSE)
+	}, finally = {
+		cat(paste (tool, "is finished running.\n"))
+		
+		# initialise debugger
+		.debug.init(prov.json(), is.file = FALSE)
+	})
 }
 
 # === HELPER FUNCTIONS ======================================================= #
