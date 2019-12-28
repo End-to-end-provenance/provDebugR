@@ -434,6 +434,28 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	return(lineages)
 }
 
+.get.lineage <- function(node.id, forward = FALSE)
+{	
+	# get lineage, extract proc nodes
+	lineage <- provGraphR::get.lineage(.debug.env$graph, node.id, forward = forward)
+	lineage <- lineage[grep('^p[[:digit:]]+', lineage)]
+	
+	# if getting the forward lineage, get the proc node which first assigned the variable
+	if(forward)
+	{
+		edge <- .debug.env$proc.data[.debug.env$proc.data$entity ==  node.id, ]
+		
+		if(nrow(edge) > 0)
+			lineage <- append(lineage, edge$activity[[1]], 0)
+	}
+	
+	# order by increasing proc node number
+	node.nums <- as.integer(sub("^[[:alpha:]]", "", lineage))
+	lineage <- lineage[order(node.nums)]
+	
+	return(lineage)
+}
+
 .get.output.lineage <- function(id.list)
 {
 	proc.nodes <- .debug.env$proc.nodes
@@ -891,31 +913,196 @@ debug.state <- function(..., script.num = 1)
 
 # === ERROR ================================================================== #
 
-# === WARNING ================================================================ #
-
-# === UTILITY ================================================================ #
-
-.get.lineage <- function(node.id, forward = FALSE)
-{	
-	# get lineage, extract proc nodes
-	lineage <- provGraphR::get.lineage(.debug.env$graph, node.id, forward = forward)
-	lineage <- lineage[grep('^p[[:digit:]]+', lineage)]
+debug.error <- function(stack.overflow = FALSE)
+{
+	# extract the first error
+	error.node <- .debug.env$data.nodes[.debug.env$data.nodes$name == "error.msg", ]
+	error.node <- error.node[1, ]
+	message <- error.node$value
 	
-	# if getting the forward lineage, get the proc node which first assigned the variable
-	if(forward)
-	{
-		edge <- .debug.env$proc.data[.debug.env$proc.data$entity ==  node.id, ]
-		
-		if(nrow(edge) > 0)
-			lineage <- append(lineage, edge$activity[[1]], 0)
+	# no error
+	if(length(message) == 0) {
+		cat("There were no errors in this script!")
+		return(invisible(NULL))
 	}
 	
-	# order by increasing proc node number
-	node.nums <- as.integer(sub("^[[:alpha:]]", "", lineage))
-	lineage <- lineage[order(node.nums)]
+	# the error
+	cat(paste("Your Error: ", message, "\n", sep = ""))
 	
-	return(lineage)
+	# get lineage
+	lineage <- .get.lineage(error.node$id, forward = FALSE)
+	
+	# query Stack Exchange API
+	if(stack.overflow)
+	{
+		tryCatch({
+			.search.stackoverflow(message)
+		},
+		error = function(e){
+			warning(e$message)
+			warning("Connection to Stack Overflow did not succeed.")
+		})
+	}
+	
+	# return
+	return(.get.output.lineage(lineage))
 }
+
+.search.stackoverflow <- function(search.query, order = "desc", sort = "votes", tagged = "r") 
+{
+	search.query <- .process.error(search.query)
+
+	# The url is the name of the api site
+	url <- "http://api.stackexchange.com"
+	# The path shows the version of the API and all the options the
+	# user is choosing
+	path <- paste("/2.2/search?order=", order,
+				  "&sort=", sort,
+				  "&tagged=", tagged, "
+				  &intitle=", search.query,
+				  "&site=stackoverflow",
+				  sep ="")
+
+	# Query the site for the information
+	raw.result <- httr::GET(url = url, path = URLencode(path))
+
+	# A 200 status code is a success, an unsuccesful code would be something
+	# like 400, 404, etc
+	if(raw.result$status_code != 200) {
+		stop("Connection to Stack Overflow Did Not Succeed")
+	}
+
+	# parse the content
+	result <- jsonlite::fromJSON(rawToChar(raw.result$content))
+
+	# USER INPUT
+	# Grab the titles and links to the questions
+	pos.urls <- head(result$items)[, c("title", "link")]
+
+	# This serves as a "menu" of sorts since it will print the row number
+	# of each title
+	print(pos.urls[, "title"])
+
+	# They can either choose none or an index that will be matched to a row
+	cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
+	chosen.result <- readline()
+
+	if(!chosen.result == "q") 
+	{
+		chosen.result <- as.integer(chosen.result)
+
+		# The input needs to be an integer so it can be used to
+		# index into the rows of the data frame
+		if(is.na(chosen.result)){
+			stop("Invalid Input")
+		} else if (chosen.result > 6 || chosen.result < 1) {
+			stop ('Choose an option between 1 - 6')
+		}
+
+		# Open up the requested link in the default web browser
+		browseURL(pos.urls[chosen.result ,]$link)
+		cat("\nCode that led to error message:\n")
+	}
+}
+
+process.error <- function(error.message)
+{
+	split <- strsplit(error.message, ":")[[1]]
+
+	# Error messages from the prov.json will
+	#typically have an uneeded prefix followed
+	# by a colon ":"
+	if(length(split) > 1) {
+		error.message <- split[-1]
+	}
+
+	# This complicated mess of regex i=actually checks for 4 things (all inclusive):
+	# Matches to characters surronded by quotes "dog"
+	# Matches to characters surronded by escaped quotes \"dog\"
+	# Matches to characters surronded by single quotes 'dog'
+	# Matches to characters surronded by escaped quotes \'dog\'
+	exp <- "\\\"[^\"\r]*\\\"|\"[^\"\r]*\"|\'[^\"\r]*\'|\\\'[^\"\r]*\\\'"
+	error.message <- gsub(exp, "", error.message, perl = T)
+
+	# remove whitespace from beginning and end
+	exp <- "^ *| *\\\n*$"
+	error.message <- gsub(exp, "", error.message)
+
+	return(error.message)
+}
+
+# === WARNING ================================================================ #
+
+.debug.warning <- function(..., all = FALSE)
+{
+	# get all warning nodes
+	warning.nodes <- .debug.env$data.nodes[.debug.env$data.nodes$name == "warning.msg", 
+										   c("id", "value")]
+	
+	if(nrow(warning.nodes) == 0) {
+		cat("There were no warnings in this script!")
+		return(invisible(NULL))
+	}
+	
+	num.warnings <- 1:nrow(warning.nodes)
+	row.names(warning.nodes) <- num.warnings
+	
+	valid.queries <- .get.valid.warn(warning.nodes, ..., all = all)
+	
+	if(is.null(valid.queries))
+		return(invisible(NULL))
+	
+	output <- lapply(valid.queries$id, function(id) {
+		return(.get.output.lineage(.get.lineage(id)))
+	})
+	
+	names(output) <- row.names(valid.queries)
+	return(output)
+}
+
+.get.valid.warn <- function(warning.nodes, ..., all = all)
+{
+	if(all)
+		return(warning.nodes)
+	
+	query <- unique(unlist(list(...)))
+	
+	if(is.null(query)) {
+		.print.pos.warnings(warning.nodes)
+		return(NULL)
+	}
+	
+	pos.values <- row.names(warning.nodes)
+	
+	valid.cells <- sapply(1:length(query), function(i) {
+		return(query[i] %in% pos.values)
+	})
+	
+	.print.invalid.queries(query[!valid.cells])
+	
+	valid.queries <- query[valid.cells]
+	
+	if(length(valid.queries) == 0) {
+		.print.pos.warnings(warning.nodes)
+		return(NULL)
+	}
+	
+	# as debug.warning requires users to query by warning node number
+	# this is equivallent to the row numbers of the table of warning nodes
+	# therefore, the valid queries can be directly used to extract from the warning node table
+	return(warning.nodes[valid.queries, ])
+}
+
+.print.pos.warnings <- function(warning.nodes)
+{
+	cat("Possible results: \n")
+	results.df <- as.data.frame(warning.nodes$value)
+	colnames(results.df) <- NULL
+	print(results.df)
+	cat("\nPass the corresponding numeric value to the function for info on that warning.\n")
+}
+
+# === UTILITY ================================================================ #
 
 .form.df <- function(list)
 {
