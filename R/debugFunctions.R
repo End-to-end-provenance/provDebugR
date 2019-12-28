@@ -1,5 +1,6 @@
 # === LINE =================================================================== #
 
+#' @export
 debug.line <- function(..., script.num = 1, all = FALSE)
 {
 	# get valid lines from user input
@@ -58,6 +59,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	return(output)
 }
 
+#' @noRd
 .get.valid.line <- function(..., script.num = 1, all = FALSE)
 {
 	# get all possible nodes for query
@@ -126,6 +128,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	return(valid.queries)
 }
 
+#' @noRd
 .get.output.line <- function(id.list)
 {
 	rows <- lapply(id.list, function(id)
@@ -141,6 +144,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 
 # === VARIABLE =============================================================== #
 
+#' @export
 debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 {
 	data.nodes <- .debug.env$data.nodes
@@ -167,6 +171,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(variables)
 }
 
+#' @noRd
 .get.pos.vars <- function(pos.nodes)
 {
 	# list possible variables, taking into account start line and script number
@@ -199,6 +204,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(unique(pos.vars))
 }
 
+#' @noRd
 .get.valid.var <- function(pos.nodes, ..., val.type = NA, start.line = NA, script.num = 1, all = FALSE, forward = FALSE)
 {
 	# save table of all possible nodes - this is required later
@@ -313,6 +319,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(valid.queries)
 }
 
+#' @noRd
 .get.query.var <- function(..., val.type = NA, start.line = NA, script.num = 1)
 {
 	if(length(script.num) > 1) {
@@ -368,6 +375,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(query.table)
 }
 
+#' @noRd
 .get.output.var <- function(pos.vars, query)
 {
 	# extract all data nodes from pos.vars with
@@ -407,6 +415,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 
 # === LINEAGE ================================================================ #
 
+#' @export
 debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, forward = FALSE)
 {
 	# get table of possible variables
@@ -434,6 +443,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	return(lineages)
 }
 
+#' @noRd
 .get.lineage <- function(node.id, forward = FALSE)
 {	
 	# get lineage, extract proc nodes
@@ -456,6 +466,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	return(lineage)
 }
 
+#' @noRd
 .get.output.lineage <- function(id.list)
 {
 	proc.nodes <- .debug.env$proc.nodes
@@ -473,6 +484,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 
 # === TYPE CHANGES =========================================================== #
 
+#' @export
 debug.type.changes <- function(var = NA)
 {
 	# Get all data nodes with type "Data" or "Snapshot"
@@ -551,6 +563,7 @@ debug.type.changes <- function(var = NA)
 	return(vars)
 }
 
+#' @noRd
 .get.output.type.changes <- function(data.nodes)
 {
 	# script num, line num, full code, value, valType
@@ -588,6 +601,7 @@ debug.type.changes <- function(var = NA)
 
 # === STATE ================================================================== #
 
+#' @export 
 debug.state <- function(..., script.num = 1)
 {
 	# Get all possible procedure nodes that can be queried. (Operation nodes)
@@ -677,6 +691,7 @@ debug.state <- function(..., script.num = 1)
 	return(output)
 }
 
+#' @noRd
 .remove.non.vars.proc <- function(pos.proc)
 {	
 	# get list of non-variables
@@ -713,6 +728,7 @@ debug.state <- function(..., script.num = 1)
 }
 
 # Remove output edges to non-variables from proc-data edge table
+#' @noRd
 .remove.non.vars.proc.data <- function()
 {
 	data.nodes <- .debug.env$data.nodes
@@ -743,6 +759,7 @@ debug.state <- function(..., script.num = 1)
 
 # get closest procedure node id with line number <= queried line number
 # returns p0 for pre-existing data nodes (where fromEnv == TRUE)
+#' @noRd
 .get.closest.proc <- function(pos.nodes, line)
 {
 	# try to parse the given line number as an integer.
@@ -782,6 +799,7 @@ debug.state <- function(..., script.num = 1)
 }
 
 # location is guarenteed to be between possible line numbers
+#' @noRd
 .find.line.loc <- function(line.nums, line)
 {
 	# uses binary search	
@@ -801,6 +819,7 @@ debug.state <- function(..., script.num = 1)
 	return(low.index)
 }
 
+#' @noRd
 .get.closest.data <- function(proc.node, pos.proc, pos.edges)
 {
 	# case: proc.node == "p0"
@@ -834,6 +853,7 @@ debug.state <- function(..., script.num = 1)
 	return("d0")
 }
 
+#' @noRd
 .get.state <- function(data.node, pos.edges, pos.data)
 {
 	# get id of data nodes where fromEnv is TRUE
@@ -877,6 +897,7 @@ debug.state <- function(..., script.num = 1)
 	return(.get.output.state(var.id))
 }
 
+#' @noRd
 .get.output.state <- function(id.list)
 {	
 	# output consists of: var name, value, valType, scriptNum, startLine
@@ -913,6 +934,7 @@ debug.state <- function(..., script.num = 1)
 
 # === ERROR ================================================================== #
 
+#' @export
 debug.error <- function(stack.overflow = FALSE)
 {
 	# extract the first error
@@ -948,6 +970,7 @@ debug.error <- function(stack.overflow = FALSE)
 	return(.get.output.lineage(lineage))
 }
 
+#' @noRd
 .search.stackoverflow <- function(search.query, order = "desc", sort = "votes", tagged = "r") 
 {
 	search.query <- .process.error(search.query)
@@ -1005,7 +1028,8 @@ debug.error <- function(stack.overflow = FALSE)
 	}
 }
 
-process.error <- function(error.message)
+#' @noRd
+.process.error <- function(error.message)
 {
 	split <- strsplit(error.message, ":")[[1]]
 
@@ -1033,7 +1057,8 @@ process.error <- function(error.message)
 
 # === WARNING ================================================================ #
 
-.debug.warning <- function(..., all = FALSE)
+#' @export
+debug.warning <- function(..., all = FALSE)
 {
 	# get all warning nodes
 	warning.nodes <- .debug.env$data.nodes[.debug.env$data.nodes$name == "warning.msg", 
@@ -1060,6 +1085,7 @@ process.error <- function(error.message)
 	return(output)
 }
 
+#' @noRd
 .get.valid.warn <- function(warning.nodes, ..., all = all)
 {
 	if(all)
@@ -1093,6 +1119,7 @@ process.error <- function(error.message)
 	return(warning.nodes[valid.queries, ])
 }
 
+#' @noRd
 .print.pos.warnings <- function(warning.nodes)
 {
 	cat("Possible results: \n")
@@ -1104,6 +1131,7 @@ process.error <- function(error.message)
 
 # === UTILITY ================================================================ #
 
+#' @noRd
 .form.df <- function(list)
 {
 	# get column names
@@ -1126,6 +1154,7 @@ process.error <- function(error.message)
 }
 
 # print invalid queries, if any.
+#' @noRd
 .print.invalid.queries <- function(invalid)
 {	
 	if(length(invalid) == 0)
@@ -1166,6 +1195,7 @@ process.error <- function(error.message)
 	})
 }
 
+#' @noRd
 .print.pos.options <- function(pos.args)
 {
 	cat("Options:\n")

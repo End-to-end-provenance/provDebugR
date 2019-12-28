@@ -16,6 +16,7 @@
 # === INIT =================================================================== #
 
 # uses last json generated
+#' @export
 prov.debug <- function()
 {
 	# determine which provenance collection tool to use
@@ -31,12 +32,14 @@ prov.debug <- function()
 }
 
 # uses json from file
+#' @export
 prov.debug.file <- function(prov.file)
 {
 	.debug.init(prov.file, is.file = TRUE)
 }
 
 # runs provenance-collection first
+#' @export
 prov.debug.run <- function(script)
 {
 	# determine which provenance collection tool to use
@@ -62,6 +65,7 @@ prov.debug.run <- function(script)
 
 # === HELPER FUNCTIONS ======================================================= #
 
+#' @noRd
 .debug.init <- function(json, is.file)
 {
 	# get parsed provenance, adjacency graph
@@ -118,6 +122,7 @@ prov.debug.run <- function(script)
 }
 
 # returns the full code for each Operation procedure node
+#' @noRd
 .get.full.code <- function()
 {
 	proc.nodes <- .debug.env$proc.nodes
