@@ -1,5 +1,5 @@
 Package: provDebugR
-Title: An R Post-Mortem Debugger
+Title: An R Time-Travelling Debugger
 Version: 0.1.2.9000
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
@@ -19,12 +19,8 @@ Imports:
   igraph, 
   jsonlite, 
   methods, 
-  miniUI, 
   provGraphR,
   provParseR,
-  rstudioapi, 
-  shiny, 
-  stats
 Suggests:
   rdtLite, 
   rdt,
