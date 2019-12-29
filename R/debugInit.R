@@ -4,6 +4,7 @@
 # parsed provenance and adjacency graph
 .debug.env$prov <- NULL
 .debug.env$graph <- NULL
+.deubg.env$has.graph <- FALSE
 
 # procedure nodes, data nodes
 .debug.env$proc.nodes <- NULL
@@ -83,8 +84,12 @@ prov.debug.run <- function(script)
 	.debug.env$proc.data <- provParseR::get.proc.data(.debug.env$prov)
 	
 	# empty case
-	if(is.null(.debug.env$graph))
+	if(is.null(.debug.env$graph)) {
+		.deubg.env$has.graph <- FALSE
 		stop("The provenance is empty.")
+	}
+	
+	.deubg.env$has.graph <- TRUE
 	
 	# get full code for each procedure node
 	.debug.env$proc.nodes$name <- .get.full.code()
