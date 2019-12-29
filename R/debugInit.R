@@ -89,7 +89,7 @@ prov.debug.run <- function(script)
 		stop("The provenance is empty.")
 	}
 	
-	.deubg.env$has.graph <- TRUE
+	.debug.env$has.graph <- TRUE
 	
 	# get full code for each procedure node
 	.debug.env$proc.nodes$name <- .get.full.code()
