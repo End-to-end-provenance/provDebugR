@@ -4,7 +4,7 @@
 # parsed provenance and adjacency graph
 .debug.env$prov <- NULL
 .debug.env$graph <- NULL
-.deubg.env$has.graph <- FALSE
+.debug.env$has.graph <- FALSE
 
 # procedure nodes, data nodes
 .debug.env$proc.nodes <- NULL
