@@ -19,20 +19,6 @@
 		</exec>
 	</target>
 
-	<!-- === CHECK ========================================================= -->
-
-	<target name="check" depends="build">
-		<exec executable="R" >
-			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
-		</exec>
-	</target>
-	
-	<target name="cran-check" depends="build">
-		<exec executable="R" >
-			<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>
-		</exec>
-	</target>
-
 	<!-- === INSTALL ======================================================= -->
 
 	<target name="install" depends="check">
@@ -88,6 +74,20 @@
 	<!-- delete prov directory -->
 	<target name="delete.prov.dir">
 		<delete dir="inst/testdata/prov_${scriptname}"/>
+	</target>
+	
+	<!-- === CHECK ========================================================= -->
+
+	<target name="check" depends="build">
+		<exec executable="R" >
+			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
+		</exec>
+	</target>
+	
+	<target name="cran-check" depends="build, create-json">
+		<exec executable="R" >
+			<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>
+		</exec>
 	</target>
 
 </project>
