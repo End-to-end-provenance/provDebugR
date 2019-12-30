@@ -86,7 +86,7 @@ prov.debug.run <- function(script)
 	# empty case
 	if(is.null(.debug.env$graph)) {
 		.debug.env$has.graph <- FALSE
-		stop("The provenance is empty.")
+		stop("There is no provenance.")
 	}
 	
 	.debug.env$has.graph <- TRUE

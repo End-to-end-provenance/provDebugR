@@ -3,6 +3,10 @@
 #' @export
 debug.line <- function(..., script.num = 1, all = FALSE)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	# get valid lines from user input
 	valid.lines <- .get.valid.line(..., script.num = script.num, all = all)
 	
@@ -147,6 +151,10 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 #' @export
 debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	data.nodes <- .debug.env$data.nodes
 	
 	# get table of possible variables
@@ -418,6 +426,10 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' @export
 debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, forward = FALSE)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	# get table of possible variables
 	# this includes valType, start line and script number
 	pos.vars <- .get.pos.vars(.debug.env$data.nodes)
@@ -487,6 +499,10 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 #' @export
 debug.type.changes <- function(var = NA)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	# Get all data nodes with type "Data" or "Snapshot"
 	data.nodes <- .debug.env$data.nodes
 	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
@@ -604,6 +620,10 @@ debug.type.changes <- function(var = NA)
 #' @export 
 debug.state <- function(..., script.num = 1)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	# Get all possible procedure nodes that can be queried. (Operation nodes)
 	pos.proc.all <- .debug.env$proc.nodes[.debug.env$proc.nodes$type == "Operation", ]
 	
@@ -937,6 +957,10 @@ debug.state <- function(..., script.num = 1)
 #' @export
 debug.error <- function(stack.overflow = FALSE)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	# extract the first error
 	error.node <- .debug.env$data.nodes[.debug.env$data.nodes$name == "error.msg", ]
 	error.node <- error.node[1, ]
@@ -1060,6 +1084,10 @@ debug.error <- function(stack.overflow = FALSE)
 #' @export
 debug.warning <- function(..., all = FALSE)
 {
+	# case: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
 	# get all warning nodes
 	warning.nodes <- .debug.env$data.nodes[.debug.env$data.nodes$name == "warning.msg", 
 										   c("id", "value")]
