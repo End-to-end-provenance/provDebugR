@@ -9,10 +9,10 @@ context("Initialization")
 # prov.debug (general case)
 
 # empty prov
-test_that("Debugger initialization on empty provenance", 
+test_that("Initialization - Empty provenance", 
 {
-	c1 <- system.file("testdata", "empty.json", package = "provDebugR")
-	expect_error(provDebugR::prov.debug.file(c1))
+	c0 <- system.file("testdata", "empty.json", package = "provDebugR")
+	expect_error(provDebugR::prov.debug.file(c0))
 	expect_false(provDeubgR:::.debug.env$has.graph)
 })
 
