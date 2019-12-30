@@ -41,11 +41,26 @@
 	</target>
 	
 	<!-- === CREATE JSON =================================================== -->
-
+	
+	<!-- 
+		Creates up-to-date json files for testing.
+		Does not include sourced files.
+	-->
 	<target name="create-json">
+		
+		<!-- empty -->
 		<antcall target="json">
 			<param name="theFile" value="empty.R"/>
 		</antcall>
+		
+		<!-- errors, warnings -->
+		<!-- this case is used to test .get.full.code as well -->
+		<antcall target="json">
+			<param name="theFile" value="exceptions.R"/>
+			<param name="delete.dir" value="false"/>
+		</antcall>
+		<delete dir="inst/testdata/prov_exceptions/data"/>
+		<delete dir="inst/testdata/prov_exceptions/debug"/>
 	</target>
 	
 	<target name="json">
