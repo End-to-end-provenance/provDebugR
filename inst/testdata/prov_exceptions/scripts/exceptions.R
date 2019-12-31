@@ -1,6 +1,8 @@
+library(rdtLite)
+
 col1 <- c(1:11)
 
-prov.source("source_warning.R")
-prov.source("source_error.R")
+prov.source(system.file("testscripts", "source_warning.r", package = "provDebugR"))
+prov.source(system.file("testscripts", "source_error.r", package = "provDebugR"))
 
 print("exceptions test case complete")

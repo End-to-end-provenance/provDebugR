@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "exceptions.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "1.03",
+			"rdt:elapsedTime": "1.09",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -42,29 +42,119 @@
 			"rdt:endCol": "NA"
 		},
 		"rdt:p2": {
-			"rdt:name": "col1 <- c(1:11)",
+			"rdt:name": "library(rdtLite)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.14",
+			"rdt:elapsedTime": "0.15",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
 			"rdt:endLine": 1,
-			"rdt:endCol": 15
+			"rdt:endCol": 16
 		},
 		"rdt:p3": {
-			"rdt:name": "prov.source(\"source_warning.R\")",
+			"rdt:name": "col1 <- c(1:11)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.03",
+			"rdt:elapsedTime": "0.13",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
 			"rdt:endLine": 3,
-			"rdt:endCol": 31
+			"rdt:endCol": 15
 		},
 		"rdt:p4": {
+			"rdt:name": "source_warning.r",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": "0.08",
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"rdt:p5": {
+			"rdt:name": "if(length(col1) > 10) {\n\tcol1 <- c(1:10)\n\twarning(\"length wa",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.11",
+			"rdt:scriptNum": 2,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 4,
+			"rdt:endCol": 1
+		},
+		"rdt:p6": {
+			"rdt:name": "warning(\"another warning thrown\")",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.16",
+			"rdt:scriptNum": 2,
+			"rdt:startLine": 6,
+			"rdt:startCol": 1,
+			"rdt:endLine": 6,
+			"rdt:endCol": 33
+		},
+		"rdt:p7": {
+			"rdt:name": "source_warning.r",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": "0.0",
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"rdt:p8": {
+			"rdt:name": "source_error.r",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": "0.15",
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"rdt:p9": {
+			"rdt:name": "get.error.df <- function()\n{\n\tcol2 <- rep(c(\"ll\",12,13,14,15",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.11",
+			"rdt:scriptNum": 3,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 6,
+			"rdt:endCol": 1
+		},
+		"rdt:p10": {
+			"rdt:name": "df <- cbind(col1, get.error.df(), stringsAsFactors=FALSE)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.11",
+			"rdt:scriptNum": 3,
+			"rdt:startLine": 8,
+			"rdt:startCol": 1,
+			"rdt:endLine": 8,
+			"rdt:endCol": 57
+		},
+		"rdt:p11": {
+			"rdt:name": "sum(df, col1)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.02",
+			"rdt:scriptNum": 3,
+			"rdt:startLine": 10,
+			"rdt:startCol": 1,
+			"rdt:endLine": 10,
+			"rdt:endCol": 13
+		},
+		"rdt:p12": {
+			"rdt:name": "source_error.r",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": "0.2",
+			"rdt:scriptNum": "NA",
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"rdt:p13": {
 			"rdt:name": "exceptions.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.1",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -86,8 +176,74 @@
 			"rdt:location": ""
 		},
 		"rdt:d2": {
+			"rdt:name": "warning.msg",
+			"rdt:value": "In  eval(annot, environ, NULL) :  length was greater than 10",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d3": {
+			"rdt:name": "package.rds",
+			"rdt:value": "data/3-package.rds",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "8e1beadae45976c666764d90f9e89374",
+			"rdt:timestamp": "2019-12-31T00.40.58EST",
+			"rdt:location": "C:/Users/Elizabeth/Documents/Programming/Libraries/R/provDebugR/Meta/package.rds"
+		},
+		"rdt:d4": {
+			"rdt:name": "col1",
+			"rdt:value": " 1  2  3  4  5  6  7  8  9 10",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d5": {
+			"rdt:name": "warning.msg",
+			"rdt:value": "In  eval(annot, environ, NULL) :  another warning thrown",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "Exception",
+			"rdt:scope": "ddg.library",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d6": {
+			"rdt:name": "get.error.df",
+			"rdt:value": "function()...",
+			"rdt:valType": "function",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d7": {
+			"rdt:name": "df",
+			"rdt:value": "Row 1\t1   ll   21",
+			"rdt:valType": "{\"container\":\"data_frame\", \"dimension\":[10,3], \"type\":[\"integer\",\"character\",\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d8": {
 			"rdt:name": "error.msg",
-			"rdt:value": "Error in prov.source(\"source_warning.R\"): could not find function \"prov.source\"\n",
+			"rdt:value": "Error in FUN(X[[i]], ...): only defined on a data frame with all numeric variables\n",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
 			"rdt:type": "Exception",
 			"rdt:scope": "ddg.library",
@@ -104,13 +260,19 @@
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.1 (2019-07-05)",
 			"rdt:script": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst/testscripts/exceptions.R",
-			"rdt:scriptTimeStamp": "2019-12-30T16.14.36EST",
-			"rdt:totalElapsedTime": "1.3",
-			"rdt:sourcedScripts": "",
-			"rdt:sourcedScriptTimeStamps": "",
+			"rdt:scriptTimeStamp": "2019-12-31T00.40.46EST",
+			"rdt:totalElapsedTime": "2.31",
+			"rdt:sourcedScripts": [
+				"C:/Users/Elizabeth/Documents/Programming/Libraries/R/provDebugR/testscripts/source_warning.r",
+				"C:/Users/Elizabeth/Documents/Programming/Libraries/R/provDebugR/testscripts/source_error.r"
+			],
+			"rdt:sourcedScriptTimeStamps": [
+				"2019-12-31T00.35.23EST",
+				"2019-12-31T00.35.23EST"
+			],
 			"rdt:workingDirectory": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst",
 			"rdt:provDirectory": "testdata/prov_exceptions",
-			"rdt:provTimestamp": "2019-12-30T18.31.02EST",
+			"rdt:provTimestamp": "2019-12-31T00.40.57EST",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -163,6 +325,14 @@
 			}
 		},
 		"rdt:l7": {
+			"name": "rdtLite",
+			"version": "1.2.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l8": {
 			"name": "stats",
 			"version": "3.6.1",
 			"prov:type": {
@@ -170,7 +340,7 @@
 				"type": "xsd:QName"
 			}
 		},
-		"rdt:l8": {
+		"rdt:l9": {
 			"name": "utils",
 			"version": "3.6.1",
 			"prov:type": {
@@ -192,17 +362,104 @@
 		"rdt:pp3": {
 			"prov:informant": "rdt:p3",
 			"prov:informed": "rdt:p4"
+		},
+		"rdt:pp4": {
+			"prov:informant": "rdt:p4",
+			"prov:informed": "rdt:p5"
+		},
+		"rdt:pp5": {
+			"prov:informant": "rdt:p5",
+			"prov:informed": "rdt:p6"
+		},
+		"rdt:pp6": {
+			"prov:informant": "rdt:p6",
+			"prov:informed": "rdt:p7"
+		},
+		"rdt:pp7": {
+			"prov:informant": "rdt:p7",
+			"prov:informed": "rdt:p8"
+		},
+		"rdt:pp8": {
+			"prov:informant": "rdt:p8",
+			"prov:informed": "rdt:p9"
+		},
+		"rdt:pp9": {
+			"prov:informant": "rdt:p9",
+			"prov:informed": "rdt:p10"
+		},
+		"rdt:pp10": {
+			"prov:informant": "rdt:p10",
+			"prov:informed": "rdt:p11"
+		},
+		"rdt:pp11": {
+			"prov:informant": "rdt:p11",
+			"prov:informed": "rdt:p12"
+		},
+		"rdt:pp12": {
+			"prov:informant": "rdt:p12",
+			"prov:informed": "rdt:p13"
 		}
 	},
 
 	"wasGeneratedBy" : {
 		"rdt:pd1": {
-			"prov:activity": "rdt:p2",
+			"prov:activity": "rdt:p3",
 			"prov:entity": "rdt:d1"
 		},
 		"rdt:pd2": {
-			"prov:activity": "rdt:p3",
+			"prov:activity": "rdt:p5",
 			"prov:entity": "rdt:d2"
+		},
+		"rdt:pd3": {
+			"prov:activity": "rdt:p5",
+			"prov:entity": "rdt:d4"
+		},
+		"rdt:pd4": {
+			"prov:activity": "rdt:p6",
+			"prov:entity": "rdt:d5"
+		},
+		"rdt:pd5": {
+			"prov:activity": "rdt:p9",
+			"prov:entity": "rdt:d6"
+		},
+		"rdt:pd6": {
+			"prov:activity": "rdt:p10",
+			"prov:entity": "rdt:d7"
+		},
+		"rdt:pd7": {
+			"prov:activity": "rdt:p11",
+			"prov:entity": "rdt:d8"
+		}
+	},
+
+	"used" : {
+		"rdt:dp1": {
+			"prov:entity": "rdt:d1",
+			"prov:activity": "rdt:p5"
+		},
+		"rdt:dp2": {
+			"prov:entity": "rdt:d3",
+			"prov:activity": "rdt:p5"
+		},
+		"rdt:dp3": {
+			"prov:entity": "rdt:d3",
+			"prov:activity": "rdt:p9"
+		},
+		"rdt:dp4": {
+			"prov:entity": "rdt:d4",
+			"prov:activity": "rdt:p10"
+		},
+		"rdt:dp5": {
+			"prov:entity": "rdt:d6",
+			"prov:activity": "rdt:p10"
+		},
+		"rdt:dp6": {
+			"prov:entity": "rdt:d7",
+			"prov:activity": "rdt:p11"
+		},
+		"rdt:dp7": {
+			"prov:entity": "rdt:d4",
+			"prov:activity": "rdt:p11"
 		}
 	}
 }
