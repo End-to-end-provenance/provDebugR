@@ -16,6 +16,8 @@ test_that("debug.error - no/empty provenance",
 	expect_error(provDebugR::debug.error())
 })
 
+# no error
+
 # general case: error with lineage of >1 nodes
 test_that("debug.error - general",
 {
