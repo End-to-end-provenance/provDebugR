@@ -10,8 +10,8 @@ test_that("debug.warning - no/empty provenance",
 	expect_error(provDebugR::debug.warning())
 	
 	# empty provenance
-	c0 <- system.file("testdata", "empty.json", package = "provDebugR")
-	expect_error(provDebugR::prov.debug.file(c0))
+	json <- system.file("testdata", "empty.json", package = "provDebugR")
+	expect_error(provDebugR::prov.debug.file(json))
 	expect_false(provDeubgR:::.debug.env$has.graph)
 	expect_error(provDebugR::debug.warning())
 })
