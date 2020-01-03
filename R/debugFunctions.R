@@ -1132,7 +1132,13 @@ debug.warning <- function(..., all = FALSE)
 		return(query[i] %in% pos.values)
 	})
 	
-	.print.invalid.queries(query[!valid.cells])
+	# print invalid queries
+	invalid <- query[!valid.cells]
+	
+	if(length(invalid) > 0) {
+		cat(paste(invalid, " is not a possible query.", sep="", collapse = "\n"))
+		cat("\n\n")
+	}
 	
 	valid.queries <- query[valid.cells]
 	
