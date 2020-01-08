@@ -1114,7 +1114,7 @@ debug.warning <- function(..., all = FALSE)
 }
 
 #' @noRd
-.get.valid.warn <- function(warning.nodes, ..., all = all)
+.get.valid.warn <- function(warning.nodes, ..., all = FALSE)
 {
 	if(all)
 		return(warning.nodes)

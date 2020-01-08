@@ -1,19 +1,23 @@
 library(testthat)
+library(provDebugR)
 
 context("debug.error")
 
 # no provenance
 test_that("debug.error - no/empty provenance", 
 {
+	# clean debug environment of provDebugR first to ensure inital state
+	provDebugR:::.clean()
+	
 	# initialisation not run
-	expect_false(provDeubgR:::.debug.env$has.graph)
-	expect_error(provDebugR::debug.error())
+	expect_false(provDebugR:::.debug.env$has.graph)
+	expect_error(debug.error())
 	
 	# empty provenance
 	json <- system.file("testdata", "empty.json", package = "provDebugR")
-	expect_error(provDebugR::prov.debug.file(json))
-	expect_false(provDeubgR:::.debug.env$has.graph)
-	expect_error(provDebugR::debug.error())
+	expect_error(prov.debug.file(json))
+	expect_false(provDebugR:::.debug.env$has.graph)
+	expect_error(debug.error())
 })
 
 # no error
@@ -22,15 +26,16 @@ test_that("debug.error - no/empty provenance",
 test_that("debug.error - general",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
-	provDebugR::prov.debug.file(json)
+	prov.debug.file(json)
 	
 	# c1: output table on lineage of error
 	# c2: message about error
 	c2 <- utils::capture.output(c1 <- debug.error())
+	c2 <- paste(c2, collapse = '\n')
 	
 	# e1: expected output table on lineage of error
 	e1 <- system.file("testexpected", "debugError_general.csv", package = "provDebugR")
-	e1 <- read.csv(e0, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	e1 <- read.csv(e1, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
 	
 	expect_equivalent(c1, e1)	# check equivalence of table contents
 	expect_true(nchar(c2) > 0)	# check that there exists message about error

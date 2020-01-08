@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "exceptions.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "1.21",
+			"rdt:elapsedTime": "0.75",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -44,7 +44,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(rdtLite)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.15",
+			"rdt:elapsedTime": "0.12",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "col1 <- c(1:11)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.13",
+			"rdt:elapsedTime": "0.1",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -64,7 +64,7 @@
 		"rdt:p4": {
 			"rdt:name": "source_warning.r",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.06",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -74,7 +74,7 @@
 		"rdt:p5": {
 			"rdt:name": "if(length(col1) > 10) {\n\tcol1 <- c(1:10)\n\twarning(\"length wa",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.11",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 2,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -84,7 +84,7 @@
 		"rdt:p6": {
 			"rdt:name": "warning(\"another warning thrown\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.17",
+			"rdt:elapsedTime": "0.1",
 			"rdt:scriptNum": 2,
 			"rdt:startLine": 6,
 			"rdt:startCol": 1,
@@ -94,7 +94,7 @@
 		"rdt:p7": {
 			"rdt:name": "source_warning.r",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -104,7 +104,7 @@
 		"rdt:p8": {
 			"rdt:name": "source_error.r",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.19",
+			"rdt:elapsedTime": "0.12",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -114,7 +114,7 @@
 		"rdt:p9": {
 			"rdt:name": "get.error.df <- function()\n{\n\tcol2 <- rep(c(\"ll\",12,13,14,15",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.1",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 3,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -124,7 +124,7 @@
 		"rdt:p10": {
 			"rdt:name": "df <- cbind(col1, get.error.df(), stringsAsFactors=FALSE)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.1",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 3,
 			"rdt:startLine": 8,
 			"rdt:startCol": 1,
@@ -144,7 +144,7 @@
 		"rdt:p12": {
 			"rdt:name": "source_error.r",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.25",
+			"rdt:elapsedTime": "0.15",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -154,7 +154,7 @@
 		"rdt:p13": {
 			"rdt:name": "exceptions.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -193,9 +193,9 @@
 			"rdt:type": "File",
 			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "1ffd0e00f1b6e0846eef91caa091ac81",
-			"rdt:timestamp": "2019-12-31T01.28.49EST",
-			"rdt:location": "C:/Users/Elizabeth/Documents/Programming/Libraries/R/provDebugR/Meta/package.rds"
+			"rdt:hash": "2e84b3a8190e6a407fde21e3c2abd7e1",
+			"rdt:timestamp": "2020-01-07T23.34.03EST",
+			"rdt:location": "C:/Users/fong22e/Documents/Libraries/R/win-library/provDebugR/Meta/package.rds"
 		},
 		"rdt:d4": {
 			"rdt:name": "col1",
@@ -259,20 +259,20 @@
 			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.1 (2019-07-05)",
-			"rdt:script": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst/testscripts/exceptions.R",
-			"rdt:scriptTimeStamp": "2019-12-31T00.40.46EST",
-			"rdt:totalElapsedTime": "2.55",
+			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/exceptions.R",
+			"rdt:scriptTimeStamp": "2020-01-07T17.10.15EST",
+			"rdt:totalElapsedTime": "1.66",
 			"rdt:sourcedScripts": [
-				"C:/Users/Elizabeth/Documents/Programming/Libraries/R/provDebugR/testscripts/source_warning.r",
-				"C:/Users/Elizabeth/Documents/Programming/Libraries/R/provDebugR/testscripts/source_error.r"
+				"C:/Users/fong22e/Documents/Libraries/R/win-library/provDebugR/testscripts/source_warning.r",
+				"C:/Users/fong22e/Documents/Libraries/R/win-library/provDebugR/testscripts/source_error.r"
 			],
 			"rdt:sourcedScriptTimeStamps": [
-				"2019-12-31T01.28.28EST",
-				"2019-12-31T01.28.28EST"
+				"2020-01-07T23.18.27EST",
+				"2020-01-07T23.18.27EST"
 			],
-			"rdt:workingDirectory": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst",
-			"rdt:provDirectory": "testdata/prov_exceptions",
-			"rdt:provTimestamp": "2019-12-31T01.28.48EST",
+			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
+			"rdt:provDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testdata/prov_exceptions",
+			"rdt:provTimestamp": "2020-01-07T23.34.01EST",
 			"rdt:hashAlgorithm": "md5"
 		},
 

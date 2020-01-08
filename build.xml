@@ -93,7 +93,7 @@
 	
 	<!-- === CHECK ========================================================= -->
 
-	<target name="check" depends="build">
+	<target name="check" depends="build, create-json">
 		<exec executable="R" >
 			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
 		</exec>

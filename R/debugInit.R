@@ -167,3 +167,25 @@ prov.debug.run <- function(script)
 	
 	return(unname(codes))
 }
+
+# === FOR TESTING ONLY ======================================================= #
+
+# This function returns provDebugR's debug environment to its initial state. 
+# Used only for testing.
+#
+#' @noRd
+.clean <- function()
+{
+	# parsed provenance and adjacency graph
+	.debug.env$prov <- NULL
+	.debug.env$graph <- NULL
+	.debug.env$has.graph <- FALSE
+
+	# procedure nodes, data nodes
+	.debug.env$proc.nodes <- NULL
+	.debug.env$data.nodes <- NULL
+
+	# data-to-procedure edges, procedure-to-data edges
+	.debug.env$data.proc <- NULL
+	.debug.env$proc.data <- NULL
+}
