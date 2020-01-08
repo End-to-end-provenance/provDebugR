@@ -335,7 +335,6 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		return(NULL)
 	}
 	
-	# TMP
 	if(length(val.type) > 1) {
 		warning("Please query only 1 valType.")
 		return(NULL)
@@ -358,9 +357,9 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	}
 	else if(length(query.vars) == 1)
 	{
-		query.vars <- rep(query.vars, length(query.lines))
-		query.types - rep(val.type, length(query.lines))
 		query.lines <- start.line
+		query.vars <- rep(query.vars, length(query.lines))
+		query.types <- rep(val.type, length(query.lines))
 		query.scripts <- rep(script.num, length(query.lines))
 	}
 	else if(length(query.vars) == length(start.line))
