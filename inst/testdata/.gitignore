@@ -1,4 +1,5 @@
 /.DS_Store
-/prov_exceptions/data/
-/prov_exceptions/scripts/
-/prov_exceptions/prov.json
+/prov_exceptions/
+/exceptions.json
+/prov_missingScripts/
+/missingScripts.json

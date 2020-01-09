@@ -137,8 +137,17 @@ prov.debug.run <- function(script)
 	# get code lines for each script
 	scripts <- provParseR::get.saved.scripts(.debug.env$prov)$script
 	
+	# vector to store script paths that could not be found
+	inaccessible <- c()
+	
 	lines <- lapply(scripts, function(script) 
 	{
+		# check if file exists
+		if(!file.exists(script)) {
+			inaccessible <<- append(inaccessible, script)
+			return(NA)
+		}
+		
 		# read file
 		file <- file(script, "r", encoding = getOption("encoding"))
 		line.list <- readLines(file, warn = FALSE)
@@ -147,21 +156,41 @@ prov.debug.run <- function(script)
 		return(line.list)
 	})
 	
+	# case: throw warning if there are inaccessible files
+	if(length(inaccessible) > 0) 
+	{
+		warn.msg <- paste(inaccessible, collapse="\n")
+		warn.msg <- paste("Unable to access the following files:",
+						  warn.msg, sep="\n")
+		warning(warn.msg)
+	
+		# case: if all files are inaccessible
+		# return the name column of proc nodes as is
+		if(length(inaccessible) == length(scripts)) {
+			return(proc.nodes$name)
+		}
+	}
+	
 	# get full code for each proc node
 	codes <- sapply(1:nrow(proc.nodes), function(i)
 	{
 		node <- proc.nodes[i, ]
+		script.num <- node$scriptNum
 		
 		# case: not an operation
-		if(node$type != "Operation")
+		# case: script file was not found
+		if(node$type != "Operation" || is.na(lines[[script.num]])) {
 			return(node$name)
+		}
 		
 		# get full code
-		# if procedure has more than 1 line, collapse the lines into 1 before returning
-		if(node$endLine - node$startLine == 0)
-			return(lines[[node$scriptNum]][node$startLine])
+		# if procedure has more than 1 line, 
+		# collapse the lines into 1 before returning
+		if(node$endLine - node$startLine == 0) {
+			return(lines[[script.num]][node$startLine])
+		}
 		
-		code <- lines[[node$scriptNum]][node$startLine:node$endLine]
+		code <- lines[[script.num]][node$startLine:node$endLine]
 		return(paste(code, sep="", collapse = "\n"))
 	})
 	

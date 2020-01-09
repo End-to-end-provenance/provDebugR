@@ -2,7 +2,7 @@ library(rdtLite)
 
 col1 <- c(1:11)
 
-prov.source(system.file("testscripts", "source_warning.r", package = "provDebugR"))
-prov.source(system.file("testscripts", "source_error.r", package = "provDebugR"))
+prov.source("testscripts/source_warning.r")
+prov.source("testscripts/source_error.r")
 
 print("exceptions test case complete")

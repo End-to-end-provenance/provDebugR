@@ -53,6 +53,12 @@
 			<param name="theFile" value="empty.R"/>
 		</antcall>
 		
+		<!-- type changes -->
+		<antcall target="json">
+			<param name="theFile" value="typeChanges.R"/>
+		</antcall>
+		<delete file="inst/Rplots.pdf"/>
+		
 		<!-- errors, warnings -->
 		<!-- this case is used to test .get.full.code as well -->
 		<antcall target="json">
@@ -61,7 +67,18 @@
 		</antcall>
 		<delete dir="inst/testdata/prov_exceptions/data"/>
 		<delete dir="inst/testdata/prov_exceptions/debug"/>
+		
+		<!-- .get.full.code case for a missing script from prov folder -->
+		<antcall target="json">
+			<param name="theFile" value="missingScripts.R"/>
+			<param name="delete.dir" value="false"/>
+		</antcall>
+		<delete file="inst/testdata/prov_missingScripts/scripts/source_notInProv.R"/>
+		<delete dir="inst/testdata/prov_missingScripts/data"/>
+		<delete dir="inst/testdata/prov_missingScripts/debug"/>
+		
 	</target>
+	
 	
 	<target name="json">
 		<!-- default: values of parameters to prov.run -->
@@ -86,6 +103,7 @@
 		<antcall if:true="${delete.dir}" target="delete.prov.dir"/>
 	</target>
 	
+	
 	<!-- delete prov directory -->
 	<target name="delete.prov.dir">
 		<delete dir="inst/testdata/prov_${scriptname}"/>
@@ -93,13 +111,13 @@
 	
 	<!-- === CHECK ========================================================= -->
 
-	<target name="check" depends="build, create-json">
+	<target name="check" depends="create-json, build">
 		<exec executable="R" >
 			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
 		</exec>
 	</target>
 	
-	<target name="cran-check" depends="build, create-json">
+	<target name="cran-check" depends="create-json, build">
 		<exec executable="R" >
 			<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>
 		</exec>
