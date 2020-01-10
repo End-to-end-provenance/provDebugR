@@ -162,7 +162,7 @@ prov.debug.run <- function(script)
 		warn.msg <- paste(inaccessible, collapse="\n")
 		warn.msg <- paste("Unable to access the following files:",
 						  warn.msg, sep="\n")
-		warning(warn.msg)
+		warning(warn.msg, call. = FALSE)
 	
 		# case: if all files are inaccessible
 		# return the name column of proc nodes as is
@@ -203,7 +203,7 @@ prov.debug.run <- function(script)
 # Used only for testing.
 #
 #' @noRd
-.clean <- function()
+.clear <- function()
 {
 	# parsed provenance and adjacency graph
 	.debug.env$prov <- NULL

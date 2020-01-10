@@ -7,7 +7,7 @@ context("debug.variable")
 test_that("debug.variable - no/empty provenance", 
 {
 	# clean debug environment of provDebugR first to ensure inital state
-	provDebugR:::.clean()
+	provDebugR:::.clear()
 	
 	# initialisation not run
 	expect_false(provDebugR:::.debug.env$has.graph)

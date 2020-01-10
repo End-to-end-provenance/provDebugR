@@ -6,8 +6,8 @@ context("debug.error")
 # no provenance
 test_that("debug.error - no/empty provenance", 
 {
-	# clean debug environment of provDebugR first to ensure inital state
-	provDebugR:::.clean()
+	# clear debug environment of provDebugR first to ensure inital state
+	provDebugR:::.clear()
 	
 	# initialisation not run
 	expect_false(provDebugR:::.debug.env$has.graph)
@@ -26,6 +26,8 @@ test_that("debug.error - no/empty provenance",
 test_that("debug.error - general",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
 	prov.debug.file(json)
 	
 	# c1: output table on lineage of error

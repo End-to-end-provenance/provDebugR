@@ -7,7 +7,7 @@ context("debug.warning")
 test_that("debug.warning - no/empty provenance", 
 {
 	# clean debug environment of provDebugR first to ensure inital state
-	provDebugR:::.clean()
+	provDebugR:::.clear()
 	
 	# initialisation not run
 	expect_false(provDebugR:::.debug.env$has.graph)
@@ -26,6 +26,8 @@ test_that("debug.warning - no/empty provenance",
 test_that("debug.warning - general",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
 	prov.debug.file(json)
 	
 	# by individual warnings
@@ -66,6 +68,8 @@ test_that("debug.warning - general",
 test_that("debug.warning - no queries", 
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
 	prov.debug.file(json)
 	
 	c2 <- utils::capture.output(c1 <- debug.warning())
@@ -82,6 +86,8 @@ test_that("debug.warning - no queries",
 test_that("debug.warning - invalid queries",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
 	prov.debug.file(json)
 	
 	# an expected output table
