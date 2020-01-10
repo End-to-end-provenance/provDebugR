@@ -960,16 +960,18 @@ debug.error <- function(stack.overflow = FALSE)
 	if(!.debug.env$has.graph)
 		stop("There is no provenance.")
 	
-	# extract the first error
+	# get errors
 	error.node <- .debug.env$data.nodes[.debug.env$data.nodes$name == "error.msg", ]
-	error.node <- error.node[1, ]
-	message <- error.node$value
 	
-	# no error
-	if(length(message) == 0) {
+	# case: no error
+	if(nrow(error.node) == 0) {
 		cat("There were no errors in this script!")
 		return(invisible(NULL))
 	}
+	
+	# extract the first error
+	error.node <- error.node[1, ]
+	message <- error.node$value
 	
 	# the error
 	cat(paste("Your Error: ", message, "\n", sep = ""))

@@ -21,6 +21,19 @@ test_that("debug.error - no/empty provenance",
 })
 
 # no error
+test_that("debug.error - no error",
+{
+	json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning due to prov folder deleted
+	
+	c2 <- utils::capture.output(c1 <- debug.error())
+	c2 <- paste(c2, collapse = '\n')
+	
+	expect_null(c1)              # check the returned value
+	expect_true(nchar(c2) > 0)   # check that a message exists
+})
 
 # general case: error with lineage of >1 nodes
 test_that("debug.error - general",
@@ -42,3 +55,5 @@ test_that("debug.error - general",
 	expect_equivalent(c1, e1)	# check equivalence of table contents
 	expect_true(nchar(c2) > 0)	# check that there exists message about error
 })
+
+# .process.error

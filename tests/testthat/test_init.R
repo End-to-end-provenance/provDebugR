@@ -53,6 +53,8 @@ test_that("Initialization - Empty provenance",
 })
 
 # .get.full.code
+# .get.full.code throws a warning when files are not found.
+# this makes the initialisation functions throw the warning too.
 test_that("Initialization - .get.full.code",
 {
 	# GENERAL CASE
