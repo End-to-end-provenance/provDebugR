@@ -21,6 +21,12 @@ test_that("debug.variable - no/empty provenance",
 })
 
 # general case
+# no param
+# all
+# invalid script
+# invalid vars
+# invalid valtypes
+
 
 # no variables
 
@@ -30,11 +36,7 @@ test_that("debug.variable - no/empty provenance",
 
 # .get.query.var
 test_that("debug.variable - .get.query.var (valid queries)",
-{
-	# no queries
-	expect_null(provDebugR:::.get.query.var())
-	expect_null(provDebugR:::.get.query.var(val.type = "logical", start.line = 5))
-	
+{	
 	# 1 object queried
 	c1 <- provDebugR:::.get.query.var("x")
 	

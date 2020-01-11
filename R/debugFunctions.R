@@ -75,7 +75,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 		return(all.pos.nodes)
 	
 	# get user's query into vector form, 
-	query <- unique(unlist(list(...)))
+	query <- unique(.flatten.args(...))
 	
 	# CASE: no queries
 	if(is.null(query)) {
@@ -120,9 +120,6 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	valid.queries <- query[valid.cells, ]
 	valid.queries <- cbind("id"=valid.id, valid.queries)
 	
-	# USER OUTPUT: print invalid queries, if any
-	.print.invalid.queries(query[!valid.cells, ])
-	
 	# CASE: no valid queries
 	if(nrow(valid.queries) == 0) {
 		return(invisible(NULL))
@@ -151,212 +148,138 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 #' @export
 debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 {
-	# case: no provenance
+	# CASE: no provenance
 	if(!.debug.env$has.graph)
 		stop("There is no provenance.")
 	
+	# STEP: get all possible variables
+	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
 	data.nodes <- .debug.env$data.nodes
+	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
 	
-	# get table of possible variables
-	# this includes valType, start line and script number
-	# only nodes with type = "Data" or "Snapshot" are permitted here.
-	pos.vars <- .get.pos.vars(data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ])
+	# columns: d.id, p.id, name, valType, startLine, scriptNum
+	pos.vars <- .get.pos.var(data.nodes)
 	
-	# get valid queries, keeping name, valType, scriptNum columns
-	valid.queries <- .get.valid.var(pos.vars, ..., val.type = val.type, script.num = script.num, all = all)
-	valid.queries[ , c("name", "valType", "scriptNum")]
-	
-	# case: no valid queries
-	if(is.null(valid.queries))
+	# CASE: no variables
+	if(is.null(pos.vars)) {
+		cat("There are no variables.\n")
 		return(invisible(NULL))
+	}
 	
-	# get user output
-	variables <- lapply(c(1:nrow(valid.queries)), function(i) {
-		return(.get.output.var(pos.vars, valid.queries[i, ]))
-	})
-	
-	names(variables) <- valid.queries$name
-	return(variables)
-}
-
-#' @noRd
-.get.pos.vars <- function(pos.nodes)
-{
-	# list possible variables, taking into account start line and script number
-	id.list <- pos.nodes$id
-	
-	rows <- lapply(id.list, function(data.id)
-	{
-		# get line of code that assigned/produced the data
-		proc.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == data.id]
-		
-		# alternatively, get the line that first used the data (e.g. URL nodes)
-		if(length(proc.id) == 0)
-			proc.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == data.id]
-		
-		# get startLine, script number, code from the proc nodes
-		proc.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == proc.id, 
-											 c("startLine", "scriptNum", "name")]
-		names(proc.fields) <- c("startLine", "scriptNum", "code")
-		return(proc.fields)
-	})
-	
-	# form the data frame of startLine and scriptNum
-	pos.vars <- .form.df(rows)
-	
-	# cbind id, name, value, valType of variable to df
-	data.fields <- pos.nodes[ , c("id", "name", "value", "valType")]
-	pos.vars <- cbind(data.fields, pos.vars, stringsAsFactors = FALSE)
-	
-	# return unique rows
-	return(unique(pos.vars))
-}
-
-#' @noRd
-.get.valid.var <- function(pos.nodes, ..., val.type = NA, start.line = NA, script.num = 1, all = FALSE, forward = FALSE)
-{
-	# save table of all possible nodes - this is required later
-	all.pos.nodes <- pos.nodes
-	
-	# QUERY: ALL
+	# STEP: get user's query
+	# columns: name, valType, startLine, scriptNum
 	if(all)
-		return(all.pos.nodes)
+		query.vars <- unique(pos.vars$name)
+	else
+		query.vars <- .flatten.args(...)
 	
-	# get user's query
-	query <- .get.query.var(..., val.type = val.type, start.line = start.line)
+	query <- .get.query.var(query.vars, val.type = val.type, script.num = script.num)
 	
-	# CASE: no queries
-	if(is.null(query)) {
-		.print.pos.options(all.pos.nodes)
-		return(NULL)
+	# STEP: get valid queries
+	valid.queries <- .get.valid.var(pos.vars, query)
+	
+	# CASE: no valid query
+	if(is.null(valid.queries)) {
+		cat("No valid queries.\n\n")
+		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum")])
+		return(invisible(NULL))
 	}
 	
-	# QUERY: subset by script number
-	pos.nodes <- all.pos.nodes[all.pos.nodes$scriptNum == script.num, ]
-	
-	if(nrow(pos.nodes) == 0) {
-		cat(paste("Script number", script.num, "is not a possible input.\n"))
-		return(NULL)
-	}
-	
-	# QUERY: check for valid variable and start line combinations
-	query.indices <- c(1:nrow(query))
-	
-	# store id of valid data nodes when found
-	# this is so that in cases where no start.line is searched for,
-	# we will know which node id to return (for forward/backward lineage queries)
-	valid.id <- c()
-	
-	# this is akin to a loop where, for every row (var/line combination),'
-	# a TRUE or FALSE will be returned. TRUE corresponds to valid inputs.
-	# this is used later to extract the table of valid inputs.'
-	valid.cells <- sapply(query.indices, function(i)
-	{
-		# the query
-		query.var <- query$name[i]
-		query.valType <- query$valType[i]
-		query.line <- query$startLine[i]
-		
-		# get indices of variables found, if any
-		pos.indices <- as.integer(row.names(pos.nodes))[pos.nodes$name == query.var]
-		
-		# CASE: no row with var found - return false
-		if(length(pos.indices) == 0)
-			return(FALSE)
-		
-		# filter by valType 
-		if(!is.na(query.valType))
-		{
-			# get the regex form for the valType query
-			query.valType <- paste("*", query.valType, "*", sep="")
-			
-			# get the valType column for the data nodes where name == query
-			# extract the cells where the queried valType can be found
-			valTypes <- pos.nodes$valType[pos.indices]
-			pos.indices <- pos.indices[grep(query.valType, valTypes)]
-			
-			# CASE: no cells with queried valType found - return false
-			if(length(pos.indices) == 0)
-				return(FALSE)
-		}
-		
-		# Start Line is NA - node depends on forward/backwards lineage wanted
-		if(is.na(query.line))
-		{
-			node.id <- pos.nodes$id[pos.indices]
-			
-			# find the id of the node to be used.
-			if(length(pos.indices) == 1)
-				valid.id <<- append(valid.id, node.id)
-			else if(forward)	# forward lineage - get first node
-				valid.id <<- append(valid.id, node.id[1])
-			else	# backwards lineage - get last node
-				valid.id <<- append(valid.id, node.id[length(node.id)])
-			
-			return(TRUE)
-		}
-		
-		# else: get all possible startLine values for the argument
-		subset <- pos.nodes[pos.indices, ]
-		
-		# find index of startLine, if any
-		node.id <- subset$id[subset$startLine == query.line]
-		
-		# CASE: no valid line found - return false
-		if(length(node.id) == 0)
-			return(FALSE)
-		
-		# record value of id
-		valid.id <<- append(valid.id, node.id)
-		return(TRUE)
+	# STEP: for each valid query, form table for user output
+	output <- lapply(c(1:nrow(valid.queries)), function(i) {
+		return(.get.output.var(valid.queries[i, ]))
 	})
 	
-	# extract valid inputs
-	valid.queries <- query[valid.cells, ]
-	
-	# USER OUTPUT: print invalid queries, if any
-	.print.invalid.queries(query[!valid.cells, ])
-	
-	# CASE: no valid queries
-	if(nrow(valid.queries) == 0) {
-		return(NULL)
-	}
-	
-	# cbind id column, return
-	valid.queries <- cbind("id" = valid.id, valid.queries, stringsAsFactors=FALSE)
-	return(valid.queries)
+	names(output) <- valid.queries$name
+	return(output)
 }
 
+# function shared with debug.lineage
+# columns: d.id, p.id, name, valType, startLine, scriptNum
+#'
 #' @noRd
-.get.query.var <- function(..., val.type = NA, start.line = NA, script.num = 1)
+.get.pos.var <- function(data.nodes)
 {
+	# CASE: no variables
+	if(nrow(data.nodes) == 0)
+		return(NULL)
+	
+	# from data nodes, keep columns: id, name, valType
+	# rename id column to d.id
+	data.nodes <- data.nodes[ , c("id", "name", "valType")]
+	colnames(data.nodes) <- c("d.id", "name", "valType")
+	
+	# for each data node, get the corresponding procedure node
+	proc.nodes <- lapply(data.nodes$`d.id`, function(d.id)
+	{
+		# try to get the procedure node that assigned/produced the data node
+		p.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == d.id]
+		
+		# alternatively, get the procedure node that first used the data (e.g. url)
+		if(length(p.id) == 0)
+			p.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == d.id]
+		
+		# get startLine and scriptNum from proc nodes table
+		p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == p.id,
+										  c("id", "startLine", "scriptNum")]
+		
+		# rename id field to p.id, return
+		colnames(p.fields) <- c("p.id", "startLine", "scriptNum")
+		return(p.fields)
+	})
+	
+	# bind into a single data frame
+	proc.nodes <- .form.df(proc.nodes)
+	
+	# cbind data nodes and their corresponding proc nodes into a single data frame
+	pos.nodes <- cbind(data.nodes, proc.nodes, stringsAsFactors = FALSE)
+	
+	# rearrange columns, rename rows
+	pos.nodes <- pos.nodes[ , c("d.id", "p.id", "name", "valType", "startLine", "scriptNum")]
+	row.names(pos.nodes) <- c(1:nrow(pos.nodes))
+	
+	return(pos.nodes)
+}
+
+#' function shared with debug.lineage
+#' columns: name, valType, startLine, scriptNum
+#'
+#' @noRd
+.get.query.var <- function(query.vars, val.type = NA, start.line = NA, script.num = 1)
+{
+	# CASE: no queried variables
+	if(is.null(query.vars))
+		return(NULL)
+	
+	# CASE: more than 1 script number queried
 	if(length(script.num) > 1) {
 		warning("Please query only 1 script number.")
 		return(NULL)
 	}
 	
+	# CASE: more than 1 valType queried
 	if(length(val.type) > 1) {
 		warning("Please query only 1 valType.")
 		return(NULL)
 	}
 	
-	query.vars <- unlist(list(...))
-	
-	if(is.null(query.vars))
-		return(NULL)
-	
+	# Generate user's queries 
+	# each query is a different possible combination of parameters
 	query.types <- c()
 	query.lines <- c()
 	query.scripts <- c()
 	
-	if(length(start.line) == 1) 
+	if(length(start.line) == 1)
 	{
-		query.types <- rep(val.type, length(query.vars))
+		# queried only 1 start line (could be NA)
 		query.lines <- rep(start.line, length(query.vars))
+		query.types <- rep(val.type, length(query.vars))
 		query.scripts <- rep(script.num, length(query.vars))
 	}
 	else if(length(query.vars) == 1)
 	{
+		# there's only 1 variable queried
+		# there could be multiple start lines queried
 		query.lines <- start.line
 		query.vars <- rep(query.vars, length(query.lines))
 		query.types <- rep(val.type, length(query.lines))
@@ -364,8 +287,9 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	}
 	else if(length(query.vars) == length(start.line))
 	{
-		query.types <- rep(val.type, length(query.vars))
+		# equal numbers of start lines and queried variables
 		query.lines <- start.line
+		query.types <- rep(val.type, length(query.vars))
 		query.scripts <- rep(script.num, length(query.vars))
 	}
 	else
@@ -377,47 +301,197 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		return(NULL)
 	}
 	
+	# combine each column into a table
 	query.table <- data.frame(query.vars, query.types, query.lines, query.scripts, stringsAsFactors = FALSE)
 	names(query.table) <- c("name", "valType", "startLine", "scriptNum")
-	return(query.table)
+	
+	# return unique rows (queries)
+	return(unique(query.table))
 }
 
+#' pos.nodes columns: d.id, p.id, name, valType, startLine, scriptNum
+#' query columns: name, valType, startLine, scriptNum
+#'
+#' returned columns: d.id, p.id, name, valType, startLine, scriptNum
+#'
+#' function shared with debug.lineage
+#'
 #' @noRd
-.get.output.var <- function(pos.vars, query)
+.get.valid.var <- function(pos.nodes, query, forward = FALSE)
 {
-	# extract all data nodes from pos.vars with
-	# name == var, scriptNum == script.num
-	nodes <- pos.vars[pos.vars$scriptNum == query$scriptNum, ]
-	nodes <- nodes[nodes$name == query$name, ]
+	# CASE: no queries
+	if(is.null(query))
+		return(invisible(NULL))
 	
-	# extract columns with queried valType, if it is not na
-	if(!is.na(query$valType)) {
-		query.valType <- paste("*", query$valType, "*", sep="")
-		nodes <- nodes[grep(query.valType, nodes$valType), ]
+	# QUERY: subset by script number
+	# Since there can only be 1 script number queried per call,
+	# check for its validity first.
+	script.num <- query$scriptNum[1]
+	pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
+	
+	# CASE: invalid script num
+	if(nrow(pos.nodes) == 0) {
+		cat(paste("Script number", script.num, "is not a possible input.\n"))
+		return(invisible(NULL))
 	}
 	
-	# extract columns: id, value, startLine, scriptNum, code
-	nodes <- nodes[ , c("id", "value", "startLine", "scriptNum", "code")]
+	# STEP: check validity of each query (row)
+	query.indices <- c(1:nrow(query))
 	
-	# get valType columns from provParseR
-	valTypes <- provParseR::get.val.type(.debug.env$prov, nodes$id)
+	# (for forward/backward lineage queries)
+	# store id of valid data nodes and its corresponding proc node when found
+	# this is so that in cases where no start.line is searched for,
+	# we will know which node id to return
+	valid.d.id <- c()
+	valid.p.id <- c()
 	
-	# merge tables by id
-	nodes <- merge(nodes, valTypes, by.x = "id")
+	# this is akin to a loop where, for every query (row),
+	# a TRUE or FALSE will be returned. TRUE corresponds to valid query
+	# this is used later to extract from the table of queries
+	valid.indices <- sapply(query.indices, function(i)
+	{
+		# extract individual components of the query
+		query.var <- query$name[i]
+		query.valType <- query$valType[i]
+		query.line <- query$startLine[i]
+		
+		# QUERY: filter by node name
+		subset <- pos.nodes[pos.nodes$name == query.var, ]
+		
+		# CASE: no row with queried node name found - return false
+		if(nrow(subset) == 0)
+			return(FALSE)
+		
+		# QUERY: filter by valType, if queried valType is not NA
+		if(!is.na(query.valType))
+		{
+			# get the regex form for the valType query
+			query.valType <- paste("*", query.valType, "*", sep="")
+			
+			# extract the cells where the queried valType can be found
+			subset <- subset[grep(query.valType, subset$valType), ]
+			
+			# CASE: no nodes with queried valType found - return false
+			if(nrow(subset) == 0)
+				return(FALSE)
+		}
+		
+		# (for lineage queries)
+		# QUERY: start line queried is NA, 
+		# find the id of the node to be used
+		if(is.na(query.line))
+		{
+			# extract data node id and corresponding proc node id columns
+			d.id <- subset$`d.id`
+			p.id <- subset$`p.id`
+			
+			# find the id of the node to be used
+			# forward lineage - get first node
+			# backwards lineage - get last node
+			if(nrow(subset) == 1) {
+				valid.d.id <<- append(valid.d.id, d.id)
+				valid.p.id <<- append(valid.p.id, p.id)
+			}
+			else if(forward) {
+				valid.d.id <<- append(valid.d.id, d.id[1])
+				valid.p.id <<- append(valid.p.id, p.id[1])
+			}
+			else {
+				valid.d.id <<- append(valid.d.id, d.id[length(d.id)])
+				valid.p.id <<- append(valid.p.id, p.id[length(p.id)])
+			}
+			
+			# node is found - return true
+			return(TRUE)
+		}
+		
+		# QUERY: search for queried start line
+		subset <- subset[subset$startLine == query.line, ]
+		
+		# CASE: start line not found
+		if(nrow(subset) == 0)
+			return(FALSE)
+		
+		# node found: record data node id and corresponding proc node id
+		valid.d.id <<- append(valid.d.id, subset$`d.id`)
+		valid.p.id <<- append(valid.p.id, subset$`p.id`)
+		
+		return(TRUE)
+	})
 	
-	# order table by increasing node id
-	# this involves stripping the id values of their 'd', then ordering them
-	id.num <- as.integer(sub("^[[:alpha:]]", "", nodes$id))
-	nodes <- nodes[order(id.num), ]
+	# STEP: extract valid queries
+	valid.queries <- query[valid.indices, ]
 	
-	# order columns, remove id column
-	nodes <- nodes[ , c("value", 
-						"container", "dimension", "type", 
-						"scriptNum", "startLine", "code")]
+	# CASE: no valid queries
+	if(nrow(valid.queries) == 0)
+		return(invisible(NULL))
 	
-	# re-number row numbers, return
-	row.names(nodes) <- c(1:nrow(nodes))
-	return(nodes)
+	# STEP: bind valid data node id and proc node id columns to valid queries
+	valid.queries <- cbind("d.id" = valid.d.id,
+						   "p.id" = valid.p.id,
+						   valid.queries,
+						   stringsAsFactors = FALSE)
+	return(valid.queries)
+}
+
+#' returned columns: value, container, dimension, type, scriptNum, startLine, code
+#'
+#' @noRd
+.get.output.var <- function(query)
+{
+	pos.data <- .debug.env$data.nodes
+	pos.proc <- .debug.env$proc.nodes
+	
+	# STEP: from query, extract applicable columns
+	# name, valType
+	query <- query[ , c("name", "valType")]
+	
+	# STEP: from all data nodes, 
+	# get nodes with queried name
+	# extract columns: id, value, valType
+	data.nodes <- pos.data[pos.data$name == query$name, 
+							 c("id", "value", "valType")]
+	
+	# STEP: extract nodes with queried valType, if not NA
+	if(!is.na(query$valType)) {
+		query.valType <- paste("*", query$valType, "*", sep="")
+		data.nodes <- data.nodes[grep(query.valType, data.nodes$valType), ]
+	}
+	
+	# STEP: for each data node, get columns for val type
+	# and from corresponding procedure node
+	rows <- lapply(c(1:nrow(data.nodes)), function(i)
+	{
+		# STEP: get row from data nodes
+		# columns: id, value
+		data.fields <- data.nodes[i, c("id", "value")]
+		
+		# STEP: get val type columns from provParseR
+		# columns: container, dimension, type
+		valType.fields <- provParseR::get.val.type(.debug.env$prov, data.fields$id)
+		valType.fields <- valType.fields[ , c("container", "dimension", "type")]
+		
+		# STEP: get corresponding procedure node id
+		p.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == data.fields$id]
+		
+		if(length(p.id) == 0)
+			p.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == data.fields$id]
+		
+		# STEP: get fields from proc nodes
+		# columns: scriptNum, startLine, code
+		proc.fields <- pos.proc[pos.proc$id == p.id, c("scriptNum", "startLine", "name")]
+		colnames(proc.fields) <- c("scriptNum", "startLine", "code")
+		
+		# STEP: cbind columns
+		# remove id (first) column
+		fields <- cbind(data.fields, valType.fields, proc.fields, stringsAsFactors = FALSE)
+		fields <- fields[ ,-1]
+		
+		return(fields)
+	})
+	
+	# STEP: bind rows into data frame, return
+	return(.form.df(rows))
 }
 
 # === LINEAGE ================================================================ #
@@ -431,7 +505,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	
 	# get table of possible variables
 	# this includes valType, start line and script number
-	pos.vars <- .get.pos.vars(.debug.env$data.nodes)
+	pos.vars <- .get.pos.var(.debug.env$data.nodes)
 	
 	# get valid queries - all data nodes are possible nodes
 	valid.queries <- .get.valid.var(pos.vars, ..., val.type = NA, start.line = start.line, 
@@ -560,10 +634,8 @@ debug.type.changes <- function(var = NA)
 		
 		# no valid variables
 		if(length(valid.queries) == 0) {
-			cat("No valid variables.\n")
-			cat("Possible Options:\n")
-			cat(paste(vars.names, collapse='\n'))
-			cat('\n')
+			cat("No valid variables.\n\n")
+			.print.pos.options(vars.names)
 			return(invisible(NULL))
 		}
 		
@@ -635,7 +707,7 @@ debug.state <- function(..., script.num = 1)
 	pos.edges <- .remove.non.vars.proc.data()
 	
 	# get user's query
-	query <- unlist(list(...))
+	query <- .flatten.args(...)
 	
 	# no queries - show state at end of execution
 	if(is.null(query))
@@ -1120,7 +1192,7 @@ debug.warning <- function(..., all = FALSE)
 	if(all)
 		return(warning.nodes)
 	
-	query <- unique(unlist(list(...)))
+	query <- unique(.flatten.args(...))
 	
 	if(is.null(query)) {
 		.print.pos.warnings(warning.nodes)
@@ -1157,14 +1229,17 @@ debug.warning <- function(..., all = FALSE)
 #' @noRd
 .print.pos.warnings <- function(warning.nodes)
 {
-	cat("Possible results: \n")
-	results.df <- as.data.frame(warning.nodes$value)
-	colnames(results.df) <- NULL
-	print(results.df)
+	.print.pos.options(warning.nodes)
 	cat("\nPass the corresponding numeric value to the function for info on that warning.\n")
 }
 
 # === UTILITY ================================================================ #
+
+#' @noRd
+.flatten.args <- function(...)
+{
+	return(unlist(list(...)))
+}
 
 #' @noRd
 .form.df <- function(list)
@@ -1188,67 +1263,15 @@ debug.warning <- function(..., all = FALSE)
 	return(df)
 }
 
-# print invalid queries, if any.
-#' @noRd
-.print.invalid.queries <- function(invalid)
-{	
-	if(length(invalid) == 0)
-		return(NULL)
-	
-	if(nrow(invalid) == 0)
-		return(NULL)
-	
-	indices <- c(1:nrow(invalid))
-	
-	sapply(indices, function(i) 
-	{
-		output <- ''
-		
-		# line query
-		if(is.null(invalid$name)) {
-			output <- paste("Line ", invalid$startLine[i], ", ", sep='')
-		}
-		else {	# lineage query
-			# variable/object name
-			output <- paste(invalid$name[i], ", ", sep='')
-			
-			# valType
-			if(!is.null(invalid$valType) && !is.na(invalid$valType[i]))
-				output <- paste(output, "with type ", invalid$valType[i], ", ", sep='')
-			
-			# line
-			if(!is.null(invalid$startLine) && !is.na(invalid$startLine[i]))
-				output <- paste(output, "on line ", invalid$startLine[i], ", ", sep='')
-		}
-		
-		# scriptNum
-		if(!is.null(invalid$scriptNum))
-			output <- paste(output, "in script ", invalid$scriptNum[i], ", ", sep='')
-		
-		output <- paste(output, "is not a valid query.\n", sep='')
-		cat(output)
-	})
-}
-
 #' @noRd
 .print.pos.options <- function(pos.args)
 {
-	cat("Options:\n")
+	cat("Possible options:\n")
 	
-	indices <- c(1:nrow(pos.args))
+	if(!is.data.frame(pos.args)) {
+		pos.args <- as.data.frame(pos.args)
+		colnames(pos.args) <- NULL
+	}
 	
-	# name column is null -> line number query
-	if(is.null(pos.args$name)) {
-		sapply(indices, function(i) {
-			cat(paste("line", pos.args$startLine[i], 
-					  "in script", pos.args$scriptNum[i], "\n"))
-		})
-	}
-	else {	# lineage query
-		sapply(indices, function(i) {
-			cat(paste(pos.args$name[i], 
-					  "on line", pos.args$startLine[i], 
-					  "in script", pos.args$scriptNum[i], "\n"))
-		})
-	}
+	print(pos.args)
 }
