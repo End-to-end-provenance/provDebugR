@@ -1,0 +1,27 @@
+"","d.id","p.id","name","valType","startLine","scriptNum"
+"1","d1","p2","a","{""container"":""vector"", ""dimension"":[1], ""type"":[""integer""]}",2,1
+"2","d2","p3","dev.2","Device",5,1
+"3","d3","p4","cc","{""container"":""vector"", ""dimension"":[1], ""type"":[""integer""]}",8,1
+"4","d4","p4","dev.2","Device",8,1
+"5","d5","p5","cc","{""container"":""vector"", ""dimension"":[1], ""type"":[""integer""]}",9,1
+"6","d6","p6","d","{""container"":""vector"", ""dimension"":[1], ""type"":[""numeric""]}",12,1
+"7","d7","p7","d","{""container"":""list"", ""dimension"":[1]}",13,1
+"8","d8","p8","e","{""container"":""matrix"", ""dimension"":[4,25], ""type"":[""integer""]}",16,1
+"9","d9","p9","e","{""container"":""matrix"", ""dimension"":[5,20], ""type"":[""integer""]}",17,1
+"10","d10","p10","f","{""container"":""vector"", ""dimension"":[1], ""type"":[""numeric""]}",20,1
+"11","d11","p11","f","{""container"":""vector"", ""dimension"":[1], ""type"":[""integer""]}",21,1
+"12","d12","p12","g","{""container"":""vector"", ""dimension"":[1], ""type"":[""numeric""]}",24,1
+"13","d13","p13","g","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",25,1
+"14","d14","p14","g","{""container"":""vector"", ""dimension"":[1], ""type"":[""logical""]}",26,1
+"15","d15","p15","h","{""container"":""vector"", ""dimension"":[1], ""type"":[""logical""]}",29,1
+"16","d16","p16","h","{""container"":""vector"", ""dimension"":[1], ""type"":[""logical""]}",30,1
+"17","d17","p17","h","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",31,1
+"18","d18","p18","h","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",32,1
+"19","d19","p19","h","{""container"":""vector"", ""dimension"":[1], ""type"":[""integer""]}",33,1
+"20","d20","p20","h","{""container"":""vector"", ""dimension"":[1], ""type"":[""integer""]}",34,1
+"21","d21","p21","s","null",38,1
+"22","d22","p22","s","environment",39,1
+"23","d23","p23","s","function",40,1
+"24","d24","p24","s","factor",41,1
+"25","d25","p25","s","POSIXct",42,1
+"26","d26","p26","Rplots.pdf","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",NA,NA
