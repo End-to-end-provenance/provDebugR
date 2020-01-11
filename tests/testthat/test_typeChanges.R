@@ -58,9 +58,18 @@ get.expected <- function()
 					startLine = c(30,31,32,33),
 					stringsAsFactors = FALSE)
 	
+	# special data types
+	# also omit value and code column due to length
+	s <- data.frame(container = as.character(c(NA,NA,NA,NA,NA)),
+					dimension = as.character(c(NA,NA,NA,NA,NA)),
+					type = c('null', 'environment', 'function', 'factor', 'POSIXct'),
+					scriptNum = c(1,1,1,1,1),
+					startLine = c(38,39,40,41,42),
+					stringsAsFactors = FALSE)
+	
 	# combine
-	type.changes <- list(d,e,f,g,h)
-	names(type.changes) <- c("d", "e", "f", "g", "h")
+	type.changes <- list(d,e,f,g,h,s)
+	names(type.changes) <- c("d", "e", "f", "g", "h", "s")
 	
 	return(type.changes)
 }
@@ -96,49 +105,58 @@ expected <- get.expected()
 test_that("debug.type.changes - no parameters", 
 {
 	c1 <- debug.type.changes()
-	c1$e <- c1$e[ ,-1]   # omit value column of e due to its length
+	c1$e <- c1$e[ ,-1]          # omit value column
+	c1$s <- c1$s[ , c(-1,-5)]   # omit value and code column
 	
 	expect_equivalent(c1, expected)
 })
 
-# debug.type.changes - all valid variables queried
-test_that("debug.type.changes - all valid variables queried",
+# debug.type.changes - all valid variables queried (single)
+test_that("debug.type.changes - all valid variables queried (single)",
 {
 	# queries
-	q1 <- "d"                # single variable - d
-	q2 <- "e"                # single variable - e
-	q3 <- "f"                # single variable - f
-	q4 <- "g"                # single variable - g
-	q5 <- "h"                # single variable - h
-	q6 <- c("d", "f", "g")   # multiple variables
-	q7 <- c("f", "h", "d")   # multiple variables (in different order)
+	q1 <- "d"
+	q2 <- "e"
+	q3 <- "f"
+	q4 <- "g"
+	q5 <- "h"
+	q6 <- "s"
 	
 	# test cases
 	c1 <- debug.type.changes(var = q1)[[1]]
-	c2 <- debug.type.changes(var = q2)[[1]][ ,-1]   # omit value column due to its length
+	c2 <- debug.type.changes(var = q2)[[1]][ ,-1]          # omit value column
 	c3 <- debug.type.changes(var = q3)[[1]]
 	c4 <- debug.type.changes(var = q4)[[1]]
 	c5 <- debug.type.changes(var = q5)[[1]]
-	c6 <- debug.type.changes(var = q6)
-	c7 <- debug.type.changes(var = q7)
+	c6 <- debug.type.changes(var = q6)[[1]][ , c(-1,-5)]   # omit value and code column
+	
+	# test
+	expect_equivalent(c1, expected$d)
+	expect_equivalent(c2, expected$e)
+	expect_equivalent(c3, expected$f)
+	expect_equivalent(c4, expected$g)
+	expect_equivalent(c5, expected$h)
+	expect_equivalent(c6, expected$s)
+})
+
+# debug.type.changes - all valid variables queried (multiple)
+test_that("debug.type.changes - all valid variables queried (multiple)",
+{
+	# queries
+	q1 <- c("d", "f", "g")   # multiple variables
+	q2 <- c("f", "h", "d")   # multiple variables (in different order)
+	
+	# test cases
+	c1 <- debug.type.changes(var = q1)
+	c2 <- debug.type.changes(var = q2)
 	
 	# expected
-	e1 <- expected$d
-	e2 <- expected$e
-	e3 <- expected$f
-	e4 <- expected$g
-	e5 <- expected$h
-	e6 <- expected[q6]
-	e7 <- expected[q7]
+	e1 <- expected[q1]
+	e2 <- expected[q2]
 	
 	# test
 	expect_equivalent(c1, e1)
 	expect_equivalent(c2, e2)
-	expect_equivalent(c3, e3)
-	expect_equivalent(c4, e4)
-	expect_equivalent(c5, e5)
-	expect_equivalent(c6, e6)
-	expect_equivalent(c7, e7)
 })
 
 # debug.type.changes - all invalid variables queried

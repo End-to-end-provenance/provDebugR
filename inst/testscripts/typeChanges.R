@@ -32,3 +32,11 @@ h <- "seven"
 h <- "eight"
 h <- 8L
 h <- 9L
+
+# special valTypes
+# null, environment, function, factor, posixct
+s <- NULL
+s <- new.env()
+s <- function(x) print(x)
+s <- factor(c("red","green","blue","red","green","red"))
+s <- as.POSIXct("080406 10:11", tz = "UTC", format = "%y%m%d %H:%M")
