@@ -328,6 +328,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	# check for its validity first.
 	script.num <- query$scriptNum[1]
 	pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
+	pos.nodes <- na.omit(pos.nodes)
 	
 	# CASE: invalid script num
 	if(nrow(pos.nodes) == 0) {
@@ -357,6 +358,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		
 		# QUERY: filter by node name
 		subset <- pos.nodes[pos.nodes$name == query.var, ]
+		subset <- na.omit(subset)
 		
 		# CASE: no row with queried node name found - return false
 		if(nrow(subset) == 0)
@@ -370,6 +372,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 			
 			# extract the cells where the queried valType can be found
 			subset <- subset[grep(query.valType, subset$valType), ]
+			subset <- na.omit(subset)
 			
 			# CASE: no nodes with queried valType found - return false
 			if(nrow(subset) == 0)
@@ -407,6 +410,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		
 		# QUERY: search for queried start line
 		subset <- subset[subset$startLine == query.line, ]
+		subset <- na.omit(subset)
 		
 		# CASE: start line not found
 		if(nrow(subset) == 0)
@@ -420,7 +424,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	})
 	
 	# STEP: extract valid queries
-	valid.queries <- query[valid.indices, ]
+	valid.queries <- na.omit(query[valid.indices, ])
 	
 	# CASE: no valid queries
 	if(nrow(valid.queries) == 0)

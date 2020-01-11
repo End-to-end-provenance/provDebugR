@@ -44,8 +44,11 @@ test_that(".get.pos.var (valid)",
 	provDebugR:::.clear()
 	prov.debug.file(json)
 	
-	c1 <- provDebugR:::.get.pos.var(.debug.env$data.nodes)
-	c2 <- provDebugR:::.get.pos.var(.debug.env$data.nodes[.debug.env$data.nodes$type == "Data" | .debug.env$data.nodes$type == "Snapshot", ])
+	c1 <- provDebugR:::.get.pos.var(provDebugR:::.debug.env$data.nodes)
+	c2 <- provDebugR:::.get.pos.var(
+				provDebugR:::.debug.env$data.nodes[
+					provDebugR:::.debug.env$data.nodes$type == "Data" | 
+					provDebugR:::.debug.env$data.nodes$type == "Snapshot", ])
 	
 	e1 <- system.file("testexpected", "posVar_exceptions_full.csv", package = "provDebugR")
 	e2 <- system.file("testexpected", "posVar_exceptions_vars.csv", package = "provDebugR")
@@ -62,10 +65,13 @@ test_that(".get.pos.var (valid)",
 	json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
 	
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
-	c3 <- provDebugR:::.get.pos.var(.debug.env$data.nodes)
-	c4 <- provDebugR:::.get.pos.var(.debug.env$data.nodes[.debug.env$data.nodes$type == "Data" | .debug.env$data.nodes$type == "Snapshot", ])
+	c3 <- provDebugR:::.get.pos.var(provDebugR:::.debug.env$data.nodes)
+	c4 <- provDebugR:::.get.pos.var(
+				provDebugR:::.debug.env$data.nodes[
+					provDebugR:::.debug.env$data.nodes$type == "Data" | 
+					provDebugR:::.debug.env$data.nodes$type == "Snapshot", ])
 	
 	e3 <- system.file("testexpected", "posVar_typeChanges_full.csv", package = "provDebugR")
 	e4 <- system.file("testexpected", "posVar_typeChanges_vars.csv", package = "provDebugR")
@@ -175,8 +181,116 @@ test_that(".get.query.var (invalid queries)",
 	expect_null(c4)
 })
 
-# .get.valid.var
-test_that(".get.valid.var",
+# .get.valid.var - all valid queries
+test_that(".get.valid.var (all valid queries)",
 {
+	# POS.NODES
+	# cols: d.id, p.id, name, valType, startLine, scriptNum
+	p.full <- system.file("testexpected", "posVar_typeChanges_full.csv", package = "provDebugR")
+	p.vars <- system.file("testexpected", "posVar_typeChanges_vars.csv", package = "provDebugR")
+	
+	p.full <- read.csv(p.full, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	p.vars <- read.csv(p.vars, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	
+	
+	# QUERIES
+	# cols: name, valType, startLine, scriptNum
+	
+	
+	# returned columns: d.id, p.id, name, valType, startLine, scriptNum
+	
+	# all can be done using typeChanges
+	
+	
+})
+
+# .get.valid.var - all invalid queries
+test_that(".get.valid.var (all invalid queries)",
+{
+	# POS.NODES 
+	# cols: d.id, p.id, name, valType, startLine, scriptNum
+	p.full <- system.file("testexpected", "posVar_typeChanges_full.csv", package = "provDebugR")
+	p.vars <- system.file("testexpected", "posVar_typeChanges_vars.csv", package = "provDebugR")
+	
+	p.full <- read.csv(p.full, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	p.vars <- read.csv(p.vars, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	
+	# QUERIES 
+	# cols: name, valType, startLine, scriptNum
+	q1 <- NULL                                   # no query
+	q2 <- data.frame("name" = "invalid",         # data node with name does not exist
+					 "valType"= NA, 
+					 "startLine" = NA, 
+					 "scriptNum" = 1,
+					 stringsAsFactors = FALSE)
+	q3 <- data.frame("name" = "dev.2",           # is data node, but not variable
+					 "valType"= NA, 
+					 "startLine" = NA, 
+					 "scriptNum" = 1,
+					 stringsAsFactors = FALSE)
+	q4 <- data.frame("name" = c("a","s"),        # invalid valType
+					 "valType"= c("language","language"), 
+					 "startLine" = c(NA,NA), 
+					 "scriptNum" = c(1,1),
+					 stringsAsFactors = FALSE)
+	q5 <- data.frame("name" = c("a","s"),        # invalid start lines
+					 "valType"= c(NA,NA), 
+					 "startLine" = c(50,2), 
+					 "scriptNum" = c(1,1),
+					 stringsAsFactors = FALSE)
+	q6 <- data.frame("name" = "a",               # invalid script num
+					 "valType"= NA, 
+					 "startLine" = NA, 
+					 "scriptNum" = 5,
+					 stringsAsFactors = FALSE)
+	
+	# CASES
+	c1 <- provDebugR:::.get.valid.var(p.full, q1)   # no query
+	c2 <- provDebugR:::.get.valid.var(p.vars, q1)
+	
+	c3 <- provDebugR:::.get.valid.var(p.full, q2)   # data node with name does not exist
+	c4 <- provDebugR:::.get.valid.var(p.vars, q2)
+	
+	c5 <- provDebugR:::.get.valid.var(p.vars, q3)   # is data node, but not variable
+	
+	c6 <- provDebugR:::.get.valid.var(p.full, q4)   # invalid valType
+	c7 <- provDebugR:::.get.valid.var(p.vars, q4)
+	
+	c8 <- provDebugR:::.get.valid.var(p.full, q5)   # invalid start lines
+	c9 <- provDebugR:::.get.valid.var(p.vars, q5)
+	
+	c11 <- utils::capture.output(c10 <- provDebugR:::.get.valid.var(p.full, q6))   # invalid script num
+	c13 <- utils::capture.output(c12 <- provDebugR:::.get.valid.var(p.vars, q6))
+	
+	# TEST: returned values
+	expect_null(c1)
+	expect_null(c2)
+	expect_null(c3)
+	expect_null(c4)
+	expect_null(c5)
+	expect_null(c6)
+	expect_null(c7)
+	expect_null(c8)
+	expect_null(c9)
+	expect_null(c10)
+	expect_null(c12)
+	
+	# TEST: output messages
+	c11 <- paste(c11, collapse = '\n')
+	c13 <- paste(c13, collapse = '\n')
+	
+	expect_true(nchar(c11) > 0)
+	expect_true(nchar(c13) > 0)
+})
+
+# .get.valid.var - some valid, some invalid queries
+test_that(".get.valid.var (some valid, some invalid queries)",
+{
+	# pos.nodes columns: d.id, p.id, name, valType, startLine, scriptNum
+	# query columns: name, valType, startLine, scriptNum
+	# returned columns: d.id, p.id, name, valType, startLine, scriptNum
+	
+	# all can be done using typeChanges
+	
 	
 })
