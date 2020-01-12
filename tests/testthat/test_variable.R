@@ -128,10 +128,6 @@ expect_warning(prov.debug.file(json))   # warning is due to deleted prov folder
 
 expected <- get.expected()
 
-expected <<- expected
-
-# general case
-
 # debug.variable - all
 test_that("debug.variable (all == TRUE)",
 {
@@ -192,6 +188,32 @@ test_that("debug.variable (no variable queries)",
 })
 
 # debug.variable - variable name queries
+test_that("debug.variable (variable name queries)",
+{
+	# all valid variable names
+	c1 <- debug.variable("cc", "a")
+	e1 <- expected[c(2,1)]
+	
+	expect_equivalent(c1,e1)
+	
+	# no data node with name
+	c3 <- utils::capture.output(c2 <- debug.variable("invalid"))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# data node exists, but is not a variable
+	c5 <- utils::capture.output(c4 <- debug.variable("dev.2"))
+	
+	expect_null(c4)
+	expect_true(nchar(paste(c5, collapse='\n')) > 0)
+	
+	# some valid, some invalid variable names
+	c6 <- debug.variable("a", "invalid", "g", "h", "dev.2")
+	e6 <- expected[c(1,6,7)]
+	
+	expect_equivalent(c6,e6)
+})
 
 # debug.variable - valType queries
 test_that("debug.variable (val.type queries)",
@@ -252,9 +274,15 @@ test_that("debug.variable (script.num queries)",
 	c2 <- utils::capture.output(c1 <- debug.variable("a", script.num = 5))
 	
 	expect_null(c1)
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
 	
-	c2 <- paste(c2, collapse='\n')
-	expect_true(nchar(c2) > 0)
+	# multiple script numbers
+	c4 <- utils::capture.output(
+			expect_warning(
+				c3 <- debug.variable("a", script.num = c(1,2))))
+	
+	expect_null(c3)
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
 })
 
 # TODO - no variables
