@@ -3,6 +3,106 @@ library(provDebugR)
 
 context("debug.variable")
 
+# === HELPER FUNCTIONS ======================================================= #
+
+# helper function to get the list of expected tables
+# uses the test case `typeChanges.R`
+get.expected <- function()
+{
+	# single assignment
+	a <- data.frame(value = '1',
+					container = 'vector',
+					dimension = '1',
+					type = 'integer',
+					scriptNum = 1L,
+					startLine = 2L,
+					code = 'a <- 1L',
+					stringsAsFactors = FALSE)
+	
+	# no type change
+	cc <- data.frame(value = c('2','3'),
+					 container = c('vector','vector'),
+					 dimension = as.character(c(1,1)),
+					 type = c('integer','integer'),
+					 scriptNum = as.integer(c(1,1)),
+					 startLine = as.integer(c(8,9)),
+					 code = c('cc <- 2L','cc <- 3L'),
+					 stringsAsFactors = FALSE)
+	
+	# container change
+	d <- data.frame(value = c('4','4'),
+					container = c('vector','list'),
+					dimension = as.character(c(1,1)),
+					type = c('numeric',NA),
+					scriptNum = as.integer(c(1,1)),
+					startLine = as.integer(c(12,13)),
+					code = c('d <- 4','d <- as.list(d)'),
+					stringsAsFactors = FALSE)
+	
+	# dimension change
+	# omit value column
+	e <- data.frame(container = c('matrix','matrix'),
+					dimension = c('4,25','5,20'),
+					type = c('integer','integer'),
+					scriptNum = as.integer(c(1,1)),
+					startLine = as.integer(c(16,17)),
+					code = c('e <- matrix(c(1:100),4)','e <- matrix(c(1:100),5)'),
+					stringsAsFactors = FALSE)
+	
+	# type change
+	f <- data.frame(value = c('5','5'),
+					container = c('vector','vector'),
+					dimension = as.character(c(1,1)),
+					type = c('numeric','integer'),
+					scriptNum = as.integer(c(1,1)),
+					startLine = as.integer(c(20,21)),
+					code = c('f <- 5','f <- as.integer(f)'),
+					stringsAsFactors = FALSE)
+	
+	# multiple type changes in sequence
+	g <- data.frame(value = c('6','"six"','TRUE'),
+					container = c('vector','vector','vector'),
+					dimension = as.character(c(1,1,1)),
+					type = c('numeric','character','logical'),
+					scriptNum = as.integer(c(1,1,1)),
+					startLine = as.integer(c(24,25,26)),
+					code = c('g <- 6','g <- "six"','g <- TRUE'),
+					stringsAsFactors = FALSE)
+	
+	# multiple type changes, with no type change
+	value <- c('FALSE','TRUE','"seven"','"eight"','8','9')
+	container <- rep('vector', 6)
+	dimension <- rep('1', 6)
+	type <- c('logical','logical','character','character','integer','integer')
+	scriptNum <- rep(1L,6)
+	startLine <- as.integer(c(29:34))
+	code <- c('h <- FALSE', 'h <- TRUE', 'h <- "seven',
+			  'h <- "eight"', 'h <- 8L', 'h <- 9L')
+	
+	h <- data.frame(value, container, dimension, type,
+					scriptNum, startLine, code, stringsAsFactors = FALSE)
+	
+	# special valTypes
+	# null, environment, function, factor, posixct
+	# omit value and code column
+	container <- as.character(rep(NA,5))
+	dimension <- as.character(rep(NA,5))
+	type <- c('null', 'environment', 'function', 'factor', 'POSIXct')
+	scriptNum <- rep(1L,5)
+	startLine <- as.integer(c(38:42))
+	
+	s <- data.frame(container, dimension, type, scriptNum, startLine,
+					stringsAsFactors = FALSE)
+	
+	# combine into list
+	expected <- list(a,cc,d,e,f,g,h,s)
+	names(expected) <- c("a","cc","d","e","f","g","h","s")
+	
+	return(expected)
+}
+
+# === THE TESTS ============================================================== #
+
 # no provenance
 test_that("debug.variable - no/empty provenance", 
 {
@@ -195,13 +295,151 @@ test_that(".get.valid.var (all valid queries)",
 	
 	# QUERIES
 	# cols: name, valType, startLine, scriptNum
+	q1 <- data.frame(name = 'a',                 # single data node for variable
+					 valType = NA,
+					 startLine = NA,
+					 scriptNum = 1,
+					 stringsAsFactors = FALSE)
+	q2 <- data.frame(name = 's',                 # multiple datas node for variable
+					 valType = NA,
+					 startLine = NA,
+					 scriptNum = 1,
+					 stringsAsFactors = FALSE)
+	q3 <- data.frame(name = c("f","d","g"),      # container query
+					 valType = c('vector','vector','vector'), 
+					 startLine = c(NA,NA,NA), 
+					 scriptNum = c(1,1,1),
+					 stringsAsFactors = FALSE)
+	q4 <- data.frame(name = c("a","f","h"),      # type query
+					 valType = c('integer','integer','integer'), 
+					 startLine = c(NA,NA,NA), 
+					 scriptNum = c(1,1,1),
+					 stringsAsFactors = FALSE)
+	q5 <- data.frame(name = 's',                 # special valType query
+					 valType = 'environment',
+					 startLine = NA,
+					 scriptNum = 1,
+					 stringsAsFactors = FALSE)
+	q6 <- data.frame(name = 's',                 # line query
+					 valType = NA,
+					 startLine = 40,
+					 scriptNum = 1,
+					 stringsAsFactors = FALSE)
+	q7 <- data.frame(name = "dev.2",             # is data node, but not variable
+					 valType = NA, 
+					 startLine = NA, 
+					 scriptNum = 1,
+					 stringsAsFactors = FALSE)
 	
+	# CASES
+	c1 <- provDebugR:::.get.valid.var(p.full, q1, forward = FALSE)    # single data node for variable
+	c2 <- provDebugR:::.get.valid.var(p.full, q1, forward = TRUE)
+	c3 <- provDebugR:::.get.valid.var(p.vars, q1, forward = FALSE)
+	c4 <- provDebugR:::.get.valid.var(p.vars, q1, forward = TRUE)
 	
+	c5 <- provDebugR:::.get.valid.var(p.full, q2, forward = FALSE)    # multiple datas node for variable
+	c6 <- provDebugR:::.get.valid.var(p.full, q2, forward = TRUE)
+	c7 <- provDebugR:::.get.valid.var(p.vars, q2, forward = FALSE)
+	c8 <- provDebugR:::.get.valid.var(p.vars, q2, forward = TRUE)
+	
+	c9 <- provDebugR:::.get.valid.var(p.full, q3, forward = FALSE)   # container query
+	c10 <- provDebugR:::.get.valid.var(p.full, q3, forward = TRUE)
+	c11 <- provDebugR:::.get.valid.var(p.vars, q3, forward = FALSE)
+	c12 <- provDebugR:::.get.valid.var(p.vars, q3, forward = TRUE)
+	
+	c13 <- provDebugR:::.get.valid.var(p.full, q4, forward = FALSE)   # type query
+	c14 <- provDebugR:::.get.valid.var(p.full, q4, forward = TRUE)
+	c15 <- provDebugR:::.get.valid.var(p.vars, q4, forward = FALSE)
+	c16 <- provDebugR:::.get.valid.var(p.vars, q4, forward = TRUE)
+	
+	c17 <- provDebugR:::.get.valid.var(p.full, q5, forward = FALSE)   # special valType query
+	c18 <- provDebugR:::.get.valid.var(p.full, q5, forward = TRUE)
+	c19 <- provDebugR:::.get.valid.var(p.vars, q5, forward = FALSE)
+	c20 <- provDebugR:::.get.valid.var(p.vars, q5, forward = TRUE)
+	
+	c21 <- provDebugR:::.get.valid.var(p.full, q6, forward = FALSE)   # line query
+	c22 <- provDebugR:::.get.valid.var(p.full, q6, forward = TRUE)
+	c23 <- provDebugR:::.get.valid.var(p.vars, q6, forward = FALSE)
+	c24 <- provDebugR:::.get.valid.var(p.vars, q6, forward = TRUE)
+	
+	c25 <- provDebugR:::.get.valid.var(p.full, q7, forward = FALSE)   # is data node, but not variable
+	c26 <- provDebugR:::.get.valid.var(p.full, q7, forward = TRUE)
+	
+	# EXPECTED
 	# returned columns: d.id, p.id, name, valType, startLine, scriptNum
+	e1 <- cbind('d.id' = 'd1',                  # single data node for variable
+				'p.id' = 'p2',
+				q1, stringsAsFactors = FALSE)
 	
-	# all can be done using typeChanges
+	e2 <- cbind('d.id' = 'd25',                 # single data node for variable
+				'p.id' = 'p25',
+				q2, stringsAsFactors = FALSE)
+	e3 <- cbind('d.id' = 'd21',
+				'p.id' = 'p21',
+				q2, stringsAsFactors = FALSE)
 	
+	e4 <- cbind('d.id' = c('d11','d6','d14'),   # container query (f,d,g,vector)
+				'p.id' = c('p11','p6','p14'),
+				q3, stringsAsFactors = FALSE)
+	e5 <- cbind('d.id' = c('d10','d6','d12'),
+				'p.id' = c('p10','p6','p12'),
+				q3, stringsAsFactors = FALSE)
 	
+	e6 <- cbind('d.id' = c('d1','d11','d20'),   # type query (a,f,h,integer)
+				'p.id' = c('p2','p11','p20'),
+				q4, stringsAsFactors = FALSE)
+	e7 <- cbind('d.id' = c('d1','d11','d19'),
+				'p.id' = c('p2','p11','p19'),
+				q4, stringsAsFactors = FALSE)
+	
+	e8 <- cbind('d.id' = 'd22',                 # special valType query (s,environment)
+				'p.id' = 'p22',
+				q5, stringsAsFactors = FALSE)
+	
+	e9 <- cbind('d.id' = 'd23',                 # line query (40)
+				'p.id' = 'p23',
+				q6, stringsAsFactors = FALSE)
+	
+	e10 <- cbind('d.id' = 'd4',                 # is data node, but not variable
+				'p.id' = 'p4',
+				q7, stringsAsFactors = FALSE)
+	e11 <- cbind('d.id' = 'd2',                 # is data node, but not variable
+				'p.id' = 'p3',
+				q7, stringsAsFactors = FALSE)
+	
+	# TEST
+	expect_equivalent(c1,e1)     # single data node for variable
+	expect_equivalent(c2,e1)
+	expect_equivalent(c3,e1)
+	expect_equivalent(c4,e1)
+	
+	expect_equivalent(c5,e2)     # multiple datas node for variable
+	expect_equivalent(c6,e3)
+	expect_equivalent(c7,e2)
+	expect_equivalent(c8,e3)
+	
+	expect_equivalent(c9,e4)     # container query (f,d,g,vector)
+	expect_equivalent(c10,e5)
+	expect_equivalent(c11,e4)
+	expect_equivalent(c12,e5)
+	
+	expect_equivalent(c13,e6)    # type query (a,f,h,integer)
+	expect_equivalent(c14,e7)
+	expect_equivalent(c15,e6)
+	expect_equivalent(c16,e7)
+	
+	expect_equivalent(c17,e8)    # special valType query (s,environment)
+	expect_equivalent(c18,e8)
+	expect_equivalent(c19,e8)
+	expect_equivalent(c20,e8)
+	
+	expect_equivalent(c21,e9)    # line query (40)
+	expect_equivalent(c22,e9)
+	expect_equivalent(c23,e9)
+	expect_equivalent(c24,e9)
+	
+	expect_equivalent(c25,e10)   # is data node, but not variable
+	expect_equivalent(c26,e11)
 })
 
 # .get.valid.var - all invalid queries
