@@ -46,7 +46,7 @@ get.expected <- function()
 					type = c('integer','integer'),
 					scriptNum = as.integer(c(1,1)),
 					startLine = as.integer(c(16,17)),
-					code = c('e <- matrix(c(1:100),4)','e <- matrix(c(1:100),5)'),
+					code = c('e <- matrix(c(1:100), 4)','e <- matrix(c(1:100), 5)'),
 					stringsAsFactors = FALSE)
 	
 	# type change
@@ -76,7 +76,7 @@ get.expected <- function()
 	type <- c('logical','logical','character','character','integer','integer')
 	scriptNum <- rep(1L,6)
 	startLine <- as.integer(c(29:34))
-	code <- c('h <- FALSE', 'h <- TRUE', 'h <- "seven',
+	code <- c('h <- FALSE', 'h <- TRUE', 'h <- "seven"',
 			  'h <- "eight"', 'h <- 8L', 'h <- 9L')
 	
 	h <- data.frame(value, container, dimension, type,
@@ -120,14 +120,60 @@ test_that("debug.variable - no/empty provenance",
 	expect_error(debug.variable("x"))
 })
 
+# debug.variable tests
+json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
+
+provDebugR:::.clear()
+expect_warning(prov.debug.file(json))   # warning is due to deleted prov folder
+
+expected <- get.expected()
+
+expected <<- expected
+
 # general case
+
+# debug.variable - all
+test_that("debug.variable (all == TRUE)",
+{
+	# no variables, default val.type and script.num
+	c1 <- debug.variable(all = TRUE)
+	c1$e <- c1$e[ ,-1]         # omit columns from test
+	c1$s <- c1$s[ ,c(-1,-7)]
+	
+	expect_equivalent(c1, expected)
+	
+	# variables queried, default val.type and script.num
+	c2 <- debug.variable("s", all = TRUE)
+	c2$e <- c2$e[ ,-1]         # omit columns from test
+	c2$s <- c2$s[ ,c(-1,-7)]
+	
+	expect_equivalent(c2, expected)
+	
+	# val.type query
+	c3 <- debug.variable(val.type = "logical", all = TRUE)
+	
+	e3 <- expected[c(6,7)]
+	e3$g <- e3$g[3, ]
+	e3$h <- e3$h[c(1,2), ]
+	
+	expect_equivalent(c3, e3)
+	
+	# special val.type query
+	c4 <- debug.variable(val.type = "environment", all = TRUE)[[1]]
+	c4 <- c4[ ,c(-1,-7)]   # omit columns from test
+	
+	e4 <- expected$s
+	e4 <- e4[2, ]
+	
+	expect_equivalent(c4, e4)
+})
+
 # no param
-# all
 # invalid script
 # invalid vars
 # invalid valtypes
 
-# no variables
+# TODO - no variables
 
 # .get.output.var (?)
 
