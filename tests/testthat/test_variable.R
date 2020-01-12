@@ -191,9 +191,20 @@ test_that("debug.variable (no variable queries)",
 	expect_true(nchar(c6) > 0)
 })
 
-# invalid script
-# invalid vars
-# invalid valtypes
+# name queries
+# valType queries
+
+# debug.variable - script queries
+test_that("debug.variable (script.num queries)",
+{
+	# invalid script number
+	c2 <- utils::capture.output(c1 <- debug.variable("a", script.num = 5))
+	
+	expect_null(c1)
+	
+	c2 <- paste(c2, collapse='\n')
+	expect_true(nchar(c2) > 0)
+})
 
 # TODO - no variables
 
