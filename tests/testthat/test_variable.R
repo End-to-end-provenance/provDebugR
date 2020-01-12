@@ -168,7 +168,29 @@ test_that("debug.variable (all == TRUE)",
 	expect_equivalent(c4, e4)
 })
 
-# no param
+# debug.variable - no variable queries
+test_that("debug.variable (no variable queries)",
+{
+	# CASES
+	c2 <- utils::capture.output(c1 <- debug.variable())
+	c4 <- utils::capture.output(c3 <- debug.variable(val.type = "integer"))
+	c6 <- utils::capture.output(c5 <- debug.variable(script.num = 5))
+	
+	c2 <- paste(c2, collapse='\n')
+	c4 <- paste(c4, collapse='\n')
+	c6 <- paste(c6, collapse='\n')
+	
+	# TEST: returned value
+	expect_null(c1)
+	expect_null(c3)
+	expect_null(c5)
+	
+	# TEST: output message
+	expect_true(nchar(c2) > 0)
+	expect_true(nchar(c4) > 0)
+	expect_true(nchar(c6) > 0)
+})
+
 # invalid script
 # invalid vars
 # invalid valtypes
