@@ -342,7 +342,7 @@ test_that(".get.valid.var (all valid queries)",
 	c7 <- provDebugR:::.get.valid.var(p.vars, q2, forward = FALSE)
 	c8 <- provDebugR:::.get.valid.var(p.vars, q2, forward = TRUE)
 	
-	c9 <- provDebugR:::.get.valid.var(p.full, q3, forward = FALSE)   # container query
+	c9 <- provDebugR:::.get.valid.var(p.full, q3, forward = FALSE)    # container query
 	c10 <- provDebugR:::.get.valid.var(p.full, q3, forward = TRUE)
 	c11 <- provDebugR:::.get.valid.var(p.vars, q3, forward = FALSE)
 	c12 <- provDebugR:::.get.valid.var(p.vars, q3, forward = TRUE)
@@ -366,7 +366,7 @@ test_that(".get.valid.var (all valid queries)",
 	c26 <- provDebugR:::.get.valid.var(p.full, q7, forward = TRUE)
 	
 	# EXPECTED
-	# returned columns: d.id, p.id, name, valType, startLine, scriptNum
+	# cols: d.id, p.id, name, valType, startLine, scriptNum
 	e1 <- cbind('d.id' = 'd1',                  # single data node for variable
 				'p.id' = 'p2',
 				q1, stringsAsFactors = FALSE)
@@ -524,11 +524,134 @@ test_that(".get.valid.var (all invalid queries)",
 # .get.valid.var - some valid, some invalid queries
 test_that(".get.valid.var (some valid, some invalid queries)",
 {
-	# pos.nodes columns: d.id, p.id, name, valType, startLine, scriptNum
-	# query columns: name, valType, startLine, scriptNum
-	# returned columns: d.id, p.id, name, valType, startLine, scriptNum
+	# POS.NODES 
+	# cols: d.id, p.id, name, valType, startLine, scriptNum
+	p.full <- system.file("testexpected", "posVar_typeChanges_full.csv", package = "provDebugR")
+	p.vars <- system.file("testexpected", "posVar_typeChanges_vars.csv", package = "provDebugR")
 	
-	# all can be done using typeChanges
+	p.full <- read.csv(p.full, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	p.vars <- read.csv(p.vars, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
 	
+	# QUERIES 
+	# cols: name, valType, startLine, scriptNum
+	q1 <- data.frame(name = c('a','s'),                 # start line queries
+					 valType = c(NA,NA),
+					 startLine = c(40,40),
+					 scriptNum = c(1,1),
+					 stringsAsFactors = FALSE)
+	q2 <- data.frame(name = c('h','s'),                 # container queries
+					 valType = c('vector','vector'),
+					 startLine = c(NA,NA),
+					 scriptNum = c(1,1),
+					 stringsAsFactors = FALSE)
+	q3 <- data.frame(name = c('h','s'),                 # type queries
+					 valType = c('integer','integer'),
+					 startLine = c(NA,NA),
+					 scriptNum = c(1,1),
+					 stringsAsFactors = FALSE)
+	q4 <- data.frame(name = c('h','s'),                 # special valType queries
+					 valType = c('factor','factor'),
+					 startLine = c(NA,NA),
+					 scriptNum = c(1,1),
+					 stringsAsFactors = FALSE)
+	q5 <- data.frame(name = c('a','invalid','dev.2'),   # name queries
+					 valType = c(NA,NA,NA),
+					 startLine = c(NA,NA,NA),
+					 scriptNum = c(1,1,1),
+					 stringsAsFactors = FALSE)
 	
+	# CASES
+	c1 <- provDebugR:::.get.valid.var(p.full, q1, forward = FALSE)    # start line queries
+	c2 <- provDebugR:::.get.valid.var(p.full, q1, forward = TRUE)
+	c3 <- provDebugR:::.get.valid.var(p.vars, q1, forward = FALSE)
+	c4 <- provDebugR:::.get.valid.var(p.vars, q1, forward = TRUE)
+	
+	c5 <- provDebugR:::.get.valid.var(p.full, q2, forward = FALSE)    # container queries
+	c6 <- provDebugR:::.get.valid.var(p.full, q2, forward = TRUE)
+	c7 <- provDebugR:::.get.valid.var(p.vars, q2, forward = FALSE)
+	c8 <- provDebugR:::.get.valid.var(p.vars, q2, forward = TRUE)
+	
+	c9 <- provDebugR:::.get.valid.var(p.full, q3, forward = FALSE)    # type queries
+	c10 <- provDebugR:::.get.valid.var(p.full, q3, forward = TRUE)
+	c11 <- provDebugR:::.get.valid.var(p.vars, q3, forward = FALSE)
+	c12 <- provDebugR:::.get.valid.var(p.vars, q3, forward = TRUE)
+	
+	c13 <- provDebugR:::.get.valid.var(p.full, q4, forward = FALSE)   # special valType queries
+	c14 <- provDebugR:::.get.valid.var(p.full, q4, forward = TRUE)
+	c15 <- provDebugR:::.get.valid.var(p.vars, q4, forward = FALSE)
+	c16 <- provDebugR:::.get.valid.var(p.vars, q4, forward = TRUE)
+	
+	c17 <- provDebugR:::.get.valid.var(p.vars, q5, forward = FALSE)   # name queries
+	c18 <- provDebugR:::.get.valid.var(p.vars, q5, forward = TRUE)
+	c19 <- provDebugR:::.get.valid.var(p.full, q5, forward = FALSE)
+	c20 <- provDebugR:::.get.valid.var(p.full, q5, forward = TRUE)
+	
+	# EXPECTED
+	# cols: d.id, p.id, name, valType, startLine, scriptNum
+	e1 <- cbind('d.id' = 'd23',             # start line queries
+				'p.id' = 'p23',
+				q1[-1, ], 
+				stringsAsFactors = FALSE)
+	
+	e2 <- cbind('d.id' = 'd20',             # container queries (h,s,vector)
+				'p.id' = 'p20',
+				q2[-2, ], 
+				stringsAsFactors = FALSE)
+	e3 <- cbind('d.id' = 'd15',
+				'p.id' = 'p15',
+				q2[-2, ], 
+				stringsAsFactors = FALSE)
+	
+	e4 <- cbind('d.id' = 'd20',             # type queries (h,s,integer)
+				'p.id' = 'p20',
+				q3[-2, ], 
+				stringsAsFactors = FALSE)
+	e5 <- cbind('d.id' = 'd19',
+				'p.id' = 'p19',
+				q3[-2, ], 
+				stringsAsFactors = FALSE)
+	
+	e6 <- cbind('d.id' = 'd24',             # special valType queries (h,s,factor)
+				'p.id' = 'p24',
+				q4[-1, ], 
+				stringsAsFactors = FALSE)
+	
+	e7 <- cbind('d.id' = 'd1',              # name queries (a,invalid,dev.2)
+				'p.id' = 'p2',
+				q5[c(-2,-3), ], 
+				stringsAsFactors = FALSE)
+	e8 <- cbind('d.id' = c('d1','d4'),
+				'p.id' = c('p2','p4'),
+				q5[-2, ], 
+				stringsAsFactors = FALSE)
+	e9 <- cbind('d.id' = c('d1','d2'),
+				'p.id' = c('p2','p3'),
+				q5[-2, ], 
+				stringsAsFactors = FALSE)
+	
+	# TEST
+	expect_equivalent(c1,e1)    # start line queries
+	expect_equivalent(c2,e1)
+	expect_equivalent(c3,e1)
+	expect_equivalent(c4,e1)
+	
+	expect_equivalent(c5,e2)    # container queries
+	expect_equivalent(c6,e3)
+	expect_equivalent(c7,e2)
+	expect_equivalent(c8,e3)
+	
+	expect_equivalent(c9,e4)    # type queries
+	expect_equivalent(c10,e5)
+	expect_equivalent(c11,e4)
+	expect_equivalent(c12,e5)
+	
+	expect_equivalent(c13,e6)   # special valType queries
+	expect_equivalent(c14,e6)
+	expect_equivalent(c15,e6)
+	expect_equivalent(c16,e6)
+	
+	expect_equivalent(c17,e7)   # name queries
+	expect_equivalent(c18,e7)
+	expect_equivalent(c19,e8)
+	expect_equivalent(c20,e9)
 })
