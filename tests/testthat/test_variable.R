@@ -191,8 +191,59 @@ test_that("debug.variable (no variable queries)",
 	expect_true(nchar(c6) > 0)
 })
 
-# name queries
-# valType queries
+# debug.variable - variable name queries
+
+# debug.variable - valType queries
+test_that("debug.variable (val.type queries)",
+{
+	# CASE: Valid valType
+	# variable does not have data node with queried valType
+	c2 <- utils::capture.output(c1 <- debug.variable("a", val.type = "logical"))
+	
+	expect_null(c1)
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+	
+	# variables queried have data nodes with queried valType
+	c3 <- debug.variable("h", "f", val.type = "integer")
+	
+	e3 <- expected[c(7,5)]
+	e3$f <- e3$f[2, ]
+	e3$h <- e3$h[c(5,6), ]
+	
+	expect_equivalent(c3,e3)
+	
+	# some variables queried have data nodes with queried valType
+	c4 <- debug.variable("s", "f", "d", "h", val.type = "integer")
+	
+	e4 <- expected[c(5,7)]
+	e4$f <- e4$f[2, ]
+	e4$h <- e4$h[c(5,6), ]
+	
+	expect_equivalent(c4,e4)
+	
+	# CASE: Special valType
+	c5 <- debug.variable("h","s", val.type = "function")[[1]]
+	c5 <- c5[ , c(-1,-7)]   # omit columns
+	
+	e5 <- expected$s
+	e5 <- e5[3, ]
+	
+	expect_equivalent(c5,e5)
+	
+	# CASE: invalid valType
+	c7 <- utils::capture.output(c6 <- debug.variable(val.type = "language", all = TRUE))
+	
+	expect_null(c6)
+	expect_true(nchar(paste(c7, collapse='\n')) > 0)
+	
+	# CASE: multiple valTypes queried
+	c9 <- utils::capture.output(
+			expect_warning(
+				c8 <- debug.variable("h", val.type = c("integer", "logical"))))
+	
+	expect_null(c6)
+	expect_true(nchar(paste(c7, collapse='\n')) > 0)
+})
 
 # debug.variable - script queries
 test_that("debug.variable (script.num queries)",
