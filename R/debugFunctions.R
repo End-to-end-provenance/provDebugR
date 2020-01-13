@@ -641,6 +641,9 @@ debug.type.changes <- function(var = NA)
 	
 	# if the user has specified variable(s) to be queried, get the valid ones
 	# for this function, this process is much simpler than get.valid.var
+	# first, remove repeated user queries
+	var <- unique(var)
+	
 	if(!(is.na(var[1]) && length(var) == 1)) 
 	{
 		valid.queries <- var[var %in% vars.names]

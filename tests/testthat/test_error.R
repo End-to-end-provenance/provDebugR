@@ -56,4 +56,4 @@ test_that("debug.error - general",
 	expect_true(nchar(c2) > 0)	# check that there exists message about error
 })
 
-# .process.error
+# TODO - .process.error

@@ -159,18 +159,22 @@ test_that("debug.type.changes - all valid variables queried (multiple)",
 	# queries
 	q1 <- c("d", "f", "g")   # multiple variables
 	q2 <- c("f", "h", "d")   # multiple variables (in different order)
+	q3 <- c("d", "d", "f")   # repeated query
 	
 	# test cases
 	c1 <- debug.type.changes(var = q1)
 	c2 <- debug.type.changes(var = q2)
+	c3 <- debug.type.changes(var = q3)
 	
 	# expected
 	e1 <- expected[q1]
 	e2 <- expected[q2]
+	e3 <- expected[c("d", "f")]
 	
 	# test
 	expect_equivalent(c1, e1)
 	expect_equivalent(c2, e2)
+	expect_equivalent(c3, e3)
 })
 
 # debug.type.changes - all invalid variables queried

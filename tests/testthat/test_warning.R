@@ -34,10 +34,16 @@ test_that("debug.warning - general",
 	c1 <- debug.warning(1)[[1]]
 	c2 <- debug.warning("2")[[1]]
 	
+	# multiple queries
+	c3 <- debug.warning(c(1,1))[[1]]   # repeated query
+	c4 <- debug.warning(c(1,2))   # multiple valid queries
+	c6 <- utils::capture.output(c5 <- debug.warning(c(1,5))[[1]])   # with invalid query
+	c8 <- utils::capture.output(c7 <- debug.warning(c(5,6)))        # all invalid queries
+	
 	# all = TRUE
-	c3 <- debug.warning(all = TRUE)   # with no queries
-	c4 <- debug.warning(1, all = TRUE)   # with valid query
-	c5 <- debug.warning(5, all = TRUE)   # with invalid query
+	c9 <- debug.warning(all = TRUE)       # with no queries
+	c10 <- debug.warning(1, all = TRUE)   # with valid query
+	c11 <- debug.warning(5, all = TRUE)   # with invalid query
 	
 	# expected
 	e1 <- system.file("testexpected", "warnings1.csv", package = "provDebugR")
@@ -50,18 +56,31 @@ test_that("debug.warning - general",
 	expect_equivalent(c1, e1)
 	expect_equivalent(c2, e2)
 	
-	# test: all = TRUE
-	expect_equal(length(c3), 2)
-	expect_equivalent(c3[[1]], e1)
-	expect_equivalent(c3[[2]], e2)
+	# test: multiple queries
+	expect_equivalent(c3, e1)         # repeated query
 	
-	expect_equal(length(c4), 2)
+	expect_equal(length(c4), 2)       # all valid queries
 	expect_equivalent(c4[[1]], e1)
 	expect_equivalent(c4[[2]], e2)
 	
-	expect_equal(length(c5), 2)
-	expect_equivalent(c5[[1]], e1)
-	expect_equivalent(c5[[2]], e2)
+	expect_equivalent(c5, e1)         # with invalid query
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
+	
+	expect_null(c7)                   # all invalid queries
+	expect_true(nchar(paste(c8, collapse='\n')) > 0)
+	
+	# test: all = TRUE
+	expect_equal(length(c9), 2)       # no queries
+	expect_equivalent(c9[[1]], e1)
+	expect_equivalent(c9[[2]], e2)
+	
+	expect_equal(length(c10), 2)      # with valid query
+	expect_equivalent(c10[[1]], e1)
+	expect_equivalent(c10[[2]], e2)
+	
+	expect_equal(length(c11), 2)      # with invalid query
+	expect_equivalent(c11[[1]], e1)
+	expect_equivalent(c11[[2]], e2)
 })
 
 # no queries
@@ -125,7 +144,7 @@ test_that("debug.warning - invalid queries",
 })
 
 # .get.valid.warn
-test_that("debug.warning - .get.valid.warn",
+test_that(".get.valid.warn",
 {
 	# possible warning nodes
 	pos.nodes <- data.frame(id=c("d1", "d2", "d3"),
@@ -138,6 +157,7 @@ test_that("debug.warning - .get.valid.warn",
 	q3 <- c(1:3)                # all valid
 	q4 <- c("3", "invalid", 2)  # some invalid, some valid
 	q5 <- c(6:8)                # all invalid
+	q6 <- c(1,1,3)              # repeated query
 	
 	# test cases
 	c2 <- utils::capture.output(
@@ -152,44 +172,44 @@ test_that("debug.warning - .get.valid.warn",
 		c9 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, q4))   # some invalid, some valid
 	c12 <- utils::capture.output(
 		c11 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, q5))  # all invalid
-	
 	c14 <- utils::capture.output(
-		c13 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, all = TRUE))      # all
+		c13 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, q6))  # repeated query
+	
 	c16 <- utils::capture.output(
-		c15 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, 3, all = TRUE))   # all, valid query
+		c15 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, all = TRUE))      # all
 	c18 <- utils::capture.output(
-		c17 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, 9, all = TRUE))   # all, invalid query
+		c17 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, 3, all = TRUE))   # all, valid query
+	c20 <- utils::capture.output(
+		c19 <- provDebugR:::.get.valid.warn(warning.nodes = pos.nodes, 9, all = TRUE))   # all, invalid query
 	
 	# test
-	expect_null(c1)                                 # no queries
-	c2 <- paste(c2, collapse="\n")
-	expect_true(nchar(c2) > 0)
+	expect_null(c1)                                     # no queries
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
 	
-	expect_null(c3)                                 # invalid
-	c4 <- paste(c4, collapse="\n")
-	expect_true(nchar(c4) > 0)
+	expect_null(c3)                                     # invalid
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
 	
-	expect_null(c5)                                 # invalid
-	c6 <- paste(c6, collapse="\n")
-	expect_true(nchar(c6) > 0)
+	expect_null(c5)                                     # invalid
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
 	
-	expect_equivalent(c7, pos.nodes)                # all valid
+	expect_equivalent(c7, pos.nodes)                    # all valid
 	expect_equal(length(c8), 0)
 	
-	expect_equivalent(c9, pos.nodes[c(3,2), ])      # some valid, some invalid
-	c10 <- paste(c10, collapse="\n")
-	expect_true(nchar(c10) > 0)
+	expect_equivalent(c9, pos.nodes[c(3,2), ])          # some valid, some invalid
+	expect_true(nchar(paste(c10, collapse='\n')) > 0)
 	
-	expect_null(c11)                                # all invalid
-	c12 <- paste(c12, collapse="\n")
-	expect_true(nchar(c12) > 0)
+	expect_null(c11)                                    # all invalid
+	expect_true(nchar(paste(c12, collapse='\n')) > 0)
 	
-	expect_equivalent(c13, pos.nodes)               # all
+	expect_equivalent(c13, pos.nodes[c(1,3), ])         # repeated queries
 	expect_equal(length(c14), 0)
 	
-	expect_equivalent(c15, pos.nodes)               # all, valid query
+	expect_equivalent(c15, pos.nodes)                   # all
 	expect_equal(length(c16), 0)
 	
-	expect_equivalent(c17, pos.nodes)               # all, invalid query
+	expect_equivalent(c17, pos.nodes)                   # all, valid query
 	expect_equal(length(c18), 0)
+	
+	expect_equivalent(c19, pos.nodes)                   # all, invalid query
+	expect_equal(length(c20), 0)
 })
