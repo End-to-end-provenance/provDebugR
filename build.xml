@@ -77,6 +77,12 @@
 		<delete dir="inst/testdata/prov_missingScripts/data"/>
 		<delete dir="inst/testdata/prov_missingScripts/debug"/>
 		
+		<!-- no variables -->
+		<antcall target="json">
+			<param name="theFile" value="noVars.R"/>
+		</antcall>
+		<delete file="inst/Rplots.pdf"/>
+		
 	</target>
 	
 	
