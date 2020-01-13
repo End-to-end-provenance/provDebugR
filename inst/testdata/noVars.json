@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "noVars.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "1.47",
+			"rdt:elapsedTime": "1.12",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -44,7 +44,7 @@
 		"rdt:p2": {
 			"rdt:name": "plot(c(1:10), c(11:20))",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.14",
+			"rdt:elapsedTime": "0.23",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "noVars.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.04",
+			"rdt:elapsedTime": "0.02",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -82,8 +82,8 @@
 			"rdt:type": "File",
 			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "586c08c7cad102227f45da02baa98dce",
-			"rdt:timestamp": "2020-01-13T17.52.04EST",
+			"rdt:hash": "7bf4808a1d385b7abeddeadbd436ca1b",
+			"rdt:timestamp": "2020-01-13T17.57.47EST",
 			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/Rplots.pdf"
 		},
 
@@ -95,12 +95,12 @@
 			"rdt:langVersion": "R version 3.6.1 (2019-07-05)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/noVars.R",
 			"rdt:scriptTimeStamp": "2020-01-13T17.51.31EST",
-			"rdt:totalElapsedTime": "1.65",
+			"rdt:totalElapsedTime": "1.37",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
 			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_noVars",
-			"rdt:provTimestamp": "2020-01-13T17.52.02EST",
+			"rdt:provTimestamp": "2020-01-13T17.57.45EST",
 			"rdt:hashAlgorithm": "md5"
 		},
 

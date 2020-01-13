@@ -120,6 +120,20 @@ test_that("debug.variable - no/empty provenance",
 	expect_error(debug.variable("x"))
 })
 
+# no variables
+test_that("debug.type.changes - no variables",
+{
+	json <- system.file("testdata", "noVars.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning is due to deleted prov folder
+	
+	c2 <- utils::capture.output(c1 <- debug.variable(all = TRUE))
+	
+	expect_null(c1)
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+})
+
 # debug.variable tests
 json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
 
@@ -285,9 +299,7 @@ test_that("debug.variable (script.num queries)",
 	expect_true(nchar(paste(c4, collapse='\n')) > 0)
 })
 
-# TODO - no variables
-
-# .get.output.var (?)
+# ??? - .get.output.var (?)
 
 # === TESTING SHARED FUNCTIONS =============================================== #
 # --- functions shared with debug.lineage ---

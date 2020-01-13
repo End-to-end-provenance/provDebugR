@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "typeChanges.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.84",
+			"rdt:elapsedTime": "0.91",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "plot(1:10)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.18",
+			"rdt:elapsedTime": "0.24",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 5,
 			"rdt:startCol": 1,
@@ -64,7 +64,7 @@
 		"rdt:p4": {
 			"rdt:name": "cc <- 2L",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.06",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 8,
 			"rdt:startCol": 1,
@@ -74,7 +74,7 @@
 		"rdt:p5": {
 			"rdt:name": "cc <- 3L",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 9,
 			"rdt:startCol": 1,
@@ -84,7 +84,7 @@
 		"rdt:p6": {
 			"rdt:name": "d <- 4",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.07",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 12,
 			"rdt:startCol": 1,
@@ -94,7 +94,7 @@
 		"rdt:p7": {
 			"rdt:name": "d <- as.list(d)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.07",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 13,
 			"rdt:startCol": 1,
@@ -104,7 +104,7 @@
 		"rdt:p8": {
 			"rdt:name": "e <- matrix(c(1:100), 4)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.13",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 16,
 			"rdt:startCol": 1,
@@ -114,7 +114,7 @@
 		"rdt:p9": {
 			"rdt:name": "e <- matrix(c(1:100), 5)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 17,
 			"rdt:startCol": 1,
@@ -124,7 +124,7 @@
 		"rdt:p10": {
 			"rdt:name": "f <- 5",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 20,
 			"rdt:startCol": 1,
@@ -154,7 +154,7 @@
 		"rdt:p13": {
 			"rdt:name": "g <- \"six\"",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 25,
 			"rdt:startCol": 1,
@@ -174,7 +174,7 @@
 		"rdt:p15": {
 			"rdt:name": "h <- FALSE",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 29,
 			"rdt:startCol": 1,
@@ -184,7 +184,7 @@
 		"rdt:p16": {
 			"rdt:name": "h <- TRUE",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 30,
 			"rdt:startCol": 1,
@@ -194,7 +194,7 @@
 		"rdt:p17": {
 			"rdt:name": "h <- \"seven\"",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.06",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 31,
 			"rdt:startCol": 1,
@@ -214,7 +214,7 @@
 		"rdt:p19": {
 			"rdt:name": "h <- 8L",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.07",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 33,
 			"rdt:startCol": 1,
@@ -254,7 +254,7 @@
 		"rdt:p23": {
 			"rdt:name": "s <- function(x) print(x)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 40,
 			"rdt:startCol": 1,
@@ -264,7 +264,7 @@
 		"rdt:p24": {
 			"rdt:name": "s <- factor(c(\"red\",\"green\",\"blue\",\"red\",\"green\",\"red\"))",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 41,
 			"rdt:startCol": 1,
@@ -284,7 +284,7 @@
 		"rdt:p26": {
 			"rdt:name": "typeChanges.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.02",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -576,8 +576,8 @@
 			"rdt:type": "File",
 			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "cff6db53342512fa5a3d05e8d609ae84",
-			"rdt:timestamp": "2020-01-11T22.13.51EST",
+			"rdt:hash": "e6eb209907eda26892fb66e9175c58ce",
+			"rdt:timestamp": "2020-01-13T17.57.37EST",
 			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/Rplots.pdf"
 		},
 
@@ -589,12 +589,12 @@
 			"rdt:langVersion": "R version 3.6.1 (2019-07-05)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/typeChanges.R",
 			"rdt:scriptTimeStamp": "2020-01-10T19.02.15EST",
-			"rdt:totalElapsedTime": "2.86",
+			"rdt:totalElapsedTime": "3.16",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
 			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_typeChanges",
-			"rdt:provTimestamp": "2020-01-11T22.13.48EST",
+			"rdt:provTimestamp": "2020-01-13T17.57.33EST",
 			"rdt:hashAlgorithm": "md5"
 		},
 

@@ -584,6 +584,14 @@ debug.type.changes <- function(var = NA)
 	# Get all data nodes with type "Data" or "Snapshot"
 	data.nodes <- .debug.env$data.nodes
 	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
+	data.nodes <- .remove.na.rows(data.nodes)
+	
+	# case: no variables
+	if(nrow(data.nodes) == 0) {
+		cat("There are no variables.\n")
+		return(invisible(NULL))
+	}
+	
 	vars.names <- unique(data.nodes$name)
 	
 	# Find all variables with type changes
