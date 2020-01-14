@@ -49,39 +49,38 @@
 	<target name="create-json">
 		
 		<!-- empty -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="empty.R"/>
-		</antcall>
+		</antcall>-->
 		
 		<!-- type changes -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="typeChanges.R"/>
 		</antcall>
-		<delete file="inst/Rplots.pdf"/>
+		<delete file="inst/Rplots.pdf"/>-->
 		
 		<!-- errors, warnings -->
 		<!-- this case is used to test .get.full.code as well -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="exceptions.R"/>
 			<param name="delete.dir" value="false"/>
 		</antcall>
 		<delete dir="inst/testdata/prov_exceptions/data"/>
-		<delete dir="inst/testdata/prov_exceptions/debug"/>
+		<delete dir="inst/testdata/prov_exceptions/debug"/>-->
 		
 		<!-- .get.full.code case for a missing script from prov folder -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="missingScripts.R"/>
 			<param name="delete.dir" value="false"/>
 		</antcall>
 		<delete file="inst/testdata/prov_missingScripts/scripts/source_notInProv.R"/>
 		<delete dir="inst/testdata/prov_missingScripts/data"/>
-		<delete dir="inst/testdata/prov_missingScripts/debug"/>
+		<delete dir="inst/testdata/prov_missingScripts/debug"/>-->
 		
 		<!-- no variables -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="noVars.R"/>
-		</antcall>
-		<delete file="inst/Rplots.pdf"/>
+		</antcall>-->
 		
 	</target>
 	

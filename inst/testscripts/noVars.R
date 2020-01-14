@@ -1,1 +1,2 @@
-plot(c(1:10), c(11:20))
+print("Case:")
+print("No variables")
