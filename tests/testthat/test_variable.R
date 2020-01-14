@@ -227,6 +227,12 @@ test_that("debug.variable (variable name queries)",
 	e6 <- expected[c(1,6,7)]
 	
 	expect_equivalent(c6,e6)
+	
+	# repeated queries
+	c7 <- debug.variable("a", "a", "cc")
+	e7 <- expected[c(1,2)]
+	
+	expect_equivalent(c7,e7)
 })
 
 # debug.variable - valType queries
@@ -426,6 +432,16 @@ test_that(".get.query.var (valid queries)",
 					 scriptNum = c(2,2), 
 					 stringsAsFactors = FALSE)
 	expect_equivalent(c6, e6)
+	
+	# repeated queries
+	c7 <- provDebugR:::.get.query.var("x","x","y")
+	
+	e7 <- data.frame(name = c("x","y"), 
+					 valType = c(NA,NA),
+					 startLine = c(NA,NA), 
+					 scriptNum = c(1,1), 
+					 stringsAsFactors = FALSE)
+	expect_equivalent(c3, e3)
 })
 
 # .get.query var - invalid queries
