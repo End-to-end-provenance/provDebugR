@@ -305,7 +305,7 @@ test_that("debug.variable (script.num queries)",
 	expect_true(nchar(paste(c4, collapse='\n')) > 0)
 })
 
-# ??? - .get.output.var (?)
+# ??? - .get.output.var
 
 # === TESTING SHARED FUNCTIONS =============================================== #
 # --- functions shared with debug.lineage ---
@@ -357,17 +357,28 @@ test_that(".get.pos.var (valid)",
 	
 	expect_equivalent(c3, e3)
 	expect_equivalent(c4, e4)
-	
-	
-	# TODO - case: fromEnv
 })
 
-# TODO - .get.pos.var
-test_that(".get.pos.var (invalid)", 
+# TODO - case: fromEnv
+test_that(".get.pos.var (fromEnv variables)",
 {
-	# no data nodes
 	
-	# no variables
+})
+
+# .get.pos.var - has data nodes, no variables
+test_that(".get.pos.var (no variables)", 
+{
+	json <- system.file("testdata", "noVars.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
+	
+	c1 <- provDebugR:::.get.pos.var(
+				provDebugR:::.debug.env$data.nodes[
+					provDebugR:::.debug.env$data.nodes$type == "Data" | 
+					provDebugR:::.debug.env$data.nodes$type == "Snapshot", ])
+	
+	expect_null(c1)
 })
 
 # .get.query.var - valid queries

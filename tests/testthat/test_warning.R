@@ -20,7 +20,19 @@ test_that("debug.warning - no/empty provenance",
 	expect_error(debug.warning())
 })
 
-# test: no warnings
+# no warnings
+test_that("debug.warning - no warnings",
+{
+	json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
+	
+	c2 <- utils::capture.output(c1 <- debug.warning(1))
+	
+	expect_null(c1)
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+})
 
 # general case:
 test_that("debug.warning - general",
