@@ -53,11 +53,23 @@
 			<param name="theFile" value="empty.R"/>
 		</antcall>-->
 		
+		<!-- no variables -->
+		<!--<antcall target="json">
+			<param name="theFile" value="noVars.R"/>
+		</antcall>-->
+		
 		<!-- type changes -->
 		<!--<antcall target="json">
 			<param name="theFile" value="typeChanges.R"/>
 		</antcall>
 		<delete file="inst/Rplots.pdf"/>-->
+		
+		<!-- fromEnv -->
+		<antcall target="json">
+			<param name="theFile" value="fromEnv.R"/>
+			<param name="console.mode" value="true"/>
+		</antcall>
+		<delete file="inst/Rplots.pdf"/>
 		
 		<!-- errors, warnings -->
 		<!-- this case is used to test .get.full.code as well -->
@@ -77,11 +89,6 @@
 		<delete dir="inst/testdata/prov_missingScripts/data"/>
 		<delete dir="inst/testdata/prov_missingScripts/debug"/>-->
 		
-		<!-- no variables -->
-		<!--<antcall target="json">
-			<param name="theFile" value="noVars.R"/>
-		</antcall>-->
-		
 	</target>
 	
 	
@@ -96,22 +103,44 @@
 			<not><isset property="delete.dir"/></not>
 		</condition>
 		
-		<!-- call rdtLite::prov.run, move prov.json file to testdata folder -->
+		<!-- default: console mode is false -->
+		<condition property="console.mode" value="false">
+			<not><isset property="console.mode"/></not>
+		</condition>
+		
+		<!-- run script -->
 		<echo message="${theFile}"/>
-		<exec executable="Rscript" dir="inst">
+		<exec if:true="${console.mode}" executable="Rscript" dir="inst">
+			<arg line="testscripts/${theFile}"/>
+		</exec>
+		<exec unless:true="${console.mode}" executable="Rscript" dir="inst">
 			<arg line="-e &quot;rdtLite::prov.run('testscripts/${theFile}', prov.dir='testdata', snapshot.size=${snapshot.size})&quot;"/>
 		</exec>
+		
 		<basename property="scriptname" file="${theFile}" suffix="R" />
-		<move file="inst/testdata/prov_${scriptname}/prov.json" tofile="inst/testdata/${scriptname}.json" />
+		
+		<!-- move prov.json file to testdata folder -->
+		<move if:true="${console.mode}" 
+			  file="inst/testdata/prov_console/prov.json" 
+			  tofile="inst/testdata/${scriptname}.json" 
+		/>
+		<move unless:true="${console.mode}"
+			  file="inst/testdata/prov_${scriptname}/prov.json" 
+			  tofile="inst/testdata/${scriptname}.json" 
+		/>
 		
 		<!-- delete prov directory if it is not needed anymore -->
 		<antcall if:true="${delete.dir}" target="delete.prov.dir"/>
 	</target>
 	
-	
 	<!-- delete prov directory -->
 	<target name="delete.prov.dir">
-		<delete dir="inst/testdata/prov_${scriptname}"/>
+		<delete if:true="${console.mode}" 
+				dir="inst/testdata/prov_console"
+		/>
+		<delete unless:true="${console.mode}" 
+				dir="inst/testdata/prov_${scriptname}"
+		/>
 	</target>
 	
 	<!-- === CHECK ========================================================= -->
