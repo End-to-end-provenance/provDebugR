@@ -362,7 +362,27 @@ test_that(".get.pos.var (valid)",
 # TODO - case: fromEnv
 test_that(".get.pos.var (fromEnv variables)",
 {
+	# CASE: variables where fromEnv is TRUE
+	# test for data nodes and variables
+	json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
 	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning from deleted prov folder
+	
+	c1 <- provDebugR:::.get.pos.var(provDebugR:::.debug.env$data.nodes)
+	c2 <- provDebugR:::.get.pos.var(
+				provDebugR:::.debug.env$data.nodes[
+					provDebugR:::.debug.env$data.nodes$type == "Data" | 
+					provDebugR:::.debug.env$data.nodes$type == "Snapshot", ])
+	
+	e1 <- system.file("testexpected", "posVar_fromEnv_full.csv", package = "provDebugR")
+	e2 <- system.file("testexpected", "posVar_fromEnv_vars.csv", package = "provDebugR")
+	
+	e1 <- read.csv(e1, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	e2 <- read.csv(e2, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+	
+	expect_equivalent(c1, e1)
+	expect_equivalent(c2, e2)
 })
 
 # .get.pos.var - has data nodes, no variables
