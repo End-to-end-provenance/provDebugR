@@ -65,11 +65,11 @@
 		<delete file="inst/Rplots.pdf"/>-->
 		
 		<!-- fromEnv -->
-		<antcall target="json">
+		<!--<antcall target="json">
 			<param name="theFile" value="fromEnv.R"/>
 			<param name="console.mode" value="true"/>
 		</antcall>
-		<delete file="inst/Rplots.pdf"/>
+		<delete file="inst/Rplots.pdf"/>-->
 		
 		<!-- errors, warnings -->
 		<!-- this case is used to test .get.full.code as well -->

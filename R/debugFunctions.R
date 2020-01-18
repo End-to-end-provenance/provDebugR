@@ -210,8 +210,13 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	colnames(data.nodes) <- c("d.id", "name", "valType")
 	
 	# for each data node, get the corresponding procedure node
-	proc.nodes <- lapply(data.nodes$`d.id`, function(d.id)
+	# some may have multiple proc nodes associated with this (files, url, fromEnv nodes etc.)
+	rows <- lapply(c(1:nrow(data.nodes)), function(i)
 	{
+		# get id and row from data nodes table
+		d.fields <- data.nodes[i, ]
+		d.id <- d.fields$`d.id`
+		
 		# try to get the procedure node that assigned/produced the data node
 		p.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == d.id]
 		
@@ -219,26 +224,31 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		if(length(p.id) == 0)
 			p.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == d.id]
 		
-		# get startLine and scriptNum from proc nodes table
-		p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == p.id,
-										  c("id", "startLine", "scriptNum")]
+		# get startLine and scriptNum from proc nodes table, 
+		# cbind with row from data nodes table
+		row <- lapply(p.id, function(id) {
+			p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == id,
+											  c("id", "startLine", "scriptNum")]
+			return(cbind(d.fields, p.fields, stringsAsFactors = FALSE))
+		})
 		
-		# rename id field to p.id, return
-		colnames(p.fields) <- c("p.id", "startLine", "scriptNum")
-		return(p.fields)
+		# if there are multiple rows, combine into data frame
+		if(length(row) == 1)
+			row <- row[[1]]
+		else
+			row <- .form.df(row)
+		
+		return(row)
 	})
 	
 	# bind into a single data frame
-	proc.nodes <- .form.df(proc.nodes)
+	rows <- .form.df(rows)
 	
-	# cbind data nodes and their corresponding proc nodes into a single data frame
-	pos.nodes <- cbind(data.nodes, proc.nodes, stringsAsFactors = FALSE)
+	# rename and rearrange columns
+	colnames(rows) <- c("d.id", "name", "valType", "p.id", "startLine", "scriptNum")
+	rows <- rows[ , c("d.id", "p.id", "name", "valType", "startLine", "scriptNum")]
 	
-	# rearrange columns, rename rows
-	pos.nodes <- pos.nodes[ , c("d.id", "p.id", "name", "valType", "startLine", "scriptNum")]
-	row.names(pos.nodes) <- c(1:nrow(pos.nodes))
-	
-	return(pos.nodes)
+	return(rows)
 }
 
 #' function shared with debug.lineage
@@ -1259,7 +1269,7 @@ debug.warning <- function(..., all = FALSE)
 
 #' @noRd
 .form.df <- function(list)
-{
+{	
 	# get column names
 	col.names <- names(list[[1]])
 	
@@ -1268,7 +1278,7 @@ debug.warning <- function(..., all = FALSE)
 	
 	cols <- lapply(col.length, function(i) 
 	{
-		return(mapply(`[[`, list, i))
+		return(unlist(mapply(`[[`, list, i)))
 	})
 	
 	names(cols) <- col.names
