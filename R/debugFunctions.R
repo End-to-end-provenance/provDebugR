@@ -176,9 +176,9 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	query <- .get.query.var(query.vars, val.type = val.type, script.num = script.num)
 	
 	# STEP: get valid queries
-	valid.queries <- .get.valid.var(pos.vars, query)
+	valid.queries <- .get.valid.var(pos.vars, query, forward = FALSE)
 	
-	# CASE: no valid query
+	# CASE: no valid queries
 	if(is.null(valid.queries)) {
 		cat("No valid queries.\n\n")
 		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum")])
@@ -322,7 +322,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' pos.nodes columns: d.id, p.id, name, valType, startLine, scriptNum
 #' query columns: name, valType, startLine, scriptNum
 #'
-#' returned columns: d.id, p.id, name, valType, startLine, scriptNum
+#' returned columns: d.id, name, valType, startLine, scriptNum
 #'
 #' function shared with debug.lineage
 #'
@@ -350,11 +350,10 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	query.indices <- c(1:nrow(query))
 	
 	# (for forward/backward lineage queries)
-	# store id of valid data nodes and its corresponding proc node when found
+	# store id of valid data nodes when found
 	# this is so that in cases where no start.line is searched for,
 	# we will know which node id to return
 	valid.d.id <- c()
-	valid.p.id <- c()
 	
 	# this is akin to a loop where, for every query (row),
 	# a TRUE or FALSE will be returned. TRUE corresponds to valid query
@@ -394,25 +393,18 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		# find the id of the node to be used
 		if(is.na(query.line))
 		{
-			# extract data node id and corresponding proc node id columns
+			# extract data node id
 			d.id <- subset$`d.id`
-			p.id <- subset$`p.id`
 			
 			# find the id of the node to be used
 			# forward lineage - get first node
 			# backwards lineage - get last node
-			if(nrow(subset) == 1) {
+			if(nrow(subset) == 1)
 				valid.d.id <<- append(valid.d.id, d.id)
-				valid.p.id <<- append(valid.p.id, p.id)
-			}
-			else if(forward) {
+			else if(forward)
 				valid.d.id <<- append(valid.d.id, d.id[1])
-				valid.p.id <<- append(valid.p.id, p.id[1])
-			}
-			else {
+			else
 				valid.d.id <<- append(valid.d.id, d.id[length(d.id)])
-				valid.p.id <<- append(valid.p.id, p.id[length(p.id)])
-			}
 			
 			# node is found - return true
 			return(TRUE)
@@ -426,9 +418,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		if(nrow(subset) == 0)
 			return(FALSE)
 		
-		# node found: record data node id and corresponding proc node id
+		# node found: record data node id
 		valid.d.id <<- append(valid.d.id, subset$`d.id`)
-		valid.p.id <<- append(valid.p.id, subset$`p.id`)
 		
 		return(TRUE)
 	})
@@ -441,9 +432,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	if(nrow(valid.queries) == 0)
 		return(invisible(NULL))
 	
-	# STEP: bind valid data node id and proc node id columns to valid queries
+	# STEP: bind valid data node id column to valid queries
 	valid.queries <- cbind("d.id" = valid.d.id,
-						   "p.id" = valid.p.id,
 						   valid.queries,
 						   stringsAsFactors = FALSE)
 	return(valid.queries)
@@ -514,30 +504,74 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' @export
 debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, forward = FALSE)
 {
-	# case: no provenance
+	# CASE: no provenance
 	if(!.debug.env$has.graph)
 		stop("There is no provenance.")
 	
-	# get table of possible variables
-	# this includes valType, start line and script number
-	pos.vars <- .get.pos.var(.debug.env$data.nodes)
+	# STEP: get all possible nodes
+	# columns: d.id, p.id, name, valType, startLine, scriptNum
+	pos.nodes <- .get.pos.var(.debug.env$data.nodes)
 	
-	# get valid queries - all data nodes are possible nodes
-	valid.queries <- .get.valid.var(pos.vars, ..., val.type = NA, start.line = start.line, 
-									script.num = script.num, all = all, forward = forward)
-	
-	# case: no valid queries
-	if(is.null(valid.queries))
+	# CASE: no data nodes (not entirely sure if this can happen)
+	if(is.null(pos.nodes)) {
+		cat("There are no data nodes.\n")
 		return(invisible(NULL))
+	}
 	
-	# get lineage
-	valid.vars.id <- valid.queries$id
+	# STEP: get user's query
+	# columns: name, valType (NA), startLine, scriptNum
+	if(all)
+		query.nodes <- unique(pos.nodes$name)
+	else
+		query.nodes <- .flatten.args(...)
 	
-	lineages <- lapply(valid.vars.id, function(id)
+	query <- .get.query.var(query.nodes, val.type = NA, script.num = script.num)
+	
+	# STEP: get valid queries
+	valid.queries <- .get.valid.var(pos.nodes, query, forward = forward)
+	
+	# CASE: no valid queries
+	# columns: d.id, name, valType, startLine, scriptNum
+	if(is.null(valid.queries)) {
+		cat("No valid queries.\n\n")
+		.print.pos.options(pos.nodes[ , c("name", "startLine", "scriptNum")])
+		return(invisible(NULL))
+	}
+	
+	# STEP: for each valid query, get lineage and form table for user output
+	# as some nodes may not have a lineage, keep a vector to keep track 
+	# of which indices of the valid queries table do
+	indices <- c()
+	
+	lineages <- lapply(c(1:nrow(valid.queries)), function(i)
 	{
-		lineage <- .get.lineage(id, forward = forward)
+		# get id and name
+		d.id <- valid.queries$`d.id`[i]
+		d.name <- valid.queries$name[i]
+		
+		# get lineage
+		lineage <- .get.lineage(d.id, forward = forward)
+		
+		# case: no lineage
+		if(is.null(lineage)) {
+			cat(paste("No lineage for ", d.name, ".\n", sep=""))
+			return(invisible(NULL))
+		}
+		
+		# keep track of index and form output
+		indices <<- append(indices, i)
 		return(.get.output.lineage(lineage))
 	})
+	
+	# Case: no lineages to display
+	if(length(indices) == 0)
+		return(invisible(NULL))
+	
+	# extract lineages that are not null
+	if(length(indices) < nrow(valid.queries)) {
+		lineages <- lineages[indices]
+		valid.queries <- valid.queries[indices, ]
+	}
 	
 	names(lineages) <- valid.queries$name
 	return(lineages)
@@ -549,6 +583,10 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	# get lineage, extract proc nodes
 	lineage <- provGraphR::get.lineage(.debug.env$graph, node.id, forward = forward)
 	lineage <- lineage[grep('^p[[:digit:]]+', lineage)]
+	
+	# case: no lineage
+	if(length(lineage) == 0)
+		return(NULL)
 	
 	# if getting the forward lineage, get the proc node which first assigned the variable
 	if(forward)
@@ -579,7 +617,13 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 		return(fields)
 	})
 	
-	return(.form.df(rows))
+	# form data frame
+	df <- .form.df(rows)
+	
+	# remove any rows where scriptNum is NA 
+	# (this occurs for plots if dev.off is not called)
+	df <- df[!is.na(df$scriptNum), ]
+	return(df)
 }
 
 # === TYPE CHANGES =========================================================== #

@@ -583,45 +583,34 @@ test_that(".get.valid.var (all valid queries)",
 	c26 <- provDebugR:::.get.valid.var(p.full, q7, forward = TRUE)
 	
 	# EXPECTED
-	# cols: d.id, p.id, name, valType, startLine, scriptNum
+	# cols: d.id, name, valType, startLine, scriptNum
 	e1 <- cbind('d.id' = 'd1',                  # single data node for variable
-				'p.id' = 'p2',
 				q1, stringsAsFactors = FALSE)
 	
 	e2 <- cbind('d.id' = 'd25',                 # single data node for variable
-				'p.id' = 'p25',
 				q2, stringsAsFactors = FALSE)
 	e3 <- cbind('d.id' = 'd21',
-				'p.id' = 'p21',
 				q2, stringsAsFactors = FALSE)
 	
 	e4 <- cbind('d.id' = c('d11','d6','d14'),   # container query (f,d,g,vector)
-				'p.id' = c('p11','p6','p14'),
 				q3, stringsAsFactors = FALSE)
 	e5 <- cbind('d.id' = c('d10','d6','d12'),
-				'p.id' = c('p10','p6','p12'),
 				q3, stringsAsFactors = FALSE)
 	
 	e6 <- cbind('d.id' = c('d1','d11','d20'),   # type query (a,f,h,integer)
-				'p.id' = c('p2','p11','p20'),
 				q4, stringsAsFactors = FALSE)
 	e7 <- cbind('d.id' = c('d1','d11','d19'),
-				'p.id' = c('p2','p11','p19'),
 				q4, stringsAsFactors = FALSE)
 	
 	e8 <- cbind('d.id' = 'd22',                 # special valType query (s,environment)
-				'p.id' = 'p22',
 				q5, stringsAsFactors = FALSE)
 	
 	e9 <- cbind('d.id' = 'd23',                 # line query (40)
-				'p.id' = 'p23',
 				q6, stringsAsFactors = FALSE)
 	
 	e10 <- cbind('d.id' = 'd4',                 # is data node, but not variable
-				'p.id' = 'p4',
 				q7, stringsAsFactors = FALSE)
 	e11 <- cbind('d.id' = 'd2',                 # is data node, but not variable
-				'p.id' = 'p3',
 				q7, stringsAsFactors = FALSE)
 	
 	# TEST
@@ -804,45 +793,36 @@ test_that(".get.valid.var (some valid, some invalid queries)",
 	c20 <- provDebugR:::.get.valid.var(p.full, q5, forward = TRUE)
 	
 	# EXPECTED
-	# cols: d.id, p.id, name, valType, startLine, scriptNum
+	# cols: d.id, name, valType, startLine, scriptNum
 	e1 <- cbind('d.id' = 'd23',             # start line queries
-				'p.id' = 'p23',
 				q1[-1, ], 
 				stringsAsFactors = FALSE)
 	
 	e2 <- cbind('d.id' = 'd20',             # container queries (h,s,vector)
-				'p.id' = 'p20',
 				q2[-2, ], 
 				stringsAsFactors = FALSE)
 	e3 <- cbind('d.id' = 'd15',
-				'p.id' = 'p15',
 				q2[-2, ], 
 				stringsAsFactors = FALSE)
 	
 	e4 <- cbind('d.id' = 'd20',             # type queries (h,s,integer)
-				'p.id' = 'p20',
 				q3[-2, ], 
 				stringsAsFactors = FALSE)
 	e5 <- cbind('d.id' = 'd19',
-				'p.id' = 'p19',
 				q3[-2, ], 
 				stringsAsFactors = FALSE)
 	
 	e6 <- cbind('d.id' = 'd24',             # special valType queries (h,s,factor)
-				'p.id' = 'p24',
 				q4[-1, ], 
 				stringsAsFactors = FALSE)
 	
 	e7 <- cbind('d.id' = 'd1',              # name queries (a,invalid,dev.2)
-				'p.id' = 'p2',
 				q5[c(-2,-3), ], 
 				stringsAsFactors = FALSE)
 	e8 <- cbind('d.id' = c('d1','d4'),
-				'p.id' = c('p2','p4'),
 				q5[-2, ], 
 				stringsAsFactors = FALSE)
 	e9 <- cbind('d.id' = c('d1','d2'),
-				'p.id' = c('p2','p3'),
 				q5[-2, ], 
 				stringsAsFactors = FALSE)
 	
