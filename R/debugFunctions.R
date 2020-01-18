@@ -525,7 +525,8 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	else
 		query.nodes <- .flatten.args(...)
 	
-	query <- .get.query.var(query.nodes, val.type = NA, script.num = script.num)
+	query <- .get.query.var(query.nodes, val.type = NA, 
+							start.line = start.line, script.num = script.num)
 	
 	# STEP: get valid queries
 	valid.queries <- .get.valid.var(pos.nodes, query, forward = forward)
