@@ -585,10 +585,6 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	lineage <- provGraphR::get.lineage(.debug.env$graph, node.id, forward = forward)
 	lineage <- lineage[grep('^p[[:digit:]]+', lineage)]
 	
-	# case: no lineage
-	if(length(lineage) == 0)
-		return(NULL)
-	
 	# if getting the forward lineage, get the proc node which first assigned the variable
 	if(forward)
 	{
@@ -597,6 +593,10 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 		if(nrow(edge) > 0)
 			lineage <- append(lineage, edge$activity[[1]], 0)
 	}
+	
+	# case: no lineage
+	if(length(lineage) == 0)
+		return(NULL)
 	
 	# order by increasing proc node number
 	node.nums <- as.integer(sub("^[[:alpha:]]", "", lineage))
