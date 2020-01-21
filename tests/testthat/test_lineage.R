@@ -189,6 +189,7 @@ test_that("debug.lineage - no/empty provenance",
 
 # no data nodes - is it possible to get a json like that?
 
+
 # debug.lineage tests
 json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
 
@@ -197,6 +198,7 @@ expect_warning(prov.debug.file(json))   # warning is due to deleted prov folder
 
 e.backward <- get.expected.backward()
 e.forward <- get.expected.forward()
+
 
 # debug.lineage - all (backward)
 test_that("debug.lineage - all (backward)",
@@ -539,6 +541,7 @@ test_that("debug.lineage - script num queries (forward)",
 	expect_null(c4)
 	expect_true(nchar(paste(c5, collapse='\n')) > 0)
 })
+
 
 # get lineage tests (esp forward tests)
 # .get.lineage - backward lineage
