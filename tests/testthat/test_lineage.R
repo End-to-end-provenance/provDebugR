@@ -355,18 +355,256 @@ test_that("debug.lineage - all (forward)",
 	expect_true(nchar(paste(c12, collapse='\n')) > 0)
 })
 
-# backwards lineage - name queries (valid and invalid)
-# forwards lineage - name queries (valid and invalid)
+# debug.lineage - name queries (backward)
+test_that("debug.lineage - name queries (backward)",
+{
+	# valid
+	c1 <- debug.lineage("f")[[1]]
+	e1 <- e.backward$f
+	
+	expect_equivalent(c1, e1)
+	
+	# invalid
+	c3 <- utils::capture.output(c2 <- debug.lineage("invalid"))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# no backward lineage
+	c5 <- utils::capture.output(c4 <- debug.lineage("a"))
+	
+	expect_null(c4)
+	expect_true(nchar(paste(c5, collapse='\n')) > 0)
+	
+	# multiple queries
+	c7 <- utils::capture.output(
+		c6 <- debug.lineage("a", "f", "invalid.1", "e", "invalid.2"))
+	
+	e6 <- e.backward[c(5,4)]
+	
+	expect_equivalent(c6, e6)
+	expect_true(nchar(paste(c7, collapse='\n')) > 0)
+	
+	# valid name query, but invalid number
+	c9 <- utils::capture.output(
+		c8 <- debug.lineage("f", start.line = 10))
+	
+	expect_null(c8)
+	expect_true(nchar(paste(c9, collapse='\n')) > 0)
+})
 
-# backwards lineage - start line queries (valid and invalid)
-# forwards lineage - start line queries (valid and invalid)
+# debug.lineage - name queries (forward)
+test_that("debug.lineage - name queries (forward)",
+{
+	# valid
+	c1 <- debug.lineage("b", forward = TRUE)[[1]]
+	e1 <- e.forward$b
+	
+	expect_equivalent(c1, e1)
+	
+	# invalid
+	c3 <- utils::capture.output(
+		c2 <- debug.lineage("invalid", forward = TRUE))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# multiple queries (valid, invalid)
+	c4 <- debug.lineage("b", "invalid", "output", forward = TRUE)
+	
+	e4 <- e.forward[c(11,4)]
+	
+	expect_equivalent(e4, c4)
+	
+	# valid query, invalid start line
+	c6 <- utils::capture.output(
+		c5 <- debug.lineage("b", start.line = 50))
+	
+	expect_null(c5)
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
+})
 
-# scriptNum cases
+# debug.lineage - start line queries (backward)
+test_that("debug.lineage - start line queries (backward)",
+{
+	# valid
+	c1 <- debug.lineage("f", start.line = 6)[[1]]
+	e1 <- e.backward$f
+	
+	expect_equivalent(c1, e1)
+	
+	# invalid
+	c3 <- utils::capture.output(
+		c2 <- debug.lineage("f", start.line = 100))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# multiple
+	c4 <- debug.lineage("e", "f", start.line = c(5,6))
+	e4 <- e.backward[c(4,5)]
+	
+	expect_equivalent(c4, e4)
+	
+	# neither the first nor last instance of variable
+	c5 <- debug.lineage("output", start.line = 8)[[1]]
+	c5 <- c5[ , -3]   # omit code column from comparison
+	
+	e5 <- data.frame(scriptNum = rep(1L,5),
+					 startLine = as.integer(c(1,5,6,7,8)),
+					 stringsAsFactors = FALSE)
+	
+	expect_equivalent(c5, e5)
+})
 
-# no lineage cases (var)
+# debug.lineage - start line queries (forward)
+test_that("debug.lineage - start line queries (forward)",
+{
+	# valid
+	c1 <- debug.lineage("b", start.line = 20, forward = TRUE)[[1]]
+	e1 <- e.forward$b
+	
+	expect_equivalent(c1, e1)
+	
+	# invalid
+	c3 <- utils::capture.output(
+		c2 <- debug.lineage("b", start.line = 50, forward = TRUE))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# multiple
+	c4 <- debug.lineage("output", "g", start.line = c(3,20), forward = TRUE)
+	e4 <- e.forward[c(4,12)]
+	
+	expect_equivalent(c4, e4)
+	
+	# neither the first nor last instance of variable
+	c5 <- debug.lineage("output", start.line = 8, forward = TRUE)[[1]]
+	
+	e5 <- data.frame(scriptNum = 1L,
+					 startLine = 8L,
+					 code = 'print(vector.2)',
+					 stringsAsFactors = FALSE)
+	
+	expect_equivalent(c5, e5)
+})
 
+# debug.lineage - script num queries (backward)
+test_that("debug.lineage - script num queries (backward)",
+{
+	# valid
+	c1 <- debug.lineage("e", "f", script.num = 1)
+	e1 <- e.backward[c(4,5)]
+	
+	expect_equivalent(c1, e1)
+	
+	# invalid
+	c3 <- utils::capture.output(
+		c2 <- debug.lineage("output", script.num = 2))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# multiple
+	expect_warning(
+		c5 <- utils::capture.output(
+			c4 <- debug.lineage("output", script.num = c(1,2))))
+	
+	expect_null(c4)
+	expect_true(nchar(paste(c5, collapse='\n')) > 0)
+})
 
+# debug.lineage - script num queries (forward)
+test_that("debug.lineage - script num queries (forward)",
+{
+	# valid
+	c1 <- debug.lineage("b", "g", script.num = 1, forward = TRUE)
+	e1 <- e.forward[c(11,12)]
+	
+	expect_equivalent(c1, e1)
+	
+	# invalid
+	c3 <- utils::capture.output(
+		c2 <- debug.lineage("output", script.num = 2, forward = TRUE))
+	
+	expect_null(c2)
+	expect_true(nchar(paste(c3, collapse='\n')) > 0)
+	
+	# multiple
+	expect_warning(
+		c5 <- utils::capture.output(
+			c4 <- debug.lineage("output", script.num = c(1,2), forward = TRUE)))
+	
+	expect_null(c4)
+	expect_true(nchar(paste(c5, collapse='\n')) > 0)
+})
 
-# helper function tests
 # get lineage tests (esp forward tests)
+# .get.lineage - backward lineage
+test_that(".get.lineage - backward lineage",
+{
+	# valid (includes a fromEnv variable)
+	c1 <- provDebugR:::.get.lineage("d11")
+	e1 <- c("p3", "p4", "p12")
+	
+	expect_equivalent(c1, e1)
+	
+	# no backwards lineage
+	c2 <- provDebugR:::.get.lineage("d2")
+	expect_null(c2)
+	
+	# lineage with only 1 proc node
+	c3 <- provDebugR:::.get.lineage("d1")
+	expect_equivalent(c3, "p3")
+	
+	# non-assignment with lineage of 1 node
+	c4 <- provDebugR:::.get.lineage("d17")
+	expect_equivalent(c4, "p17")
+})
+
+# .get.lineage - forward lineage
+test_that(".get.lineage - forward lineage",
+{
+	# valid
+	c1 <- provDebugR:::.get.lineage("d7", forward = TRUE)
+	e1 <- c("p8", "p9", "p10", "p11", "p13", "p14", "p19")
+	
+	expect_equivalent(c1, e1)
+	
+	# valid (a fromEnv variable)
+	c2 <- provDebugR:::.get.lineage("d14", forward = TRUE)
+	e2 <- c("p15", "p16")
+	
+	expect_equivalent(c2, e2)
+	
+	# non-assignment with no proc nodes following it
+	c3 <- provDebugR:::.get.lineage("d17", forward = TRUE)
+	expect_equivalent(c3, "p17")
+})
+
+
 # output test - for removed last row for no dev.off case
+test_that(".get.output.lineage",
+{
+	# backward lineage
+	l1 <- provDebugR:::.get.lineage("d11")
+	c1 <- provDebugR:::.get.output.lineage(l1)
+	
+	expect_true(length(l1) == 3)
+	expect_true(nrow(c1) == 3)
+	
+	# forward lineage
+	l2 <- provDebugR:::.get.lineage("d14", forward = TRUE)
+	c2 <- provDebugR:::.get.output.lineage(l2)
+	
+	expect_true(length(l2) == 2)
+	expect_true(nrow(c2) == 2)
+	
+	# forward lineage (for no dev.off cases)
+	l3 <- provDebugR:::.get.lineage("d7", forward = TRUE)
+	c3 <- provDebugR:::.get.output.lineage(l3)
+	
+	expect_true(length(l3) == 7)
+	expect_true(nrow(c3) == 6)
+})
