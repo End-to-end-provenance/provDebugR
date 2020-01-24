@@ -3,139 +3,194 @@
 #' @export
 debug.line <- function(..., script.num = 1, all = FALSE)
 {
-	# case: no provenance
-	if(!.debug.env$has.graph)
+	# CASE: no provenance
+	if(! .debug.env$has.graph)
 		stop("There is no provenance.")
 	
-	# get valid lines from user input
-	valid.lines <- .get.valid.line(..., script.num = script.num, all = all)
+	# STEP: get all possible options
+	# extract columns: id, startLine, scriptNum
+	pos.nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$type == "Operation", ]
+	pos.nodes <- pos.nodes[ , c("id", "startLine", "scriptNum", "name")]
+	names(pos.nodes) <- c("id", "startLine", "scriptNum", "code")
 	
-	# case: no valid lines
-	if(is.null(valid.lines))
+	# STEP: get user's query
+	# case: more than 1 script number queried
+	if(length(script.num) > 1) {
+		warning("Please query only 1 script number.", call. = FALSE)
+		.print.pos.options(pos.nodes[ , -1])
 		return(invisible(NULL))
+	}
 	
-	# get output for each valid line
-	# since valid.lines is a table, we perform lapply on row index instead
-	# this makes it easy to query the table by row
-	indices <- c(1:nrow(valid.lines))
+	if(all)
+		query <- unique(pos.nodes$startLine)
+	else
+		query <- unique(.flatten.args(...))
 	
-	output <- lapply(indices, function(i)
+	# case: ensure script.num is an integer or can be coerced into an integer
+	script.num.int <- .to.int(script.num)
+	
+	if(is.null(script.num.int)) {
+		warning("Script number must be a single integer.", call. = FALSE)
+		.print.pos.options(pos.nodes[ , -1])
+		return(invisible(NULL))
+	}
+	
+	script.num <- script.num.int
+	
+	# STEP: get valid queries
+	# columns: id, startLine, scriptNum, code
+	valid.queries <- .get.valid.line(pos.nodes, query, script.num)
+	
+	# CASE: no valid queries
+	if(is.null(valid.queries)) {
+		.print.pos.options(pos.nodes[ , -1])
+		return(invisible(NULL))
+	}
+	
+	# STEP: Form user output
+	# Make sure to keep track of indices with neither input nor output data nodes
+	# It's likely the shorter list
+	remove.indices <- c()
+	
+	output <- lapply(c(1:nrow(valid.queries)), function(i) 
 	{
-		# a list which stores tables for input data nodes and output data nodes
-		data <- list()
+		# get user output for the specified proc node id
+		p.id <- valid.queries$id[i] 
+		user.output <- .get.output.line(p.id)
 		
-		# get the activity node id (proc node id)
-		activity.id <- valid.lines$id[i]
-		
-		# INPUT data nodes
-		# get all input data node id associated with activity id
-		# then form user output table
-		input.id <- .debug.env$data.proc$entity[.debug.env$data.proc$activity == activity.id]
-		
-		if(length(input.id) == 0)
-			data$input <- NA
-		else
-			data$input <- .get.output.line(input.id)
-		
-		# OUTPUT data nodes
-		# same as for input data nodes, but for output data nodes instead
-		output.id <- .debug.env$proc.data$entity[.debug.env$proc.data$activity == activity.id]
-		
-		if(length(output.id) == 0)
-			data$output <- NA
-		else
-			data$output <- .get.output.line(output.id)
-		
-		# NULL CASE: no input or output nodes
-		if(length(input.id) == 0 && length(output.id) == 0) {
-			cat(paste("There are no input or output data nodes associated with line", valid.lines$startLine[i], 
-					  "of script", valid.lines$scriptNum[i], ".\n"))
+		# case: no input or output data nodes (keep track of index!)
+		if(is.null(user.output)) {
+			remove.indices <<- append(remove.indices, i)
 			return(NULL)
 		}
 		
-		# USER OUTPUT - before returning completed tables, print line and script number
-		cat(paste("Line", valid.lines$startLine[i], " of script", valid.lines$scriptNum[i], "\n"))
-		return(data)
+		# return user output
+		return(user.output)
 	})
 	
-	# name all tables with line number
-	names(output) <- valid.lines$startLine
+	# CASE: there are valid line queries with neither input nor output data nodes
+	if(length(remove.indices) > 0)
+	{
+		# print out table of queries with no output
+		no.output <- valid.queries[remove.indices, -1]
+		
+		cat("No input or output data nodes associated with:\n")
+		print(no.output)
+		
+		# Case: all queries have neither input nor output nodes
+		if(length(remove.indices) == nrow(valid.queries))
+			return(invisible(NULL))
+		
+		# There is output to be shown to user,
+		# make sure to put a line gap.
+		cat("\n")
+		
+		# from table of valid queries, remove rows and re-number them
+		valid.queries <- valid.queries[-remove.indices, ]
+		row.names(valid.queries) <- c(1:nrow(valid.queries))
+		
+		# remove all null cells from output
+		output <- .remove.null(output)
+	}
+	
+	# STEP: Print out valid queries before returning output
+	cat('Results for:\n')
+	print(valid.queries[ , -1])
+	cat('\n')
+	
+	names(output) <- row.names(valid.queries)
 	return(output)
 }
 
+#' returned columns: id, startLine, scriptNum, code
+#'
 #' @noRd
-.get.valid.line <- function(..., script.num = 1, all = FALSE)
+.get.valid.line <- function(pos.nodes, query, script.num)
 {
-	# get all possible nodes for query
-	all.pos.nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$type == "Operation", ]
-	all.pos.nodes <- all.pos.nodes[ , c("id", "startLine", "scriptNum")]
-	
-	# QUERY: ALL
-	if(all)
-		return(all.pos.nodes)
-	
-	# get user's query into vector form, 
-	query <- unique(.flatten.args(...))
-	
 	# CASE: no queries
-	if(is.null(query)) {
-		print.pos.options(all.pos.nodes)
+	if(is.null(query))
 		return(invisible(NULL))
-	}
-	
-	# append script.num to it to form data frame
-	query <- data.frame(query, rep(script.num, length(query)), stringsAsFactors = FALSE)
-	names(query) <- c("startLine", "scriptNum")
 	
 	# QUERY: subset by script number
-	pos.nodes <- all.pos.nodes[all.pos.nodes$scriptNum == script.num, ]
+	# since there can only be 1 script number queried by call,
+	# check for its validity first.
+	pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
+	pos.nodes <- .remove.na.rows(pos.nodes)
 	
+	# CASE: invalid script number
 	if(nrow(pos.nodes) == 0) {
-		cat(paste("Script number", script.num, "is not a possible input.\n"))
+		cat(paste("Script number", script.num, "is not a possible input.\n\n"))
 		return(invisible(NULL))
 	}
 	
-	# QUERY: get valid line numbers
-	query.indices <- c(1:nrow(query))
-	
-	# this list keeps track of node id for valid line numbers
-	valid.id <- c()
-	
-	# for every line number, search for a corresponding proc node id.
-	# if none, the line number queried is invalid - return FALSE
-	# if found, the line number queried is valid - return TRUE, keep track of proc node id
-	# this creates a vector of logicals which can be used to subset the table of queries
-	valid.cells <- sapply(query.indices, function(i) 
+	# QUERY: for each query, return TRUE if valid, FALSE otherwise
+	valid.cells <- sapply(query, function(line)
 	{
-		node.id <- pos.nodes$id[pos.nodes$startLine == query$startLine[i]]
+		# first, convert into an int
+		line <- .to.int(line)
 		
-		if(length(node.id) == 0)
+		# Case: line is NULL (can't be converted to an int or is invalid)
+		if(is.null(line))
 			return(FALSE)
 		
-		valid.id <<- append(valid.id, node.id)
-		return(TRUE)
+		# search for queried line in list of possible start lines
+		return(line %in% pos.nodes$startLine)
 	})
 	
-	# extract valid queries from all queries, cbind id column to it
-	valid.queries <- query[valid.cells, ]
-	valid.queries <- cbind("id"=valid.id, valid.queries)
+	# Extract valid queries, return NULL if there are none.
+	valid.lines <- query[valid.cells]
 	
-	# CASE: no valid queries
-	if(nrow(valid.queries) == 0) {
-		return(invisible(NULL))
+	if(length(valid.lines) == 0) 
+	{
+		cat("There are no valid queries.\n\n")
+		return(NULL)
 	}
 	
-	# RETURN VALID QUERIES
-	return(valid.queries)
+	# For each valid line, extract appropriate row from pos.nodes
+	# bind into data frame and return.
+	rows <- lapply(valid.lines, function(line) {
+		return(pos.nodes[pos.nodes$startLine == line, ])
+	})
+	
+	return(.form.df(rows))
 }
 
 #' @noRd
-.get.output.line <- function(id.list)
+.get.output.line <- function(p.id)
 {
-	rows <- lapply(id.list, function(id)
+	# This is a list which stores tables for input and output data nodes
+	result <- list(input = NA, output = NA)
+	
+	# INPUT data nodes
+	# get all input data node id associated with activity id
+	# then form user output table
+	input.dnum <- .debug.env$data.proc$entity[.debug.env$data.proc$activity == p.id]
+	
+	if(length(input.dnum) > 0)
+		result$input <- .get.output.line.helper(input.dnum)
+	
+	# OUTPUT data nodes
+	# same as for input data nodes, but for output data nodes instead
+	output.dnum <- .debug.env$proc.data$entity[.debug.env$proc.data$activity == p.id]
+	
+	if(length(output.dnum) > 0)
+		result$output <- .get.output.line.helper(output.dnum)
+	
+	# CASE: no input or output nodes
+	if(length(input.dnum) == 0 && length(output.dnum) == 0)
+		return(NULL)
+	
+	# return
+	return(result)
+}
+
+#' @noRd
+.get.output.line.helper <- function(dnum.list)
+{
+	rows <- lapply(dnum.list, function(dnum)
 	{
-		data.node <- .debug.env$data.nodes[.debug.env$data.nodes$id == id, c("name", "value")]
-		val.type <- provParseR::get.val.type(.debug.env$prov, id)[c("container", "dimension", "type")]
+		data.node <- .debug.env$data.nodes[.debug.env$data.nodes$id == dnum, c("name", "value")]
+		val.type <- provParseR::get.val.type(.debug.env$prov, dnum)[c("container", "dimension", "type")]
 		return(cbind(data.node, val.type, stringsAsFactors = FALSE))
 	})
 	
@@ -263,13 +318,13 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	
 	# CASE: more than 1 script number queried
 	if(length(script.num) > 1) {
-		warning("Please query only 1 script number.")
+		warning("Please query only 1 script number.", call. = FALSE)
 		return(NULL)
 	}
 	
 	# CASE: more than 1 valType queried
 	if(length(val.type) > 1) {
-		warning("Please query only 1 valType.")
+		warning("Please query only 1 valType.", call. = FALSE)
 		return(NULL)
 	}
 	
@@ -307,7 +362,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		warning("Please query either:\n
 				1 object (e.g. \"x\"),\n
 				1 start line number, or\n
-				an equal number of objects and start lines.")
+				an equal number of objects and start lines.",
+				call. = FALSE)
 		return(NULL)
 	}
 	
@@ -792,7 +848,7 @@ debug.state <- function(..., script.num = 1)
 	else   # check for valid script number query
 	{
 		if(length(script.num) > 1) {
-			warning("Please query only 1 script number.")
+			warning("Please query only 1 script number.", call. = FALSE)
 			return(NULL)
 		}
 	}
@@ -1334,6 +1390,42 @@ debug.warning <- function(..., all = FALSE)
 	return(df)
 }
 
+#' Converts a query to an integer.
+#' NA and negative integers are accepted.
+#' This is used in checking the validity of queried line or script numbers.
+#'
+#' @noRd
+.to.int <- function(arg)
+{
+	# Case: If it's already an integer, return it
+	if(is.integer(arg))
+		return(arg)
+	
+	# Case: NA is a potentially valid query.
+	if(is.na(arg) || arg == "NA")
+		return(as.integer(NA))
+	
+	# Case: Catch logicals. This is because they will be coerced into 1 or 0
+	if(is.logical(arg))
+		return(NULL)
+	
+	# Try to coerce into an integer
+	# this is so that integers as strings are accepted
+	arg.int <- suppressWarnings(as.integer(arg))
+	
+	# Case: can't be coerced into an integer, return NULL
+	if(is.na(arg.int))
+		return(NULL)
+	
+	# Case: make sure decimals are not accepted
+	# this is because coercing into an integer truncates decimals
+	if(arg != arg.int)
+		return(NULL)
+	
+	# return
+	return(arg.int)
+}
+
 # because for some reason, there will be rows of NA inserted.
 #' @noRd
 .remove.na.rows <- function(df)
@@ -1348,6 +1440,14 @@ debug.warning <- function(..., all = FALSE)
 	})
 	
 	return(df[valid.rows, ])
+}
+
+# remove nulls in list
+#' @noRd
+.remove.null <- function(list)
+{
+	nulls <- sapply(list, is.null)
+	return(list[!nulls])
 }
 
 #' @noRd
