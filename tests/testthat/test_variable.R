@@ -279,8 +279,8 @@ test_that("debug.variable (val.type queries)",
 	expect_true(nchar(paste(c7, collapse='\n')) > 0)
 	
 	# CASE: multiple valTypes queried
-	c9 <- utils::capture.output(
-			expect_warning(
+	expect_warning(
+		c9 <- utils::capture.output(	
 				c8 <- debug.variable("h", val.type = c("integer", "logical"))))
 	
 	expect_null(c6)
@@ -291,21 +291,27 @@ test_that("debug.variable (val.type queries)",
 test_that("debug.variable (script.num queries)",
 {
 	# invalid script number
-	c2 <- utils::capture.output(c1 <- debug.variable("a", script.num = 5))
+	c2 <- utils::capture.output(c1 <- debug.variable("a", script.num = 6))
 	
 	expect_null(c1)
 	expect_true(nchar(paste(c2, collapse='\n')) > 0)
 	
 	# multiple script numbers
-	c4 <- utils::capture.output(
-			expect_warning(
-				c3 <- debug.variable("a", script.num = c(1,2))))
+	expect_warning(
+		c4 <- utils::capture.output(
+			c3 <- debug.variable("a", script.num = c(7,8))))
 	
 	expect_null(c3)
 	expect_true(nchar(paste(c4, collapse='\n')) > 0)
+	
+	# script number is not an integer
+	expect_warning(
+		c6 <- utils::capture.output(
+			c5 <- debug.variable("a", script.num = 9.5)))
+	
+	expect_null(c5)
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
 })
-
-# ??? - .get.output.var
 
 # === TESTING SHARED FUNCTIONS =============================================== #
 # --- functions shared with debug.lineage ---
@@ -359,7 +365,7 @@ test_that(".get.pos.var (valid)",
 	expect_equivalent(c4, e4)
 })
 
-# TODO - case: fromEnv
+# .get.pos.var - fromEnv variables
 test_that(".get.pos.var (fromEnv variables)",
 {
 	# CASE: variables where fromEnv is TRUE
@@ -509,7 +515,6 @@ test_that(".get.valid.var (all valid queries)",
 	p.full <- read.csv(p.full, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
 	p.vars <- read.csv(p.vars, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
 	
-	
 	# QUERIES
 	# cols: name, valType, startLine, scriptNum
 	q1 <- data.frame(name = 'a',                 # single data node for variable
@@ -537,15 +542,20 @@ test_that(".get.valid.var (all valid queries)",
 					 startLine = NA,
 					 scriptNum = 1,
 					 stringsAsFactors = FALSE)
-	q6 <- data.frame(name = 's',                 # line query
+	q6 <- data.frame(name = 's',                 # line query is string, script num is string
 					 valType = NA,
-					 startLine = 40,
-					 scriptNum = 1,
+					 startLine = "40",
+					 scriptNum = "1",
 					 stringsAsFactors = FALSE)
 	q7 <- data.frame(name = "dev.2",             # is data node, but not variable
 					 valType = NA, 
 					 startLine = NA, 
 					 scriptNum = 1,
+					 stringsAsFactors = FALSE)
+	q8 <- data.frame(name = "Rplots.pdf",        # NA for startLine and scriptNum
+					 valType = NA, 
+					 startLine = as.integer(NA), 
+					 scriptNum = as.integer(NA),
 					 stringsAsFactors = FALSE)
 	
 	# CASES
@@ -574,13 +584,16 @@ test_that(".get.valid.var (all valid queries)",
 	c19 <- provDebugR:::.get.valid.var(p.vars, q5, forward = FALSE)
 	c20 <- provDebugR:::.get.valid.var(p.vars, q5, forward = TRUE)
 	
-	c21 <- provDebugR:::.get.valid.var(p.full, q6, forward = FALSE)   # line query
+	c21 <- provDebugR:::.get.valid.var(p.full, q6, forward = FALSE)   # line query is string, script num is string
 	c22 <- provDebugR:::.get.valid.var(p.full, q6, forward = TRUE)
 	c23 <- provDebugR:::.get.valid.var(p.vars, q6, forward = FALSE)
 	c24 <- provDebugR:::.get.valid.var(p.vars, q6, forward = TRUE)
 	
 	c25 <- provDebugR:::.get.valid.var(p.full, q7, forward = FALSE)   # is data node, but not variable
 	c26 <- provDebugR:::.get.valid.var(p.full, q7, forward = TRUE)
+	
+	c27 <- provDebugR:::.get.valid.var(p.full, q8, forward = FALSE)   # NA for startLine and scriptNum
+	c28 <- provDebugR:::.get.valid.var(p.full, q8, forward = TRUE)
 	
 	# EXPECTED
 	# cols: d.id, name, valType, startLine, scriptNum
@@ -605,13 +618,16 @@ test_that(".get.valid.var (all valid queries)",
 	e8 <- cbind('d.id' = 'd22',                 # special valType query (s,environment)
 				q5, stringsAsFactors = FALSE)
 	
-	e9 <- cbind('d.id' = 'd23',                 # line query (40)
+	e9 <- cbind('d.id' = 'd23',                 # line query is string, script num is string (40)
 				q6, stringsAsFactors = FALSE)
 	
 	e10 <- cbind('d.id' = 'd4',                 # is data node, but not variable
 				q7, stringsAsFactors = FALSE)
-	e11 <- cbind('d.id' = 'd2',                 # is data node, but not variable
+	e11 <- cbind('d.id' = 'd2',
 				q7, stringsAsFactors = FALSE)
+	
+	e12 <- cbind('d.id' = 'd26',                # NA for startLine and scriptNum
+				q8, stringsAsFactors = FALSE)
 	
 	# TEST
 	expect_equivalent(c1,e1)     # single data node for variable
@@ -639,13 +655,16 @@ test_that(".get.valid.var (all valid queries)",
 	expect_equivalent(c19,e8)
 	expect_equivalent(c20,e8)
 	
-	expect_equivalent(c21,e9)    # line query (40)
+	expect_equivalent(c21,e9)    # line query is string, script num is string (40)
 	expect_equivalent(c22,e9)
 	expect_equivalent(c23,e9)
 	expect_equivalent(c24,e9)
 	
 	expect_equivalent(c25,e10)   # is data node, but not variable
 	expect_equivalent(c26,e11)
+	
+	expect_equivalent(c27,e12)   # NA for startLine and scriptNum
+	expect_equivalent(c28,e12)
 })
 
 # .get.valid.var - all invalid queries
@@ -687,44 +706,83 @@ test_that(".get.valid.var (all invalid queries)",
 					 "startLine" = NA, 
 					 "scriptNum" = 5,
 					 stringsAsFactors = FALSE)
+	q7 <- data.frame("name" = "a",               # start line is not an integer
+					 "valType"= NA, 
+					 "startLine" = 1.5, 
+					 "scriptNum" = 1,
+					 stringsAsFactors = FALSE)
+	q8 <- data.frame("name" = "a",               # script num is not an integer
+					 "valType"= NA, 
+					 "startLine" = NA, 
+					 "scriptNum" = 1.5,
+					 stringsAsFactors = FALSE)
 	
 	# CASES
-	c1 <- provDebugR:::.get.valid.var(p.full, q1)   # no query
+	c1 <- provDebugR:::.get.valid.var(p.full, q1)         # no query
 	c2 <- provDebugR:::.get.valid.var(p.vars, q1)
 	
-	c3 <- provDebugR:::.get.valid.var(p.full, q2)   # data node with name does not exist
-	c4 <- provDebugR:::.get.valid.var(p.vars, q2)
+	c4 <- utils::capture.output(                          # data node with name does not exist
+		c3 <- provDebugR:::.get.valid.var(p.full, q2))
+	c6 <- utils::capture.output(
+		c5 <- provDebugR:::.get.valid.var(p.vars, q2))
 	
-	c5 <- provDebugR:::.get.valid.var(p.vars, q3)   # is data node, but not variable
+	c8 <- utils::capture.output(                          # is data node, but not variable
+		c7 <- provDebugR:::.get.valid.var(p.vars, q3))
 	
-	c6 <- provDebugR:::.get.valid.var(p.full, q4)   # invalid valType
-	c7 <- provDebugR:::.get.valid.var(p.vars, q4)
+	c10 <- utils::capture.output(                         # invalid valType
+		c9 <- provDebugR:::.get.valid.var(p.full, q4))
+	c12 <- utils::capture.output(
+		c11 <- provDebugR:::.get.valid.var(p.vars, q4))
 	
-	c8 <- provDebugR:::.get.valid.var(p.full, q5)   # invalid start lines
-	c9 <- provDebugR:::.get.valid.var(p.vars, q5)
+	c14 <- utils::capture.output(                         # invalid start lines
+		c13 <- provDebugR:::.get.valid.var(p.full, q5))
+	c16 <- utils::capture.output(
+		c15 <- provDebugR:::.get.valid.var(p.vars, q5))
 	
-	c11 <- utils::capture.output(c10 <- provDebugR:::.get.valid.var(p.full, q6))   # invalid script num
-	c13 <- utils::capture.output(c12 <- provDebugR:::.get.valid.var(p.vars, q6))
+	c18 <- utils::capture.output(                         # invalid script num
+		c17 <- provDebugR:::.get.valid.var(p.full, q6))
+	c20 <- utils::capture.output(
+		c19 <- provDebugR:::.get.valid.var(p.vars, q6))
+	
+	c22 <- utils::capture.output(                         # start line is not an integer
+		c21 <- provDebugR:::.get.valid.var(p.full, q7))
+	c24 <- utils::capture.output(
+		c23 <- provDebugR:::.get.valid.var(p.vars, q7))
+	
+	expect_warning(                                       # script num is not an integer
+		c25 <- provDebugR:::.get.valid.var(p.full, q8))
+	expect_warning(
+		c26 <- provDebugR:::.get.valid.var(p.vars, q8))
 	
 	# TEST: returned values
 	expect_null(c1)
 	expect_null(c2)
 	expect_null(c3)
-	expect_null(c4)
 	expect_null(c5)
-	expect_null(c6)
 	expect_null(c7)
-	expect_null(c8)
 	expect_null(c9)
-	expect_null(c10)
-	expect_null(c12)
+	expect_null(c11)
+	expect_null(c13)
+	expect_null(c15)
+	expect_null(c17)
+	expect_null(c19)
+	expect_null(c21)
+	expect_null(c23)
+	expect_null(c25)
+	expect_null(c26)
 	
 	# TEST: output messages
-	c11 <- paste(c11, collapse = '\n')
-	c13 <- paste(c13, collapse = '\n')
-	
-	expect_true(nchar(c11) > 0)
-	expect_true(nchar(c13) > 0)
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
+	expect_true(nchar(paste(c8, collapse='\n')) > 0)
+	expect_true(nchar(paste(c10, collapse='\n')) > 0)
+	expect_true(nchar(paste(c12, collapse='\n')) > 0)
+	expect_true(nchar(paste(c14, collapse='\n')) > 0)
+	expect_true(nchar(paste(c16, collapse='\n')) > 0)
+	expect_true(nchar(paste(c18, collapse='\n')) > 0)
+	expect_true(nchar(paste(c20, collapse='\n')) > 0)
+	expect_true(nchar(paste(c22, collapse='\n')) > 0)
+	expect_true(nchar(paste(c24, collapse='\n')) > 0)
 })
 
 # .get.valid.var - some valid, some invalid queries

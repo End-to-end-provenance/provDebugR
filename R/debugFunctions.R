@@ -235,7 +235,6 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
-		cat("No valid queries.\n\n")
 		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum")])
 		return(invisible(NULL))
 	}
@@ -392,13 +391,28 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	# QUERY: subset by script number
 	# Since there can only be 1 script number queried per call,
 	# check for its validity first.
-	script.num <- query$scriptNum[1]
-	pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
-	pos.nodes <- .remove.na.rows(pos.nodes)
+	script.num.int <- .to.int(query$scriptNum[1])
+	
+	if(is.null(script.num.int)) {
+		warning("Script number must be a single integer.", call. = FALSE)
+		return(invisible(NULL))
+	}
+	
+	script.num <- script.num.int
+	
+	# case: script number could be NA
+	if(is.na(script.num)) {
+		pos.nodes <- pos.nodes[is.na(pos.nodes$scriptNum), ]
+		pos.nodes <- .remove.na.rows(pos.nodes)
+	}
+	else {
+		pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
+		pos.nodes <- .remove.na.rows(pos.nodes)
+	}
 	
 	# CASE: invalid script num
 	if(nrow(pos.nodes) == 0) {
-		cat(paste("Script number", script.num, "is not a possible input.\n"))
+		cat(paste("Script number", script.num, "is not a possible input.\n\n"))
 		return(invisible(NULL))
 	}
 	
@@ -447,6 +461,13 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		# (for lineage queries)
 		# QUERY: start line queried is NA, 
 		# find the id of the node to be used
+		query.line.int <- .to.int(query.line)
+		
+		if(is.null(query.line.int))
+			return(FALSE)
+		
+		query.line <- query.line.int
+		
 		if(is.na(query.line))
 		{
 			# extract data node id
@@ -485,8 +506,10 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	valid.queries <- .remove.na.rows(valid.queries)
 	
 	# CASE: no valid queries
-	if(nrow(valid.queries) == 0)
+	if(nrow(valid.queries) == 0) {
+		cat("No valid queries.\n\n")
 		return(invisible(NULL))
+	}
 	
 	# STEP: bind valid data node id column to valid queries
 	valid.queries <- cbind("d.id" = valid.d.id,
