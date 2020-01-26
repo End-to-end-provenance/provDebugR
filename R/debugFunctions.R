@@ -152,7 +152,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 		return(pos.nodes[pos.nodes$startLine == line, ])
 	})
 	
-	return(.form.df(rows))
+	return(unique(.form.df(rows)))
 }
 
 #' @noRd
