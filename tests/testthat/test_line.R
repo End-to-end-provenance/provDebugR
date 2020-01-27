@@ -113,7 +113,7 @@ test_that("debug.line - no/empty provenance",
 	expect_error(provDebugR::debug.line(5))
 })
 
-# Test case for debug.line, .get.valid.line
+# Test case for debug.line, .get.valid.query.line
 json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 
 provDebugR:::.clear()
@@ -352,8 +352,8 @@ test_that("debug.line - script number queries",
 	expect_true(nchar(paste(c8, collapse='\n')) > 0)
 })
 
-# .get.valid.line
-test_that(".get.valid.line",
+# .get.valid.query.line
+test_that(".get.valid.query.line",
 {
 	# get pos.nodes
 	pos.nodes <- provDebugR:::.debug.env$proc.nodes
@@ -362,7 +362,7 @@ test_that(".get.valid.line",
 	names(pos.nodes) <- c("id", "startLine", "scriptNum", "code")
 	
 	# valid line and script num
-	c1 <- provDebugR:::.get.valid.line(pos.nodes, 3, 1)
+	c1 <- provDebugR:::.get.valid.query.line(pos.nodes, 3, 1)
 	c1 <- c1[ , -4]   # omit code column from comparison
 	
 	e1 <- data.frame(id = "p3",
@@ -374,13 +374,13 @@ test_that(".get.valid.line",
 	
 	# invalid line
 	c3 <- utils::capture.output(
-		c2 <- provDebugR:::.get.valid.line(pos.nodes, 15, 1))
+		c2 <- provDebugR:::.get.valid.query.line(pos.nodes, 15, 1))
 	
 	expect_null(c2)
 	expect_true(nchar(paste(c3, collapse='\n')) > 0)
 	
 	# multiple valid
-	c4 <- provDebugR:::.get.valid.line(pos.nodes, list("3", 1), 1)
+	c4 <- provDebugR:::.get.valid.query.line(pos.nodes, list("3", 1), 1)
 	c4 <- c4[ , -4]   # omit code column from comparison
 	
 	e4 <- data.frame(id = c("p3", "p2"),
@@ -392,13 +392,13 @@ test_that(".get.valid.line",
 	
 	# multiple invalid lines
 	c6 <- utils::capture.output(
-		c5 <- provDebugR:::.get.valid.line(pos.nodes, list(15, 1.2, TRUE), 1))
+		c5 <- provDebugR:::.get.valid.query.line(pos.nodes, list(15, 1.2, TRUE), 1))
 	
 	expect_null(c5)
 	expect_true(nchar(paste(c6, collapse='\n')) > 0)
 	
 	# multiple with valid and invalid
-	c7 <- provDebugR:::.get.valid.line(pos.nodes, list("10", 15, 1.3 ,8), 3)
+	c7 <- provDebugR:::.get.valid.query.line(pos.nodes, list("10", 15, 1.3 ,8), 3)
 	c7 <- c7[ , -4]
 	
 	e7 <- data.frame(id = c("p11", "p10"),
@@ -409,7 +409,7 @@ test_that(".get.valid.line",
 	expect_equivalent(c7, e7)
 	
 	# repeated line queries
-	c8 <- provDebugR:::.get.valid.line(pos.nodes, list("10", 15, 8, 1.3 ,10), 3)
+	c8 <- provDebugR:::.get.valid.query.line(pos.nodes, list("10", 15, 8, 1.3 ,10), 3)
 	c8 <- c8[ , -4]
 	
 	e8 <- data.frame(id = c("p11", "p10"),
@@ -421,7 +421,7 @@ test_that(".get.valid.line",
 	
 	# invalid script number
 	c10 <- utils::capture.output(
-		c9 <- provDebugR:::.get.valid.line(pos.nodes, c(1:3), 5))
+		c9 <- provDebugR:::.get.valid.query.line(pos.nodes, c(1:3), 5))
 	
 	expect_null(c9)
 	expect_true(nchar(paste(c10, collapse='\n')) > 0)

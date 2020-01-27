@@ -39,7 +39,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	
 	# STEP: get valid queries
 	# columns: id, startLine, scriptNum, code
-	valid.queries <- .get.valid.line(pos.nodes, query, script.num)
+	valid.queries <- .get.valid.query.line(pos.nodes, query, script.num)
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
@@ -105,7 +105,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 #' returned columns: id, startLine, scriptNum, code
 #'
 #' @noRd
-.get.valid.line <- function(pos.nodes, query, script.num)
+.get.valid.query.line <- function(pos.nodes, query, script.num)
 {
 	# CASE: no queries
 	if(is.null(query))
@@ -231,7 +231,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	query <- .get.query.var(query.vars, val.type = val.type, script.num = script.num)
 	
 	# STEP: get valid queries
-	valid.queries <- .get.valid.var(pos.vars, query, forward = FALSE)
+	valid.queries <- .get.valid.query.var(pos.vars, query, forward = FALSE)
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
@@ -382,7 +382,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' function shared with debug.lineage
 #'
 #' @noRd
-.get.valid.var <- function(pos.nodes, query, forward = FALSE)
+.get.valid.query.var <- function(pos.nodes, query, forward = FALSE)
 {
 	# CASE: no queries
 	if(is.null(query))
@@ -608,7 +608,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 							start.line = start.line, script.num = script.num)
 	
 	# STEP: get valid queries
-	valid.queries <- .get.valid.var(pos.nodes, query, forward = forward)
+	valid.queries <- .get.valid.query.var(pos.nodes, query, forward = forward)
 	
 	# CASE: no valid queries
 	# columns: d.id, name, valType, startLine, scriptNum
@@ -1324,7 +1324,7 @@ debug.warning <- function(..., all = FALSE)
 	num.warnings <- 1:nrow(warning.nodes)
 	row.names(warning.nodes) <- num.warnings
 	
-	valid.queries <- .get.valid.warn(warning.nodes, ..., all = all)
+	valid.queries <- .get.valid.query.warn(warning.nodes, ..., all = all)
 	
 	if(is.null(valid.queries))
 		return(invisible(NULL))
@@ -1338,7 +1338,7 @@ debug.warning <- function(..., all = FALSE)
 }
 
 #' @noRd
-.get.valid.warn <- function(warning.nodes, ..., all = FALSE)
+.get.valid.query.warn <- function(warning.nodes, ..., all = FALSE)
 {
 	if(all)
 		return(warning.nodes)

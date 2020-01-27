@@ -520,8 +520,8 @@ test_that(".get.query.var (invalid queries)",
 	expect_null(c4)
 })
 
-# .get.valid.var - all valid queries
-test_that(".get.valid.var (all valid queries)",
+# .get.valid.query.var - all valid queries
+test_that(".get.valid.query.var (all valid queries)",
 {
 	# POS.NODES
 	# cols: d.id, p.id, name, valType, startLine, scriptNum
@@ -575,41 +575,41 @@ test_that(".get.valid.var (all valid queries)",
 					 stringsAsFactors = FALSE)
 	
 	# CASES
-	c1 <- provDebugR:::.get.valid.var(p.full, q1, forward = FALSE)    # single data node for variable
-	c2 <- provDebugR:::.get.valid.var(p.full, q1, forward = TRUE)
-	c3 <- provDebugR:::.get.valid.var(p.vars, q1, forward = FALSE)
-	c4 <- provDebugR:::.get.valid.var(p.vars, q1, forward = TRUE)
+	c1 <- provDebugR:::.get.valid.query.var(p.full, q1, forward = FALSE)    # single data node for variable
+	c2 <- provDebugR:::.get.valid.query.var(p.full, q1, forward = TRUE)
+	c3 <- provDebugR:::.get.valid.query.var(p.vars, q1, forward = FALSE)
+	c4 <- provDebugR:::.get.valid.query.var(p.vars, q1, forward = TRUE)
 	
-	c5 <- provDebugR:::.get.valid.var(p.full, q2, forward = FALSE)    # multiple datas node for variable
-	c6 <- provDebugR:::.get.valid.var(p.full, q2, forward = TRUE)
-	c7 <- provDebugR:::.get.valid.var(p.vars, q2, forward = FALSE)
-	c8 <- provDebugR:::.get.valid.var(p.vars, q2, forward = TRUE)
+	c5 <- provDebugR:::.get.valid.query.var(p.full, q2, forward = FALSE)    # multiple datas node for variable
+	c6 <- provDebugR:::.get.valid.query.var(p.full, q2, forward = TRUE)
+	c7 <- provDebugR:::.get.valid.query.var(p.vars, q2, forward = FALSE)
+	c8 <- provDebugR:::.get.valid.query.var(p.vars, q2, forward = TRUE)
 	
-	c9 <- provDebugR:::.get.valid.var(p.full, q3, forward = FALSE)    # container query
-	c10 <- provDebugR:::.get.valid.var(p.full, q3, forward = TRUE)
-	c11 <- provDebugR:::.get.valid.var(p.vars, q3, forward = FALSE)
-	c12 <- provDebugR:::.get.valid.var(p.vars, q3, forward = TRUE)
+	c9 <- provDebugR:::.get.valid.query.var(p.full, q3, forward = FALSE)    # container query
+	c10 <- provDebugR:::.get.valid.query.var(p.full, q3, forward = TRUE)
+	c11 <- provDebugR:::.get.valid.query.var(p.vars, q3, forward = FALSE)
+	c12 <- provDebugR:::.get.valid.query.var(p.vars, q3, forward = TRUE)
 	
-	c13 <- provDebugR:::.get.valid.var(p.full, q4, forward = FALSE)   # type query
-	c14 <- provDebugR:::.get.valid.var(p.full, q4, forward = TRUE)
-	c15 <- provDebugR:::.get.valid.var(p.vars, q4, forward = FALSE)
-	c16 <- provDebugR:::.get.valid.var(p.vars, q4, forward = TRUE)
+	c13 <- provDebugR:::.get.valid.query.var(p.full, q4, forward = FALSE)   # type query
+	c14 <- provDebugR:::.get.valid.query.var(p.full, q4, forward = TRUE)
+	c15 <- provDebugR:::.get.valid.query.var(p.vars, q4, forward = FALSE)
+	c16 <- provDebugR:::.get.valid.query.var(p.vars, q4, forward = TRUE)
 	
-	c17 <- provDebugR:::.get.valid.var(p.full, q5, forward = FALSE)   # special valType query
-	c18 <- provDebugR:::.get.valid.var(p.full, q5, forward = TRUE)
-	c19 <- provDebugR:::.get.valid.var(p.vars, q5, forward = FALSE)
-	c20 <- provDebugR:::.get.valid.var(p.vars, q5, forward = TRUE)
+	c17 <- provDebugR:::.get.valid.query.var(p.full, q5, forward = FALSE)   # special valType query
+	c18 <- provDebugR:::.get.valid.query.var(p.full, q5, forward = TRUE)
+	c19 <- provDebugR:::.get.valid.query.var(p.vars, q5, forward = FALSE)
+	c20 <- provDebugR:::.get.valid.query.var(p.vars, q5, forward = TRUE)
 	
-	c21 <- provDebugR:::.get.valid.var(p.full, q6, forward = FALSE)   # line query is string, script num is string
-	c22 <- provDebugR:::.get.valid.var(p.full, q6, forward = TRUE)
-	c23 <- provDebugR:::.get.valid.var(p.vars, q6, forward = FALSE)
-	c24 <- provDebugR:::.get.valid.var(p.vars, q6, forward = TRUE)
+	c21 <- provDebugR:::.get.valid.query.var(p.full, q6, forward = FALSE)   # line query is string, script num is string
+	c22 <- provDebugR:::.get.valid.query.var(p.full, q6, forward = TRUE)
+	c23 <- provDebugR:::.get.valid.query.var(p.vars, q6, forward = FALSE)
+	c24 <- provDebugR:::.get.valid.query.var(p.vars, q6, forward = TRUE)
 	
-	c25 <- provDebugR:::.get.valid.var(p.full, q7, forward = FALSE)   # is data node, but not variable
-	c26 <- provDebugR:::.get.valid.var(p.full, q7, forward = TRUE)
+	c25 <- provDebugR:::.get.valid.query.var(p.full, q7, forward = FALSE)   # is data node, but not variable
+	c26 <- provDebugR:::.get.valid.query.var(p.full, q7, forward = TRUE)
 	
-	c27 <- provDebugR:::.get.valid.var(p.full, q8, forward = FALSE)   # NA for startLine and scriptNum
-	c28 <- provDebugR:::.get.valid.var(p.full, q8, forward = TRUE)
+	c27 <- provDebugR:::.get.valid.query.var(p.full, q8, forward = FALSE)   # NA for startLine and scriptNum
+	c28 <- provDebugR:::.get.valid.query.var(p.full, q8, forward = TRUE)
 	
 	# EXPECTED
 	# cols: d.id, name, valType, startLine, scriptNum
@@ -683,8 +683,8 @@ test_that(".get.valid.var (all valid queries)",
 	expect_equivalent(c28,e12)
 })
 
-# .get.valid.var - all invalid queries
-test_that(".get.valid.var (all invalid queries)",
+# .get.valid.query.var - all invalid queries
+test_that(".get.valid.query.var (all invalid queries)",
 {
 	# POS.NODES 
 	# cols: d.id, p.id, name, valType, startLine, scriptNum
@@ -734,41 +734,41 @@ test_that(".get.valid.var (all invalid queries)",
 					 stringsAsFactors = FALSE)
 	
 	# CASES
-	c1 <- provDebugR:::.get.valid.var(p.full, q1)         # no query
-	c2 <- provDebugR:::.get.valid.var(p.vars, q1)
+	c1 <- provDebugR:::.get.valid.query.var(p.full, q1)         # no query
+	c2 <- provDebugR:::.get.valid.query.var(p.vars, q1)
 	
 	c4 <- utils::capture.output(                          # data node with name does not exist
-		c3 <- provDebugR:::.get.valid.var(p.full, q2))
+		c3 <- provDebugR:::.get.valid.query.var(p.full, q2))
 	c6 <- utils::capture.output(
-		c5 <- provDebugR:::.get.valid.var(p.vars, q2))
+		c5 <- provDebugR:::.get.valid.query.var(p.vars, q2))
 	
 	c8 <- utils::capture.output(                          # is data node, but not variable
-		c7 <- provDebugR:::.get.valid.var(p.vars, q3))
+		c7 <- provDebugR:::.get.valid.query.var(p.vars, q3))
 	
 	c10 <- utils::capture.output(                         # invalid valType
-		c9 <- provDebugR:::.get.valid.var(p.full, q4))
+		c9 <- provDebugR:::.get.valid.query.var(p.full, q4))
 	c12 <- utils::capture.output(
-		c11 <- provDebugR:::.get.valid.var(p.vars, q4))
+		c11 <- provDebugR:::.get.valid.query.var(p.vars, q4))
 	
 	c14 <- utils::capture.output(                         # invalid start lines
-		c13 <- provDebugR:::.get.valid.var(p.full, q5))
+		c13 <- provDebugR:::.get.valid.query.var(p.full, q5))
 	c16 <- utils::capture.output(
-		c15 <- provDebugR:::.get.valid.var(p.vars, q5))
+		c15 <- provDebugR:::.get.valid.query.var(p.vars, q5))
 	
 	c18 <- utils::capture.output(                         # invalid script num
-		c17 <- provDebugR:::.get.valid.var(p.full, q6))
+		c17 <- provDebugR:::.get.valid.query.var(p.full, q6))
 	c20 <- utils::capture.output(
-		c19 <- provDebugR:::.get.valid.var(p.vars, q6))
+		c19 <- provDebugR:::.get.valid.query.var(p.vars, q6))
 	
 	c22 <- utils::capture.output(                         # start line is not an integer
-		c21 <- provDebugR:::.get.valid.var(p.full, q7))
+		c21 <- provDebugR:::.get.valid.query.var(p.full, q7))
 	c24 <- utils::capture.output(
-		c23 <- provDebugR:::.get.valid.var(p.vars, q7))
+		c23 <- provDebugR:::.get.valid.query.var(p.vars, q7))
 	
 	expect_warning(                                       # script num is not an integer
-		c25 <- provDebugR:::.get.valid.var(p.full, q8))
+		c25 <- provDebugR:::.get.valid.query.var(p.full, q8))
 	expect_warning(
-		c26 <- provDebugR:::.get.valid.var(p.vars, q8))
+		c26 <- provDebugR:::.get.valid.query.var(p.vars, q8))
 	
 	# TEST: returned values
 	expect_null(c1)
@@ -801,8 +801,8 @@ test_that(".get.valid.var (all invalid queries)",
 	expect_true(nchar(paste(c24, collapse='\n')) > 0)
 })
 
-# .get.valid.var - some valid, some invalid queries
-test_that(".get.valid.var (some valid, some invalid queries)",
+# .get.valid.query.var - some valid, some invalid queries
+test_that(".get.valid.query.var (some valid, some invalid queries)",
 {
 	# POS.NODES 
 	# cols: d.id, p.id, name, valType, startLine, scriptNum
@@ -841,30 +841,30 @@ test_that(".get.valid.var (some valid, some invalid queries)",
 					 stringsAsFactors = FALSE)
 	
 	# CASES
-	c1 <- provDebugR:::.get.valid.var(p.full, q1, forward = FALSE)    # start line queries
-	c2 <- provDebugR:::.get.valid.var(p.full, q1, forward = TRUE)
-	c3 <- provDebugR:::.get.valid.var(p.vars, q1, forward = FALSE)
-	c4 <- provDebugR:::.get.valid.var(p.vars, q1, forward = TRUE)
+	c1 <- provDebugR:::.get.valid.query.var(p.full, q1, forward = FALSE)    # start line queries
+	c2 <- provDebugR:::.get.valid.query.var(p.full, q1, forward = TRUE)
+	c3 <- provDebugR:::.get.valid.query.var(p.vars, q1, forward = FALSE)
+	c4 <- provDebugR:::.get.valid.query.var(p.vars, q1, forward = TRUE)
 	
-	c5 <- provDebugR:::.get.valid.var(p.full, q2, forward = FALSE)    # container queries
-	c6 <- provDebugR:::.get.valid.var(p.full, q2, forward = TRUE)
-	c7 <- provDebugR:::.get.valid.var(p.vars, q2, forward = FALSE)
-	c8 <- provDebugR:::.get.valid.var(p.vars, q2, forward = TRUE)
+	c5 <- provDebugR:::.get.valid.query.var(p.full, q2, forward = FALSE)    # container queries
+	c6 <- provDebugR:::.get.valid.query.var(p.full, q2, forward = TRUE)
+	c7 <- provDebugR:::.get.valid.query.var(p.vars, q2, forward = FALSE)
+	c8 <- provDebugR:::.get.valid.query.var(p.vars, q2, forward = TRUE)
 	
-	c9 <- provDebugR:::.get.valid.var(p.full, q3, forward = FALSE)    # type queries
-	c10 <- provDebugR:::.get.valid.var(p.full, q3, forward = TRUE)
-	c11 <- provDebugR:::.get.valid.var(p.vars, q3, forward = FALSE)
-	c12 <- provDebugR:::.get.valid.var(p.vars, q3, forward = TRUE)
+	c9 <- provDebugR:::.get.valid.query.var(p.full, q3, forward = FALSE)    # type queries
+	c10 <- provDebugR:::.get.valid.query.var(p.full, q3, forward = TRUE)
+	c11 <- provDebugR:::.get.valid.query.var(p.vars, q3, forward = FALSE)
+	c12 <- provDebugR:::.get.valid.query.var(p.vars, q3, forward = TRUE)
 	
-	c13 <- provDebugR:::.get.valid.var(p.full, q4, forward = FALSE)   # special valType queries
-	c14 <- provDebugR:::.get.valid.var(p.full, q4, forward = TRUE)
-	c15 <- provDebugR:::.get.valid.var(p.vars, q4, forward = FALSE)
-	c16 <- provDebugR:::.get.valid.var(p.vars, q4, forward = TRUE)
+	c13 <- provDebugR:::.get.valid.query.var(p.full, q4, forward = FALSE)   # special valType queries
+	c14 <- provDebugR:::.get.valid.query.var(p.full, q4, forward = TRUE)
+	c15 <- provDebugR:::.get.valid.query.var(p.vars, q4, forward = FALSE)
+	c16 <- provDebugR:::.get.valid.query.var(p.vars, q4, forward = TRUE)
 	
-	c17 <- provDebugR:::.get.valid.var(p.vars, q5, forward = FALSE)   # name queries
-	c18 <- provDebugR:::.get.valid.var(p.vars, q5, forward = TRUE)
-	c19 <- provDebugR:::.get.valid.var(p.full, q5, forward = FALSE)
-	c20 <- provDebugR:::.get.valid.var(p.full, q5, forward = TRUE)
+	c17 <- provDebugR:::.get.valid.query.var(p.vars, q5, forward = FALSE)   # name queries
+	c18 <- provDebugR:::.get.valid.query.var(p.vars, q5, forward = TRUE)
+	c19 <- provDebugR:::.get.valid.query.var(p.full, q5, forward = FALSE)
+	c20 <- provDebugR:::.get.valid.query.var(p.full, q5, forward = TRUE)
 	
 	# EXPECTED
 	# cols: d.id, name, valType, startLine, scriptNum
