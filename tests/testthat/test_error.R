@@ -20,6 +20,23 @@ test_that("debug.error - no/empty provenance",
 	expect_error(debug.error())
 })
 
+# no data nodes
+test_that("debug.error - no data nodes",
+{
+	skip("debug.error - no data nodes")
+	
+	json <- system.file("testdata", "noDataNodes.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning due to prov folder deleted
+	
+	c2 <- utils::capture.output(c1 <- debug.error())
+	c2 <- paste(c2, collapse = '\n')
+	
+	expect_null(c1)              # check the returned value
+	expect_true(nchar(c2) > 0)   # check that a message exists
+})
+
 # no error
 test_that("debug.error - no error",
 {

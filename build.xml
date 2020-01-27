@@ -58,6 +58,11 @@
 			<param name="theFile" value="noVars.R"/>
 		</antcall>
 		
+		<!-- no data nodes -->
+		<antcall target="json">
+			<param name="theFile" value="noDataNodes.R"/>
+		</antcall>
+		
 		<!-- type changes -->
 		<antcall target="json">
 			<param name="theFile" value="typeChanges.R"/>

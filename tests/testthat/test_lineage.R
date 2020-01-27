@@ -187,7 +187,21 @@ test_that("debug.lineage - no/empty provenance",
 	expect_error(provDebugR::debug.lineage("x"))
 })
 
-# no data nodes - is it possible to get a json like that?
+# no data nodes
+test_that("debug.lineage - no data nodes",
+{
+	skip("debug.lineage - no data nodes")
+	
+	json <- system.file("testdata", "noDataNodes.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning is due to deleted prov folder
+	
+	c2 <- utils::capture.output(c1 <- debug.variable(all = TRUE))
+	
+	expect_null(c1)
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+})
 
 
 # debug.lineage tests

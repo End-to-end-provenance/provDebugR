@@ -254,7 +254,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' @noRd
 .get.pos.var <- function(data.nodes)
 {
-	# CASE: no variables
+	# CASE: no data nodes/variables
 	if(nrow(data.nodes) == 0)
 		return(NULL)
 	
@@ -591,7 +591,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	# columns: d.id, p.id, name, valType, startLine, scriptNum
 	pos.nodes <- .get.pos.var(.debug.env$data.nodes)
 	
-	# CASE: no data nodes (not entirely sure if this can happen)
+	# CASE: no data nodes
 	if(is.null(pos.nodes)) {
 		cat("There are no data nodes.\n")
 		return(invisible(NULL))
@@ -1187,7 +1187,7 @@ debug.error <- function(stack.overflow = FALSE)
 	
 	# case: no error
 	if(nrow(error.node) == 0) {
-		cat("There were no errors in this script!")
+		cat("There are no errors in this script.")
 		return(invisible(NULL))
 	}
 	
@@ -1312,11 +1312,12 @@ debug.warning <- function(..., all = FALSE)
 		stop("There is no provenance.")
 	
 	# get all warning nodes
-	warning.nodes <- .debug.env$data.nodes[.debug.env$data.nodes$name == "warning.msg", 
-										   c("id", "value")]
+	warning.nodes <- .debug.env$data.nodes
+	warning.nodes <- warning.nodes[warning.nodes$name == "warning.msg", 
+								   c("id", "value")]
 	
 	if(nrow(warning.nodes) == 0) {
-		cat("There were no warnings in this script!")
+		cat("There are no warnings in this script.")
 		return(invisible(NULL))
 	}
 	

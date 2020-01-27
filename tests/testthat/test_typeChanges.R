@@ -93,6 +93,22 @@ test_that("debug.type.changes - no/empty provenance",
 	expect_error(debug.type.changes())
 })
 
+# no data nodes
+test_that("debug.type.changes - no data nodes",
+{
+	skip("debug.type.changes - no data nodes")
+	
+	json <- system.file("testdata", "noDataNodes.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning is due to deleted prov folder
+	
+	c2 <- utils::capture.output(c1 <- debug.type.changes())
+	
+	expect_null(c1)
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+})
+
 # no variables
 test_that("debug.type.changes - no variables",
 {
