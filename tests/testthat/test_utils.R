@@ -129,8 +129,68 @@ test_that("Utility - .to.int",
 })
 
 # .find.num.loc
+test_that("Utility - .find.num.loc",
+{
+	# matching numbers
+	l1 <- as.integer(c(1:5))
+	
+	c1 <- provDebugR:::.find.num.loc(l1, 1L)
+	c2 <- provDebugR:::.find.num.loc(l1, 3L)
+	c3 <- provDebugR:::.find.num.loc(l1, 5L)
+	
+	expect_equal(c1, 1)
+	expect_equal(c2, 3)
+	expect_equal(c3, 5)
+	
+	# list has 1 number
+	c4 <- provDebugR:::.find.num.loc(1L, 2L)
+	expect_equal(c4, 1)
+	
+	# number can not be found
+	l2 <- as.integer(c(11,13,15,17,19))
+	
+	c5 <- provDebugR:::.find.num.loc(l2, 12L)
+	c6 <- provDebugR:::.find.num.loc(l2, 18L)
+	
+	expect_equal(c5, 1)
+	expect_equal(c6, 4)
+})
 
 # .find.p.id
+test_that("Utility - .find.p.id",
+{
+	json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
+	
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
+	
+	# node edges
+	proc.data <- provDebugR:::.debug.env$proc.data
+	data.proc <- provDebugR:::.debug.env$data.proc
+	
+	# Cases
+	c1 <- "d4"    # 1 node found (from output edge only)
+	c2 <- "d14"   # 1 node found (from input edge only)
+	c3 <- "d1"    # 1 node found (has both output and input edges)
+	c4 <- "d2"    # multiple nodes found (multiple input edges)
+	
+	c1 <- provDebugR:::.find.p.id(c1, proc.data, data.proc)
+	c2 <- provDebugR:::.find.p.id(c2, proc.data, data.proc)
+	c3 <- provDebugR:::.find.p.id(c3, proc.data, data.proc)
+	c4 <- provDebugR:::.find.p.id(c4, proc.data, data.proc)
+	
+	# Expected
+	e1 <- "p5"
+	e2 <- "p15"
+	e3 <- "p3"
+	e4 <- c("p4", "p6")
+	
+	# Test
+	expect_equivalent(c1, e1)
+	expect_equivalent(c2, e2)
+	expect_equivalent(c3, e3)
+	expect_equivalent(c4, e4)
+})
 
 # .remove.na.rows
 test_that("Utility - .remove.na.rows",
