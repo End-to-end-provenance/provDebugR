@@ -121,9 +121,9 @@ test_that("debug.variable - no/empty provenance",
 })
 
 # no data nodes
-test_that("debug.variable - no variables",
+test_that("debug.variable - no data nodes",
 {
-	skip("debug.variable - no variables")
+	skip("debug.variable - no data nodes")
 	
 	json <- system.file("testdata", "noDataNodes.json", package = "provDebugR")
 	
