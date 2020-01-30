@@ -271,12 +271,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		d.fields <- data.nodes[i, ]
 		d.id <- d.fields$`d.id`
 		
-		# try to get the procedure node that assigned/produced the data node
-		p.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == d.id]
-		
-		# alternatively, get the procedure node that first used the data (e.g. url)
-		if(length(p.id) == 0)
-			p.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == d.id]
+		# try to get the procedure node that produced/used the data node (could be multiple)
+		p.id <- .get.p.id(d.id, .debug.env$proc.data, .debug.env$data.proc)
 		
 		# get startLine and scriptNum from proc nodes table, 
 		# cbind with row from data nodes table
@@ -553,23 +549,32 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		valType.fields <- provParseR::get.val.type(.debug.env$prov, data.fields$id)
 		valType.fields <- valType.fields[ , c("container", "dimension", "type")]
 		
-		# STEP: get corresponding procedure node id
-		p.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == data.fields$id]
-		
-		if(length(p.id) == 0)
-			p.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == data.fields$id]
+		# STEP: get corresponding procedure node id (could have mulitple)
+		p.id <- .get.p.id(data.fields$id, .debug.env$proc.data, .debug.env$data.proc)
 		
 		# STEP: get fields from proc nodes
 		# columns: scriptNum, startLine, code
-		proc.fields <- pos.proc[pos.proc$id == p.id, c("scriptNum", "startLine", "name")]
-		colnames(proc.fields) <- c("scriptNum", "startLine", "code")
+		# cbind with data.fields and valType.fields
+		row <- lapply(p.id, function(id)
+		{
+			proc.fields <- pos.proc[pos.proc$id == id, c("scriptNum", "startLine", "name")]
+			colnames(proc.fields) <- c("scriptNum", "startLine", "code")
+			
+			# cbind with data.fields and valType.fields
+			# remove id (first) column
+			fields <- cbind(data.fields, valType.fields, proc.fields, stringsAsFactors = FALSE)
+			fields <- fields[ ,-1]
+			
+			return(fields)
+		})
 		
-		# STEP: cbind columns
-		# remove id (first) column
-		fields <- cbind(data.fields, valType.fields, proc.fields, stringsAsFactors = FALSE)
-		fields <- fields[ ,-1]
+		# if there are multiple rows, combine into data frame
+		if(length(row) == 1)
+			row <- row[[1]]
+		else
+			row <- .form.df(row)
 		
-		return(fields)
+		return(row)
 	})
 	
 	# STEP: bind rows into data frame, return
@@ -813,11 +818,8 @@ debug.type.changes <- function(var = NA)
 		val.type <- provParseR::get.val.type(.debug.env$prov, node.id = data.id)
 		val.type <- val.type[ , c("container", "dimension", "type")]
 		
-		# get proc node which either set or used the data node
-		proc.id <- .debug.env$proc.data$activity[.debug.env$proc.data$entity == data.id]
-		
-		if(length(proc.id) == 0)
-			proc.id <- .debug.env$data.proc$activity[.debug.env$data.proc$entity == data.id]
+		# get proc node which either set or first used the data node
+		proc.id <- .get.p.id(data.id, .debug.env$proc.data, .debug.env$data.proc)[1]
 		
 		# extract script num, line num, code from proc nodes
 		proc.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == proc.id, 
@@ -1280,7 +1282,7 @@ debug.state <- function(..., script.num = 1)
 			# as there could be multiple, we need to use the given procedure node id
 			# to get the closest one that is <= the given procedure node id.
 			# e.g. for variables read into script multiple times
-			proc.id <- .find.p.id(d.id, proc.data, data.proc)
+			proc.id <- .get.p.id(d.id, proc.data, data.proc)
 			
 			if(length(proc.id) > 1)
 			{
@@ -1637,7 +1639,7 @@ debug.warning <- function(..., all = FALSE)
 #' @return The associated procedure node id, or a list of id if there are multiple.
 #'
 #' @noRd
-.find.p.id <- function(d.id, proc.data, data.proc)
+.get.p.id <- function(d.id, proc.data, data.proc)
 {
 	# Search output edges first, where the data node is produced.
 	# There should only ever be 1, if any

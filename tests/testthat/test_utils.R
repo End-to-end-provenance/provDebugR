@@ -156,8 +156,8 @@ test_that("Utility - .find.num.loc",
 	expect_equal(c6, 4)
 })
 
-# .find.p.id
-test_that("Utility - .find.p.id",
+# .get.p.id
+test_that("Utility - .get.p.id",
 {
 	json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
 	
@@ -174,10 +174,10 @@ test_that("Utility - .find.p.id",
 	c3 <- "d1"    # 1 node found (has both output and input edges)
 	c4 <- "d2"    # multiple nodes found (multiple input edges)
 	
-	c1 <- provDebugR:::.find.p.id(c1, proc.data, data.proc)
-	c2 <- provDebugR:::.find.p.id(c2, proc.data, data.proc)
-	c3 <- provDebugR:::.find.p.id(c3, proc.data, data.proc)
-	c4 <- provDebugR:::.find.p.id(c4, proc.data, data.proc)
+	c1 <- provDebugR:::.get.p.id(c1, proc.data, data.proc)
+	c2 <- provDebugR:::.get.p.id(c2, proc.data, data.proc)
+	c3 <- provDebugR:::.get.p.id(c3, proc.data, data.proc)
+	c4 <- provDebugR:::.get.p.id(c4, proc.data, data.proc)
 	
 	# Expected
 	e1 <- "p5"
