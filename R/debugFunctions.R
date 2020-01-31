@@ -951,7 +951,14 @@ debug.state <- function(..., script.num = 1)
 	return(states)
 }
 
-#' returned: list of tables: proc.nodes, data.nodes, proc.data, data.proc
+#' Returns a list of node and edge tables, with non-variables,
+#' and edges to and from non-variables removed. 
+#' Procedure nodes that do not have references to and from variables
+#' are also removed.
+#' Returned tables: proc.nodes, data.nodes, proc.data, data.proc
+#'
+#' @return The tables proc.nodes, data.nodes, proc.data, data.proc, in a list,
+#'		   with all non-variables and references to and from non-variables removed.
 #'
 #' @noRd
 .get.state.tables <- function()
@@ -966,26 +973,20 @@ debug.state <- function(..., script.num = 1)
 	
 	# get table of variables (data nodes)
 	# keep columns: id, name, value, fromEnv
-	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
-	data.nodes <- data.nodes[c("id", "name", "value", "fromEnv"), ]
+	data.nodes <- data.nodes[(data.nodes$type == "Data" | data.nodes$type == "Snapshot"), ]
+	data.nodes <- data.nodes[ , c("id", "name", "value", "fromEnv")]
 	
-	# get all queriable operation nodes
+	# get all operation nodes
 	proc.nodes <- .debug.env$proc.nodes
-	proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
-	proc.nodes <- proc.nodes[ , c("id", "scriptNum", "startLine", "name")]
-	names(proc.nodes) <- c("id", "scriptNum", "startLine", "code")
 	
 	# get edges
 	proc.data <- .debug.env$proc.data
 	data.proc <- .debug.env$data.proc
 	
-	# case: no non-variables
-	if(length(non.vars) == 0)
-		return(list(proc.nodes, data.nodes, proc.data, data.proc))
-	
-	# for each procedure (operation) node, remove edges to and from non-variables.
+	# for each procedure node, remove edges to and from non-variables.
 	# remove the procedure node if all references, if any, are to non-variables
 	# these vectors are to keep track of which indices from which table to remove.
+	# we do this for non-operation nodes as well to remove edges to non-variables, if any.
 	remove.proc <- c()
 	remove.proc.data <- c()
 	remove.data.proc <- c()
@@ -1033,11 +1034,14 @@ debug.state <- function(..., script.num = 1)
 				remove.data.proc <<- append(remove.data.proc, remove.dp.indices)
 		}
 		
-		# if procedure node has no output or input edges, 
+		# if procedure node is not an operation,
+		# has no output or input edges, 
 		# or all output and input edges are to non-variables,
 		# record index of procedure node as it is to be removed.
-		if((nrow(pd) == 0 && nrow(dp) == 0) || 
-		   (length(remove.pd.indices) == nrow(pd) && length(remove.dp.indices) == nrow(dp))) {
+		if((proc.nodes$type[proc.nodes$id == p.id] != "Operation") ||
+		   (nrow(pd) == 0 && nrow(dp) == 0) ||
+		   (length(remove.pd.indices) == nrow(pd) && length(remove.dp.indices) == nrow(dp))
+		){
 			remove.proc <<- append(remove.proc, i)
 		}
 	})
@@ -1050,8 +1054,26 @@ debug.state <- function(..., script.num = 1)
 	if(length(remove.data.proc) > 0)
 		data.proc <- data.proc[-remove.data.proc, ]
 	
+	# rename rows
+	if(nrow(data.nodes) > 0)
+		row.names(data.nodes) <- c(1:nrow(data.nodes))
+	if(nrow(proc.nodes) > 0)
+		row.names(proc.nodes) <- c(1:nrow(proc.nodes))
+	if(nrow(proc.data) > 0)
+		row.names(proc.data) <- c(1:nrow(proc.data))
+	if(nrow(data.proc) > 0)
+		row.names(data.proc) <- c(1:nrow(data.proc))
+	
+	# Now that edges are removed, extract columns
+	# columns: id, scriptNum, startLine, code
+	proc.nodes <- proc.nodes[ , c("id", "scriptNum", "startLine", "name")]
+	names(proc.nodes) <- c("id", "scriptNum", "startLine", "code")
+	
 	# bind into list and return
-	return(list(proc.nodes, data.nodes, proc.data, data.proc))
+	tables <- list(proc.nodes, data.nodes, proc.data, data.proc)
+	names(tables) <- c("proc.nodes", "data.nodes", "proc.data", "data.proc")
+	
+	return(tables)
 }
 
 #' returned columns: startLine, scriptNum
@@ -1295,7 +1317,7 @@ debug.state <- function(..., script.num = 1)
 			
 			# get procedure node fields
 			p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes == proc.id, ]
-			p.fields <- proc.fields[ , c("scriptNum", "startLine")]
+			p.fields <- p.fields[ , c("scriptNum", "startLine")]
 		}
 		
 		# combine fields into a row
