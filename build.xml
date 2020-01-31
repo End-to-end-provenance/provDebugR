@@ -94,6 +94,11 @@
 		<delete dir="inst/testdata/prov_missingScripts/data"/>
 		<delete dir="inst/testdata/prov_missingScripts/debug"/>
 		
+		<!-- test case for .get.state.tables in debug.state -->
+		<antcall target="json">
+			<param name="theFile" value="getStateTables.R"/>
+		</antcall>
+		
 	</target>
 	
 	
