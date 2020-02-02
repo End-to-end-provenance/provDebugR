@@ -1076,10 +1076,16 @@ debug.state <- function(..., script.num = 1)
 	return(tables)
 }
 
-#' returned columns: startLine, scriptNum
+#' Returns a table of valid queries.
+#' columns: startLine, scriptNum
 #'
+#' @param proc.nodes The table of all possible procedure nodes.
+#' @param ... The user's line queries
+#' @param script.num The script number to be queried.
+#' 
+#' @return The table of valid queries.
 #' @noRd
-.get.valid.query.state <- function(pos.nodes, ..., script.num = 1)
+.get.valid.query.state <- function(proc.nodes, ..., script.num = 1)
 {
 	# Get user's query
 	query <- .flatten.args(...)
@@ -1102,6 +1108,7 @@ debug.state <- function(..., script.num = 1)
 	
 	# check if there are proc nodes in that script
 	pos.proc <- proc.nodes[proc.nodes$scriptNum == script.num, ]
+	pos.proc <- .remove.na.rows(pos.proc)
 	
 	if(nrow(pos.proc) == 0) {
 		cat(paste("Script number", script.num, "is not a possible input.\n"))
@@ -1111,7 +1118,7 @@ debug.state <- function(..., script.num = 1)
 	# For each query, ensure that it is an integer
 	query <- lapply(query, function(line) 
 	{
-		line.int <- .to.int(line)
+		line <- .to.int(line)
 		
 		if(is.null(line) || is.na(line))
 			return(NULL)
@@ -1119,17 +1126,21 @@ debug.state <- function(..., script.num = 1)
 		return(line)
 	})
 	
-	query <- as.vector(unique(.remove.null(query)))
+	# remove invalid queries
+	query <- .remove.null(query)
 	
-	if(is.null(query)) {
+	if(length(query) == 0) {
 		cat("No valid queries.\n\n", call. = FALSE)
 		return(invisible(NULL))
 	}
 	
+	# get unique queries
+	query <- unique(as.vector(unlist(query)))
+	
 	# Bind valid queries to script num
-	queries <- data.frame(startLine = query,
-						  scriptNum = rep(script.num, length(query)),
+	queries <- data.frame(query, rep(script.num, length(query)),
 						  stringsAsFactors = FALSE)
+	colnames(queries) <- c("startLine", "scriptNum")
 	return(queries)
 }
 

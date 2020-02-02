@@ -60,7 +60,7 @@ test_that("debug.state - no variables",
 
 # helper functions to test
 # .get.state.tables
-# .get.valid.query.state
+
 # .get.closest.proc
 # .get.last.var
 # .get.state
@@ -136,4 +136,73 @@ test_that("debug.state - .get.state.tables",
 	
 	# skip test at beginning of test_that block
 	skip(".get.state.tables - no data nodes")
+})
+
+# .get.valid.query.state
+test_that("debug.state - .get.valid.query.state",
+{
+	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	provDebugR:::.clear()
+	prov.debug.file(json)
+	
+	proc.nodes <- provDebugR:::.debug.env$proc.nodes
+	
+	# CASES
+	c1 <- provDebugR:::.get.valid.query.state(            # 1 valid query
+			proc.nodes, 3L, script.num = 1)
+	c2 <- provDebugR:::.get.valid.query.state(            # multiple queries, with repeated
+			proc.nodes, 3L, 5L, 3, script.num = 1)
+	c3 <- provDebugR:::.get.valid.query.state(            # integer queries as different types
+			proc.nodes, 3L, 5, "7", script.num = 1)
+	c4 <- provDebugR:::.get.valid.query.state(            # different (valid) script number
+			proc.nodes, 3L, 5, "7", script.num = 3)
+	c5 <- provDebugR:::.get.valid.query.state(            # valid script number as a string
+			proc.nodes, 3L, 5, script.num = "3")
+	c6 <- provDebugR:::.get.valid.query.state(            # mix of valid and invalid queries
+			proc.nodes, 3, 5.5, 7L, script.num = 3)
+	
+	c7 <- provDebugR:::.get.valid.query.state(            # no queries
+			proc.nodes, script.num = 1)
+	expect_warning(                                       # multiple script numbers
+		c8 <- provDebugR:::.get.valid.query.state(
+			proc.nodes, 3L, 5, "7", script.num = c(1,2)))
+	expect_warning(                                       # script number is not an integer
+		c9 <- provDebugR:::.get.valid.query.state(
+			proc.nodes, 3L, 5, script.num = 2.5))
+	expect_warning(                                       # script number is NA
+		c10 <- provDebugR:::.get.valid.query.state(
+			proc.nodes, 3L, 5, script.num = NA))
+	
+	c12 <- utils::capture.output(                         # invalid queries
+		c11 <- provDebugR:::.get.valid.query.state(
+			proc.nodes, "invalid", 5.5, TRUE, NA, script.num = 3))
+	c14 <- utils::capture.output(                         # invalid script number
+		c13 <- provDebugR:::.get.valid.query.state(
+			proc.nodes, 5L , script.num = 10))
+	
+	# EXPECTED
+	e1 <- data.frame(startLine = 3L, scriptNum = 1L)                     # 1 valid query
+	e2 <- data.frame(startLine = c(3L,5L), scriptNum = c(1L,1L))         # multiple queries
+	e3 <- data.frame(startLine = c(3L,5L,7L), scriptNum = c(1L,1L,1L))   # integer queries as different types
+	e4 <- data.frame(startLine = c(3L,5L,7L), scriptNum = c(3L,3L,3L))   # different (valid) script number
+	e5 <- data.frame(startLine = c(3L,5L), scriptNum = c(3L,3L))         # valid script number as a string
+	e6 <- data.frame(startLine = c(3L,7L), scriptNum = c(3L,3L))         # mix of valid and invalid queries
+	
+	# TEST
+	expect_equivalent(c1, e1)   # 1 valid query
+	expect_equivalent(c2, e2)   # multiple queries
+	expect_equivalent(c3, e3)   # integer queries as different types
+	expect_equivalent(c4, e4)   # different (valid) script number
+	expect_equivalent(c5, e5)   # valid script number as a string
+	expect_equivalent(c6, e6)   # mix of valid and invalid queries
+	
+	expect_null(c7)        # no queries
+	expect_null(c8)        # multiple script numbers
+	expect_null(c9)        # script number is not an integer
+	expect_null(c10)       # script number is NA
+	
+	expect_null(c11)                                      # invalid queries
+	expect_true(nchar(paste(c12, collapse = '\n')) > 0)
+	expect_null(c13)                                      # invalid script number
+	expect_true(nchar(paste(c14, collapse = '\n')) > 0)
 })
