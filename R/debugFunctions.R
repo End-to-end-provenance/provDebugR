@@ -838,6 +838,7 @@ debug.type.changes <- function(var = NA)
 
 # === STATE ================================================================== #
 
+# TO CHANGE
 #' assumes that the line had been executed
 #' script num ignored if no line 
 #' @export
@@ -1079,13 +1080,12 @@ debug.state <- function(..., script.num = 1)
 #' Returns a table of valid queries.
 #' columns: startLine, scriptNum
 #'
-#' @param proc.nodes The table of all possible procedure nodes.
 #' @param ... The user's line queries
 #' @param script.num The script number to be queried.
 #' 
 #' @return The table of valid queries.
 #' @noRd
-.get.valid.query.state <- function(proc.nodes, ..., script.num = 1)
+.get.valid.query.state <- function(..., script.num = 1)
 {
 	# Get user's query
 	query <- .flatten.args(...)
@@ -1107,7 +1107,8 @@ debug.state <- function(..., script.num = 1)
 	}
 	
 	# check if there are proc nodes in that script
-	pos.proc <- proc.nodes[proc.nodes$scriptNum == script.num, ]
+	pos.proc <- .debug.env$proc.nodes
+	pos.proc <- pos.proc[pos.proc$scriptNum == script.num, ]
 	pos.proc <- .remove.na.rows(pos.proc)
 	
 	if(nrow(pos.proc) == 0) {
@@ -1144,84 +1145,46 @@ debug.state <- function(..., script.num = 1)
 	return(queries)
 }
 
-#' get closest procedure node id with line number <= queried line number
-#' returns p0 for pre-existing data nodes (where fromEnv == TRUE)
+#' Get closest procedure node id with line number <= queried line number
+#' Returns p0 if a procedure node is not found.
+#'
+#' @param line The queried line number.
+#' @param script.num The queried script number. Guarenteed to have associated procedure nodes.
+#'
 #' @noRd
-.get.closest.proc <- function(proc.nodes, query)
-{
-	line <- query$startLine
-	script.num <- query$scriptNum
+.get.closest.proc <- function(line, script.num)
+{	
+	# Get list of all possible lines for the specified script
+	proc.nodes <- .debug.env$proc.nodes
+	proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
 	
-	# get proc nodes for queried script
 	script.proc <- proc.nodes[proc.nodes$scriptNum == script.num, ]
 	
-	# Try to get the procedure node referenced by queried line
-	proc <- script.proc[script.proc$startLine == line, ]
+	# Find the index of where the queried line falls right after in the list of
+	# line numbers of the script, or 0 if the queried line falls before them. 
+	script.index <- .find.num.loc(script.proc$startLine, line)
 	
-	# Case: line number can be found
-	# Since there could be multiple proc nodes on one line,
-	# return the proc node with the highest proc node id.
-	# columns: id, scriptNum, startLine, code, nodes
-	if(nrow(proc) > 0) {
-		proc <- proc[nrow(proc), c("id", "scriptNum", "startLine", "code")]
-		proc <- cbind(proc, notes = "", stringsAsFactors = FALSE)
-		return(proc)
-	}
-	
-	# Case: line number can not be found
-	# Need to find where the queried line number fits 
-	# into the list of possible line numbers
-	pos.lines <- script.proc$startLine
-	
-	# Case: line number < line number of the first proc node in script
-	# Find where the first procedure node of script fall in the table of
-	# all possible procedure nodes. Then return the one above it, 
-	# or "p0" if reached the top of the table
-	if(line < pos.lines[1])
+	# Case: 0 (line falls before the list of numbers in the script)
+	# Returns the p.id of the node before the first node of the script,
+	# or 'p0' if the top of the procedure nodes table has been reached.
+	if(script.index == 0)
 	{
-		index <- c(1:nrow(proc.nodes))[proc.nodes$id == script.proc$id[1]]
-		index <- index - 1
+		proc.index <- c(1:nrow(proc.nodes))[proc.nodes$id == script.proc$id[1]]
+		proc.index <- proc.index - 1
 		
-		# at beginning of execution
-		if(index == 0) {
-			id <- "p0"
-			notes <- "At the beginning of execution."
-		}
-		else {
-			id <- proc.nodes$id[index]
-			notes <- paste("At the beginning of script ", script.num, ".", sep='')
-		}
-	}
-	# Case: line number > line number of last proc node in script
-	else if(line > pos.lines[length(pos.lines)])
-	{
-		id <- script.proc$id[nrow(script.proc)]
+		if(proc.index == 0)
+			return('p0')
 		
-		# note that the user is given state at end of execution if script.num is 1
-		# otherwise, note that the state at the end of the script is given instead
-		if(script.num == 1)
-			notes <- "At the end of execution."
-		else
-			notes <- paste("At the end of script ", script.num, ".", sep='')
-	}
-	# Case: line number is in between possible lines
-	else
-	{
-		# get the line index where the queried line is after in sequence
-		index <- .find.num.loc(pos.lines, line)
-		
-		id <- script.proc$id[index]
-		notes <- ""
+		return(proc.nodes$id[index])
 	}
 	
-	# return
-	return(data.frame(id = id, 
-					  scriptNum = script.num, 
-					  startLine = line,
-					  code = "",
-					  notes = notes,
-					  stringsAsFactors = FALSE))
+	# Case: line falls somewhere in the list or after it.
+	return(script.proc$id[script.index])
 }
+
+
+
+# TO CHANGE
 
 #' @noRd
 .get.last.var <- function(p.id, data.nodes, proc.data, data.proc)
