@@ -167,6 +167,15 @@ test_that("Utility - .find.num.loc",
 	expect_equal(c8, 5)
 	expect_equal(c9, 8)
 	expect_equal(c10, 8)
+	
+	# out of bounds
+	l4 <- as.integer(c(41,43,45))
+	
+	c11 <- provDebugR:::.find.num.loc(l4, 35L)
+	c12 <- provDebugR:::.find.num.loc(l4, 50L)
+	
+	expect_equal(c11, 0)
+	expect_equal(c12, 3)
 })
 
 # .get.p.id

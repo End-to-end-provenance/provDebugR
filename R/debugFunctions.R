@@ -1630,7 +1630,7 @@ debug.warning <- function(..., all = FALSE)
 	return(arg.int)
 }
 
-#' Finds the location of a number within an ordered list of unique numbers.
+#' Finds the location of a number within an ordered list of numbers.
 #'
 #' @param num The number. Guarenteed to fall within the list.
 #' @return The index of the given list where the number falls right after.
@@ -1641,15 +1641,26 @@ debug.warning <- function(..., all = FALSE)
 	# tries to find the number within the list
 	index <- c(1:length(nums.list))[nums.list == num]
 	
-	# if found, this returns the last index if there are multiple indices.
+	# Case: if found, this returns the last index if there are multiple indices.
 	if(length(index) > 0)
 		return(index[length(index)])
 	
-	# if exact match can not be found, find the closest index where
-	# number in list < num
+	# Case: Out of bounds
+	# if number falls before the numbers in the list, return 0
+	# if number falls after the numbers in the list, return the last index of the list.
+	if(num < nums.list[1])
+		return(0)
+	
+	last.index <- length(nums.list)
+	
+	if(num > nums.list[last.index])
+		return(last.index)
+	
+	# Case: in between numbers in the list
+	# find the closest index where number in list < num
 	# uses binary search	
 	low.index <- 1
-	high.index <- length(nums.list)
+	high.index <- last.index
 	
 	while(high.index - low.index > 1)
 	{
