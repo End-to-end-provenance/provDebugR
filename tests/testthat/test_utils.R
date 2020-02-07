@@ -154,6 +154,19 @@ test_that("Utility - .find.num.loc",
 	
 	expect_equal(c5, 1)
 	expect_equal(c6, 4)
+	
+	# repeated numbers in list
+	l3 <- as.integer(c(21,21,23,25,25,27,27,27,29,29))
+	
+	c7 <- provDebugR:::.find.num.loc(l3, 22L)
+	c8 <- provDebugR:::.find.num.loc(l3, 26L)
+	c9 <- provDebugR:::.find.num.loc(l3, 27L)
+	c10 <- provDebugR:::.find.num.loc(l3, 28L)
+	
+	expect_equal(c7, 2)
+	expect_equal(c8, 5)
+	expect_equal(c9, 8)
+	expect_equal(c10, 8)
 })
 
 # .get.p.id

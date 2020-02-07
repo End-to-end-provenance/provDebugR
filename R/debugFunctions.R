@@ -1641,8 +1641,9 @@ debug.warning <- function(..., all = FALSE)
 	# tries to find the number within the list
 	index <- c(1:length(nums.list))[nums.list == num]
 	
+	# if found, this returns the last index if there are multiple indices.
 	if(length(index) > 0)
-		return(index)
+		return(index[length(index)])
 	
 	# if exact match can not be found, find the closest index where
 	# number in list < num
