@@ -13,13 +13,13 @@ test_that("debug.state - no/empty provenance",
 	
 	# initialisation not run
 	expect_false(provDebugR:::.debug.env$has.graph)
-	expect_error(debug.state(10))
+	expect_error(debug.state())
 	
 	# empty provenance
 	c0 <- system.file("testdata", "empty.json", package = "provDebugR")
 	expect_error(prov.debug.file(c0))
 	expect_false(provDebugR:::.debug.env$has.graph)
-	expect_error(debug.state(10))
+	expect_error(debug.state())
 })
 
 # no data nodes
@@ -38,7 +38,7 @@ test_that("debug.state - no data nodes",
 	expect_true(nchar(paste(c2, collapse='\n')) > 0)
 })
 
-# no data nodes
+# no variables
 test_that("debug.state - no variables",
 {	
 	json <- system.file("testdata", "noVars.json", package = "provDebugR")
@@ -52,19 +52,162 @@ test_that("debug.state - no variables",
 	expect_true(nchar(paste(c2, collapse='\n')) > 0)
 })
 
-# state at end:
-# multiple scrips (with error), no error
+# debug.state (line queries)
+test_that("debug.state (line queries)",
+{
+	json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning from deleted prov folder
+	
+	# CASES
+	# columns to be compared: name, scriptNum, startLine (cols 1,6,7)
+	c2 <- utils::capture.output(                      # no state
+		c1 <- debug.state(0))
+	c4 <- utils::capture.output(                      # no parameters given
+		c3 <- debug.state()[[1]][ , c(1,6,7)])
+	
+	c6 <- utils::capture.output(                      # var does not have its final value
+		c5 <- debug.state(20)[[1]][ , c(1,6,7)])
+	c8 <- utils::capture.output(                      # queried line does not have an operation
+		c7 <- debug.state('10')[[1]][ , c(1,6,7)])
+	
+	c10 <- utils::capture.output(                     # invalid line query
+		c9 <- debug.state(5.5)[[1]][ , c(1,6,7)])
+	c12 <- utils::capture.output(                     # multiple invalid line queries
+		c11 <- debug.state(5.5,NA)[[1]][ , c(1,6,7)])
+	
+	c14 <- utils::capture.output(                     # multiple valid line queries
+		c13 <- debug.state(10,20))
+	c13$`1` <- c13$`1`[ , c(1,6,7)]
+	c13$`2` <- c13$`2`[ , c(1,6,7)]
+	
+	c16 <- utils::capture.output(                     # valid and invalid queries
+		c15 <- debug.state(10,5.5,20))
+	c15$`1` <- c15$`1`[ , c(1,6,7)]
+	c15$`2` <- c15$`2`[ , c(1,6,7)]
+	
+	# EXPECTED
+	e3 <- data.frame(name = c('a','cc','d','e','f','g','h','s'),         # state at end of execution
+					 scriptNum = rep(1L,8),
+					 startLine = as.integer(c(2,9,13,17,21,26,34,42)),
+					 stringsAsFactors = FALSE)
+	
+	e5 <- data.frame(name = c('a','cc','d','e','f'),                     # line 20
+					 scriptNum = rep(1L,5),
+					 startLine = as.integer(c(2,9,13,17,20)),
+					 stringsAsFactors = FALSE)
+	e7 <- data.frame(name = c('a','cc'),                                 # line 10
+					 startLine = rep(1L,2),
+					 startLine = as.integer(c(2,9)),
+					 stringsAsFactors = FALSE)
+	
+	e13 <- list(`1`= e7, `2`= e5)   # multiple valid queries
+	
+	# TEST
+	expect_null(c1)               # no state
+	expect_equivalent(c3, e3)     # no parameters given
+	expect_equivalent(c5, e5)     # var does not have its final value
+	expect_equivalent(c7, e7)     # queried line does not have an operation
+	expect_equivalent(c9, e3)     # invalid line query
+	expect_equivalent(c11, e3)    # multiple invalid line queries
+	expect_equivalent(c13, e13)   # multiple valid line queries
+	expect_equivalent(c15, e13)   # valid and invalid queries
+	
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
+	expect_true(nchar(paste(c8, collapse='\n')) > 0)
+	expect_true(nchar(paste(c10, collapse='\n')) > 0)
+	expect_true(nchar(paste(c12, collapse='\n')) > 0)
+	expect_true(nchar(paste(c14, collapse='\n')) > 0)
+	expect_true(nchar(paste(c16, collapse='\n')) > 0)
+})
 
-# state at end of each script,
-# state at beginning of each script
+# debug.state (multiple scripts)
+test_that("debug.state (multiple scripts)",
+{
+	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	provDebugR:::.clear()
+	prov.debug.file(json)
+	
+	# CASES
+	# columns to be compared: name, scriptNum, startLine (cols 1,6,7)
+	c2 <- utils::capture.output(                                  # line does not assign to variable
+		c1 <- debug.state(6, script.num = 2)[[1]][ , c(1,6,7)])
+	c4 <- utils::capture.output(                                  # out of bounds: start of execution
+		c3 <- debug.state(0, script.num = 1))
+	c6 <- utils::capture.output(                                  # out of bounds: end of execution
+		c5 <- debug.state(15, script.num = "3")[[1]][ , c(1,6,7)])
+	
+	expect_warning(                                               # more than 1 script number queried
+		c8 <- utils::capture.output(
+			c7 <- debug.state(6, script.num = c(1,2))[[1]][ , c(1,6,7)]))
+	expect_warning(                                               # script number is not an integer
+		c10 <- utils::capture.output(
+			c9 <- debug.state(6, script.num = 1.2)[[1]][ , c(1,6,7)]))
+	
+	# EXPECTED
+	e1 <- data.frame(name = 'col1',                           # line 6, script 2
+					 scriptNum = 2L,
+					 startLine = 1L,
+					 stringsAsFactors = FALSE)
+	
+	e5 <- data.frame(name = c('col1', 'get.error.df','df'),   # at end of execution
+					 scriptNum = as.integer(c(2,3,3)),
+					 startLine = as.integer(c(1,1,8)),
+					 stringsAsFactors = FALSE)
+	
+	# TEST
+	expect_equivalent(c1, e1)   # line does not assign to variable
+	expect_null(c3)             # out of bounds: start of execution
+	expect_equivalent(c5, e5)   # out of bounds: end of execution
+	expect_equivalent(c7, e5)   # more than 1 script number queried
+	expect_equivalent(c9, e5)   # script number is not an integer
+	
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
+	expect_true(nchar(paste(c8, collapse='\n')) > 0)
+	expect_true(nchar(paste(c10, collapse='\n')) > 0)
+	
+	skip("debug.state - cases which includes Start and Finish nodes")
+})
 
-# helper functions to test
-# .get.state.tables
+# debug.state (fromEnv variables)
+test_that("debug.state (fromEnv variables)",
+{
+	json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning from deleted prov folder
+	
+	# CASES
+	# columns to be compared: name, scriptNum, startLine (cols 1,6,7)
+	c2 <- utils::capture.output(                                  # at beginning of execution
+		c1 <- debug.state(0, script.num = 1)[[1]][ , c(1,6,7)])
+	c4 <- utils::capture.output(                                  # at end of execution
+		c3 <- debug.state()[[1]][ , c(1,6,7)])
+	
+	# EXPECTED
+	e1 <- data.frame(name = c('a', 'b'),                 # at beginning of execution
+					 scriptNum = c(NA,NA),
+					 startLine = c(NA,NA),
+					 stringsAsFactors = FALSE)
+	
+	# state at end of execution
+	e3 <- data.frame(name = c('a','b','d','vector.1','e','f','vector.2','vector.3','vector.4','g'),
+					 scriptNum = as.integer(c(NA,NA,1,1,1,1,1,1,1,1)),
+					 startLine = as.integer(c(NA,NA,1,2,5,6,7,15,16,20)),
+					 stringsAsFactors = FALSE)
+	
+	# TEST
+	expect_equivalent(c1, e1)
+	expect_equivalent(c3, e3)
+	
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
+})
 
-# .get.last.var
-# .get.state
-# .get.output.state
-
+# === TESTING HELPER FUNCTIONS =============================================== #
 
 # .get.valid.query.state
 test_that("debug.state - .get.valid.query.state",
@@ -87,8 +230,8 @@ test_that("debug.state - .get.valid.query.state",
 	c6 <- provDebugR:::.get.valid.query.state(           # mix of valid and invalid queries
 			3, 5.5, 7L, script.num = 3)
 	
-	c7 <- provDebugR:::.get.valid.query.state(           # no queries
-			script.num = 1)
+	c7 <- provDebugR:::.get.valid.query.state()          # no queries
+	
 	expect_warning(                                      # multiple script numbers
 		c8 <- provDebugR:::.get.valid.query.state(
 			3L, 5, "7", script.num = c(1,2)))
@@ -148,9 +291,71 @@ test_that("debug.state - .get.closest.proc",
 	
 	# test
 	expect_equal(c1, 'p3')
-	expect_equal(c2, 'p0')
+	expect_null(c2)
 	expect_equal(c3, 'p11')
 	expect_equal(c4, 'p5')
 	
 	skip(".get.closest.proc - cases which includes Start and Finish nodes")
+})
+
+# .get.last.var
+test_that("debug.state - .get.last.var",
+{
+	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	provDebugR:::.clear()
+	prov.debug.file(json)
+	
+	# CASES
+	c1 <- provDebugR:::.get.last.var(NULL)   # p.id is null
+	c2 <- provDebugR:::.get.last.var("p2")   # no output variables found
+	c3 <- provDebugR:::.get.last.var("p5")   # output variable at that procedure node
+	c4 <- provDebugR:::.get.last.var("p6")   # output variable not at that procedure node
+	
+	# TEST
+	expect_null(c1)
+	expect_null(c2)
+	expect_equal(c3, "d3")
+	expect_equal(c4, "d3")
+})
+
+# .get.state (multiple var reassignment)
+test_that("debug.state - .get.state (no fromEnv nodes)",
+{
+	json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning from deleted prov folder
+	
+	# CASES
+	c1 <- provDebugR:::.get.state(NULL)    # no state
+	c2 <- provDebugR:::.get.state('d17')   # not the final value of a variable
+	c3 <- provDebugR:::.get.state('d25')   # multiple reassignments of variables
+	
+	# EXPECTED
+	e2 <- paste('d', c(1,5,7,9,11,14,17), sep='')
+	e3 <- paste('d', c(1,5,7,9,11,14,20,25), sep='')
+	
+	# TEST
+	expect_null(c1)
+	expect_equivalent(c2, e2)
+	expect_equivalent(c3, e3)
+})
+
+# .get.state (with fromEnv nodes)
+test_that("debug.state - .get.state (with fromEnv nodes)",
+{
+	json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
+	provDebugR:::.clear()
+	expect_warning(prov.debug.file(json))   # warning from deleted prov folder
+	
+	# CASES
+	c1 <- provDebugR:::.get.state(NULL)    # fromEnv vars only
+	c2 <- provDebugR:::.get.state("d15")   # no reassignment of variables
+	
+	# EXPECTED
+	e1 <- c('d2','d14')
+	e2 <- paste('d', c(2,14,1,3,5,6,7,11,12,15), sep='')
+	
+	# TEST
+	expect_equivalent(c1, e1)
+	expect_equivalent(c2, e2)
 })

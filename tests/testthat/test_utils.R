@@ -186,20 +186,16 @@ test_that("Utility - .get.p.id",
 	provDebugR:::.clear()
 	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
-	# node edges
-	proc.data <- provDebugR:::.debug.env$proc.data
-	data.proc <- provDebugR:::.debug.env$data.proc
-	
 	# Cases
 	c1 <- "d4"    # 1 node found (from output edge only)
 	c2 <- "d14"   # 1 node found (from input edge only)
 	c3 <- "d1"    # 1 node found (has both output and input edges)
 	c4 <- "d2"    # multiple nodes found (multiple input edges)
 	
-	c1 <- provDebugR:::.get.p.id(c1, proc.data, data.proc)
-	c2 <- provDebugR:::.get.p.id(c2, proc.data, data.proc)
-	c3 <- provDebugR:::.get.p.id(c3, proc.data, data.proc)
-	c4 <- provDebugR:::.get.p.id(c4, proc.data, data.proc)
+	c1 <- provDebugR:::.get.p.id(c1)
+	c2 <- provDebugR:::.get.p.id(c2)
+	c3 <- provDebugR:::.get.p.id(c3)
+	c4 <- provDebugR:::.get.p.id(c4)
 	
 	# Expected
 	e1 <- "p5"
