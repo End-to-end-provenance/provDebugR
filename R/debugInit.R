@@ -128,14 +128,27 @@ prov.debug.run <- function(script)
 	stop("One of rdtLite or rdt must be installed.")
 }
 
-# returns the full code for each Operation procedure node
+#' returns the full code for each Operation procedure node
+#' uses a helper function for testing purposes.
+#'
 #' @noRd
 .get.full.code <- function()
 {
-	proc.nodes <- .debug.env$proc.nodes
-	
-	# get code lines for each script
+	# get list of saved scripts
 	scripts <- provParseR::get.saved.scripts(.debug.env$prov)$script
+	
+	# call helper function
+	return(.get.full.code.helper(scripts))
+}
+
+#' Helper function for .get.full.code
+#' Separated from .get.full.code for testing purposes.
+#'
+#' @noRd
+.get.full.code.helper <- function(scripts)
+{
+	# get table of proc nodes
+	proc.nodes <- .debug.env$proc.nodes
 	
 	# vector to store script paths that could not be found
 	inaccessible <- c()
