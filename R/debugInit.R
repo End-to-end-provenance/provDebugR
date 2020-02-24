@@ -191,7 +191,11 @@ prov.debug.run <- function(script)
 		# case: script file was not found
 		script.lines <- lines[[script.num]]
 		
-		if(node$type != "Operation" || (length(script.lines) == 1 && is.na(script.lines))) {
+		if(length(script.lines) == 1 && is.na(script.lines)) {
+			return(node$name)
+		}
+		
+		if(node$type != "Operation") {
 			return(node$name)
 		}
 		
