@@ -239,5 +239,3 @@ test_that("debug.type.changes - some valid, some invalid vars",
 	e1 <- expected[c("h", "g")]
 	expect_equivalent(c1, e1)
 })
-
-# ??? - .get.output.type.changes

@@ -57,7 +57,7 @@ test_that("debug.warning - general",
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# by individual warnings
 	c1 <- debug.warning(1)[[1]]
@@ -118,7 +118,7 @@ test_that("debug.warning - no queries",
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	c2 <- utils::capture.output(c1 <- debug.warning())
 	
@@ -136,7 +136,7 @@ test_that("debug.warning - invalid queries",
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# an expected output table
 	e1 <- system.file("testexpected", "warnings1.csv", package = "provDebugR")

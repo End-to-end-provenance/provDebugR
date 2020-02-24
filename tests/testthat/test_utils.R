@@ -8,7 +8,7 @@ context("Utility functions")
 test_that("Utility - .clear", 
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# ensure .debug.env has been changed
 	expect_false(is.null(provDebugR:::.debug.env$prov))
@@ -92,14 +92,7 @@ test_that("Utility - .form.df",
 
 # .to.int
 test_that("Utility - .to.int",
-{
-	# already an integer
-	# NA
-	# booleans
-	# decimals
-	# integers as strings
-	# non-integers as strings
-	
+{	
 	# cases
 	c1 <- provDebugR:::.to.int(1L)           # already an integer
 	c2 <- provDebugR:::.to.int(NA)           # NA

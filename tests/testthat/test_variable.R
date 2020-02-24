@@ -340,7 +340,7 @@ test_that(".get.pos.var (valid)",
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	c1 <- provDebugR:::.get.pos.var(provDebugR:::.debug.env$data.nodes)
 	c2 <- provDebugR:::.get.pos.var(

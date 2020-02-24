@@ -117,7 +117,7 @@ test_that("debug.line - no/empty provenance",
 json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 
 provDebugR:::.clear()
-prov.debug.file(json)
+expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 
 expected <- get.expected()
 

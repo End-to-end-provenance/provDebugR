@@ -58,7 +58,7 @@ test_that("debug.error - general",
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# c1: output table on lineage of error
 	# c2: message about error

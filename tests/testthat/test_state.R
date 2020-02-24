@@ -128,7 +128,7 @@ test_that("debug.state (multiple scripts)",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# CASES
 	# columns to be compared: name, scriptNum, startLine (cols 1,6,7)
@@ -214,7 +214,7 @@ test_that("debug.state - .get.valid.query.state",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# CASES
 	c1 <- provDebugR:::.get.valid.query.state(           # 1 valid query
@@ -281,7 +281,7 @@ test_that("debug.state - .get.closest.proc",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# cases
 	c1 <- provDebugR:::.get.closest.proc(3,1)    # script and line numbers can be found
@@ -303,7 +303,7 @@ test_that("debug.state - .get.last.var",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
 	provDebugR:::.clear()
-	prov.debug.file(json)
+	expect_warning(prov.debug.file(json))   # warning due to deleted prov folder
 	
 	# CASES
 	c1 <- provDebugR:::.get.last.var(NULL)   # p.id is null
