@@ -189,7 +189,9 @@ prov.debug.run <- function(script)
 		
 		# case: not an operation
 		# case: script file was not found
-		if(node$type != "Operation" || is.na(lines[[script.num]])) {
+		script.lines <- lines[[script.num]]
+		
+		if(node$type != "Operation" || (length(script.lines) == 1 && is.na(script.lines))) {
 			return(node$name)
 		}
 		
@@ -197,10 +199,10 @@ prov.debug.run <- function(script)
 		# if procedure has more than 1 line, 
 		# collapse the lines into 1 before returning
 		if(node$endLine - node$startLine == 0) {
-			return(lines[[script.num]][node$startLine])
+			return(script.lines[node$startLine])
 		}
 		
-		code <- lines[[script.num]][node$startLine:node$endLine]
+		code <- script.lines[node$startLine:node$endLine]
 		return(paste(code, sep="", collapse = "\n"))
 	})
 	
