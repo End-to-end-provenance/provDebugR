@@ -166,6 +166,9 @@ prov.debug.run <- function(script)
 		return(line.list)
 	})
 	
+	print(lines)
+	print(proc.nodes)
+	
 	# case: throw warning if there are inaccessible files
 	if(length(inaccessible) > 0) 
 	{
@@ -202,8 +205,6 @@ prov.debug.run <- function(script)
 		# get full code
 		# if procedure has more than 1 line, 
 		# collapse the lines into 1 before returning
-		print(node)
-		
 		if(node$endLine - node$startLine == 0) {
 			return(script.lines[node$startLine])
 		}
