@@ -53,21 +53,10 @@
 			<param name="theFile" value="empty.R"/>
 		</antcall>
 		
-		<!-- no variables -->
+		<!-- errors, warnings -->
 		<antcall target="json">
-			<param name="theFile" value="noVars.R"/>
+			<param name="theFile" value="exceptions.R"/>
 		</antcall>
-		
-		<!-- no data nodes -->
-		<antcall target="json">
-			<param name="theFile" value="noDataNodes.R"/>
-		</antcall>
-		
-		<!-- type changes -->
-		<antcall target="json">
-			<param name="theFile" value="typeChanges.R"/>
-		</antcall>
-		<delete file="inst/Rplots.pdf"/>
 		
 		<!-- fromEnv -->
 		<antcall target="json">
@@ -76,23 +65,21 @@
 		</antcall>
 		<delete file="inst/Rplots.pdf"/>
 		
-		<!-- errors, warnings -->
-		<!-- this case is used to test .get.full.code as well -->
+		<!-- no data nodes -->
 		<antcall target="json">
-			<param name="theFile" value="exceptions.R"/>
-			<param name="delete.dir" value="false"/>
+			<param name="theFile" value="noDataNodes.R"/>
 		</antcall>
-		<delete dir="inst/testdata/prov_exceptions/data"/>
-		<delete dir="inst/testdata/prov_exceptions/debug"/>
 		
-		<!-- .get.full.code case for a missing script from prov folder -->
+		<!-- no variables -->
 		<antcall target="json">
-			<param name="theFile" value="missingScripts.R"/>
-			<param name="delete.dir" value="false"/>
+			<param name="theFile" value="noVars.R"/>
 		</antcall>
-		<delete file="inst/testdata/prov_missingScripts/scripts/source_notInProv.R"/>
-		<delete dir="inst/testdata/prov_missingScripts/data"/>
-		<delete dir="inst/testdata/prov_missingScripts/debug"/>
+		
+		<!-- type changes -->
+		<antcall target="json">
+			<param name="theFile" value="typeChanges.R"/>
+		</antcall>
+		<delete file="inst/Rplots.pdf"/>
 		
 	</target>
 	
@@ -150,13 +137,13 @@
 	
 	<!-- === CHECK ========================================================= -->
 
-	<target name="check" depends="create-json, build">
+	<target name="check" depends="build">
 		<exec executable="R" >
 			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
 		</exec>
 	</target>
 	
-	<target name="cran-check" depends="create-json, build">
+	<target name="cran-check" depends="build">
 		<exec executable="R" >
 			<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>
 		</exec>

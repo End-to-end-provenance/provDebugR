@@ -138,18 +138,15 @@ prov.debug.run <- function(script)
 	scripts <- provParseR::get.saved.scripts(.debug.env$prov)$script
 	
 	# call helper function
-	return(.get.full.code.helper(scripts))
+	return(.get.full.code.helper(.debug.env$proc.nodes, scripts))
 }
 
 #' Helper function for .get.full.code
 #' Separated from .get.full.code for testing purposes.
 #'
 #' @noRd
-.get.full.code.helper <- function(scripts)
-{
-	# get table of proc nodes
-	proc.nodes <- .debug.env$proc.nodes
-	
+.get.full.code.helper <- function(proc.nodes, scripts)
+{	
 	# vector to store script paths that could not be found
 	inaccessible <- c()
 	
