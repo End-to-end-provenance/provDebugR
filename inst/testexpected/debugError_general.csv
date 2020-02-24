@@ -2,13 +2,9 @@
 "1",1,3,"col1 <- c(1:11)"
 "2",2,1,"if(length(col1) > 10) {
 	col1 <- c(1:10)
-	warning(""length was greater than 10"")
-}"
+	warning(""length wa"
 "3",3,1,"get.error.df <- function()
 {
-	col2 <- rep(c(""ll"",12,13,14,15), 2)
-	col3 <- c(21:30)
-	return(data.frame(col2, col3, stringsAsFactors=FALSE))
-}"
+	col2 <- rep(c(""ll"",12,13,14,15"
 "4",3,8,"df <- cbind(col1, get.error.df(), stringsAsFactors=FALSE)"
 "5",3,10,"sum(df, col1)"

@@ -2,5 +2,4 @@
 "1",1,3,"col1 <- c(1:11)"
 "2",2,1,"if(length(col1) > 10) {
 	col1 <- c(1:10)
-	warning(""length was greater than 10"")
-}"
+	warning(""length wa"
