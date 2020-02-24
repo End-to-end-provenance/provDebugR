@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "noDataNodes.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.86",
+			"rdt:elapsedTime": "3.89",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -44,7 +44,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(utils)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.11",
+			"rdt:elapsedTime": "0.48",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "library(testthat)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.17",
+			"rdt:elapsedTime": "0.61",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -64,7 +64,7 @@
 		"rdt:p4": {
 			"rdt:name": "noDataNodes.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -80,14 +80,14 @@
 			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.1 (2019-07-05)",
-			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/noDataNodes.R",
-			"rdt:scriptTimeStamp": "2020-01-26T22.51.55EST",
-			"rdt:totalElapsedTime": "1.14",
+			"rdt:script": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst/testscripts/noDataNodes.R",
+			"rdt:scriptTimeStamp": "2020-02-03T15.25.40EST",
+			"rdt:totalElapsedTime": "4.99",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
-			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
-			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_noDataNodes",
-			"rdt:provTimestamp": "2020-01-26T22.57.30EST",
+			"rdt:workingDirectory": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst",
+			"rdt:provDirectory": "testdata/prov_noDataNodes",
+			"rdt:provTimestamp": "2020-02-23T23.03.50EST",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -149,7 +149,7 @@
 		},
 		"rdt:l8": {
 			"name": "testthat",
-			"version": "2.2.1",
+			"version": "2.3.0",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
