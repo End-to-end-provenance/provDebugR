@@ -32,11 +32,14 @@ test_that("Initialization - .get.full.code",
 	s3 <- c(script1, script2, "unknown3")         # some scripts found, some not found
 	
 	# CASES
-	c1 <- provDebugR:::.get.full.code.helper(proc.nodes, s1)        # all scripts are found
+	o1 <- capture.output(c1 <- provDebugR:::.get.full.code.helper(proc.nodes, s1))        # all scripts are found
 	expect_warning(                                                 # no scripts found
 		c2 <- provDebugR:::.get.full.code.helper(proc.nodes, s2))
 	expect_warning(                                                 # some scripts found, some not found
 		c3 <- provDebugR:::.get.full.code.helper(proc.nodes, s3))
+	
+	print("c1")
+	print(o1)
 	
 	# EXPECTED
 	e1 <- system.file("testexpected", "fullCode.csv", package = "provDebugR")

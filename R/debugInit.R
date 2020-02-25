@@ -167,7 +167,6 @@ prov.debug.run <- function(script)
 	})
 	
 	print(lines)
-	print(proc.nodes)
 	
 	# case: throw warning if there are inaccessible files
 	if(length(inaccessible) > 0) 
@@ -185,7 +184,7 @@ prov.debug.run <- function(script)
 	}
 	
 	# get full code for each proc node
-	codes <- sapply(1:nrow(proc.nodes), function(i)
+	out <- capture.output(codes <- sapply(1:nrow(proc.nodes), function(i)
 	{
 		node <- proc.nodes[i, ]
 		script.num <- node$scriptNum
@@ -194,6 +193,8 @@ prov.debug.run <- function(script)
 		# case: script file was not found
 		script.lines <- lines[[script.num]]
 		
+		print(node)
+		
 		if(length(script.lines) == 1 && is.na(script.lines)) {
 			return(node$name)
 		}
@@ -201,6 +202,8 @@ prov.debug.run <- function(script)
 		if(node$type != "Operation") {
 			return(node$name)
 		}
+		
+		print("here")
 		
 		# get full code
 		# if procedure has more than 1 line, 
@@ -211,7 +214,9 @@ prov.debug.run <- function(script)
 		
 		code <- script.lines[node$startLine:node$endLine]
 		return(paste(code, sep="", collapse = "\n"))
-	})
+	}))
+	
+	print(out)
 	
 	return(unname(codes))
 }
