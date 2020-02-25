@@ -7,6 +7,6 @@ cc <- 7
 library(rdtLite)
 prov.init(prov.dir = "testdata", snapshot.size="10")
 
-prov.source("testscripts/source_fromEnv.r")
+prov.source("testscripts/source_fromEnv.R")
 
 prov.quit()

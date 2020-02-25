@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "noDataNodes.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "3.89",
+			"rdt:elapsedTime": "5.74",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -44,7 +44,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(utils)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.48",
+			"rdt:elapsedTime": "0.53",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "library(testthat)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.61",
+			"rdt:elapsedTime": "0.8",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -79,21 +79,21 @@
 			"rdt:architecture": "x86_64",
 			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
-			"rdt:langVersion": "R version 3.6.1 (2019-07-05)",
+			"rdt:langVersion": "R version 3.6.2 (2019-12-12)",
 			"rdt:script": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst/testscripts/noDataNodes.R",
 			"rdt:scriptTimeStamp": "2020-02-03T15.25.40EST",
-			"rdt:totalElapsedTime": "4.99",
+			"rdt:totalElapsedTime": "7.08",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst",
 			"rdt:provDirectory": "testdata/prov_noDataNodes",
-			"rdt:provTimestamp": "2020-02-23T23.03.50EST",
+			"rdt:provTimestamp": "2020-02-25T18.20.19EST",
 			"rdt:hashAlgorithm": "md5"
 		},
 
 		"rdt:l1": {
 			"name": "base",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -101,7 +101,7 @@
 		},
 		"rdt:l2": {
 			"name": "datasets",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -117,7 +117,7 @@
 		},
 		"rdt:l4": {
 			"name": "graphics",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -125,7 +125,7 @@
 		},
 		"rdt:l5": {
 			"name": "grDevices",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -133,7 +133,7 @@
 		},
 		"rdt:l6": {
 			"name": "methods",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -141,7 +141,7 @@
 		},
 		"rdt:l7": {
 			"name": "stats",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -149,7 +149,7 @@
 		},
 		"rdt:l8": {
 			"name": "testthat",
-			"version": "2.3.0",
+			"version": "2.3.1",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
@@ -157,7 +157,7 @@
 		},
 		"rdt:l9": {
 			"name": "utils",
-			"version": "3.6.1",
+			"version": "3.6.2",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"

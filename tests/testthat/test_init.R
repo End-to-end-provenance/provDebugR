@@ -24,8 +24,8 @@ test_that("Initialization - .get.full.code",
 	
 	# saved scripts
 	script1 <- system.file("testscripts", "exceptions.R", package = "provDebugR")
-	script2 <- system.file("testscripts", "source_warning.r", package = "provDebugR")
-	script3 <- system.file("testscripts", "source_error.r", package = "provDebugR")
+	script2 <- system.file("testscripts", "source_warning.R", package = "provDebugR")
+	script3 <- system.file("testscripts", "source_error.R", package = "provDebugR")
 	
 	s1 <- c(script1, script2, script3)            # all scripts are found
 	s2 <- c("unknown1", "unknown2", "unknown3")   # no scripts found
