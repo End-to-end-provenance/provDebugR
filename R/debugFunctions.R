@@ -1221,8 +1221,8 @@ debug.error <- function(stack.overflow = FALSE)
 			.search.stackoverflow(message)
 		},
 		error = function(e){
-			warning(e$message)
-			warning("Connection to Stack Overflow did not succeed.")
+			warning(e$message, call. = FALSE)
+			warning("Connection to Stack Overflow did not succeed.", call. = FALSE)
 		})
 	}
 	
@@ -1268,18 +1268,18 @@ debug.error <- function(stack.overflow = FALSE)
 
 	# They can either choose none or an index that will be matched to a row
 	cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
-	chosen.result <- readline()
+	chosen.result <- tolower(trimws(readline()))
 
-	if(!chosen.result == "q") 
+	while(chosen.result != "q") 
 	{
-		chosen.result <- as.integer(chosen.result)
+		chosen.result <- suppressWarnings(as.integer(chosen.result))
 
 		# The input needs to be an integer so it can be used to
 		# index into the rows of the data frame
-		if(is.na(chosen.result)){
-			stop("Invalid Input")
-		} else if (chosen.result > 6 || chosen.result < 1) {
-			stop ('Choose an option between 1 - 6')
+		if(is.na(chosen.result) || (chosen.result > 6 || chosen.result < 1)){
+			cat("Invalid Input. Please choose an option between 1 - 6 or q to quit.\n")
+			chosen.result <- tolower(trimws(readline()))
+			next
 		}
 
 		# Open up the requested link in the default web browser
