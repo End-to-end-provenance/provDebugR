@@ -1268,6 +1268,9 @@ debug.error <- function(stack.overflow = FALSE)
 	# USER INPUT
 	# Grab the titles and links to the questions
 	pos.urls <- head(result$items)[, c("title", "link")]
+	
+	# decode html characters in the titles, if any
+	pos.urls$title <- unname(sapply(pos.urls$title, textutils::HTMLdecode))
 
 	# This serves as a "menu" of sorts since it will print the row number
 	# of each title

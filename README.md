@@ -26,6 +26,7 @@ This package also imports:
 * methods
 * stats
 * testthat
+* textutils
 
 and if your environment is RStudio:
 * rstudioapi
