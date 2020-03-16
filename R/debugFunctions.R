@@ -1213,21 +1213,28 @@ debug.error <- function(stack.overflow = FALSE)
 	
 	# get lineage
 	lineage <- .get.lineage(error.node$id, forward = FALSE)
+	lineage <- .get.output.lineage(lineage)
 	
 	# query Stack Exchange API
 	if(stack.overflow)
 	{
+		# display lineage before connecting to StackOverflow
+		cat("Code that led to error message:\n\n")
+		print(lineage)
+		cat("\n")
+		
 		tryCatch({
 			.search.stackoverflow(message)
 		},
 		error = function(e){
-			warning(e$message, call. = FALSE)
-			warning("Connection to Stack Overflow did not succeed.", call. = FALSE)
+			stop(paste("", e$message,"Connection to Stack Overflow did not succeed.", sep="\n"), 
+				 call. = FALSE)
 		})
 	}
 	
 	# return
-	return(.get.output.lineage(lineage))
+	cat("Code that led to error message:\n\n")
+	return(lineage)
 }
 
 #' @noRd
@@ -1264,6 +1271,7 @@ debug.error <- function(stack.overflow = FALSE)
 
 	# This serves as a "menu" of sorts since it will print the row number
 	# of each title
+	cat("\nResults from StackOverflow:\n")
 	print(pos.urls[, "title"])
 
 	# They can either choose none or an index that will be matched to a row
@@ -1276,15 +1284,15 @@ debug.error <- function(stack.overflow = FALSE)
 
 		# The input needs to be an integer so it can be used to
 		# index into the rows of the data frame
-		if(is.na(chosen.result) || (chosen.result > 6 || chosen.result < 1)){
+		if(is.na(chosen.result) || (chosen.result > 6 || chosen.result < 1)) {
 			cat("Invalid Input. Please choose an option between 1 - 6 or q to quit.\n")
-			chosen.result <- tolower(trimws(readline()))
-			next
 		}
-
 		# Open up the requested link in the default web browser
-		browseURL(pos.urls[chosen.result ,]$link)
-		cat("\nCode that led to error message:\n")
+		else {
+			browseURL(pos.urls[chosen.result ,]$link)
+		}
+		
+		chosen.result <- tolower(trimws(readline()))
 	}
 }
 
