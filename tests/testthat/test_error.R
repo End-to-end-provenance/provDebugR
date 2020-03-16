@@ -52,7 +52,7 @@ test_that("debug.error - no error",
 	expect_true(nchar(c2) > 0)   # check that a message exists
 })
 
-# general case: error with lineage of >1 nodes
+# general case: error with lineage of > 1 nodes
 test_that("debug.error - general",
 {
 	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
@@ -73,4 +73,25 @@ test_that("debug.error - general",
 	expect_true(nchar(c2) > 0)	# check that there exists message about error
 })
 
-# TODO - .process.error
+# .process.error
+test_that("debug.error - .process.error",
+{
+	# cases
+	q1 <- "Error in FUN(X[[i]], ...): only defined on a data frame with all numeric variables\n"
+	q2 <- ""
+	q3 <- "an error"
+	
+	c1 <- provDebugR:::.process.error(q1)
+	c2 <- provDebugR:::.process.error(q2)
+	c3 <- provDebugR:::.process.error(q3)
+	
+	# expected
+	e1 <- "only defined on a data frame with all numeric variables"
+	e2 <- q2
+	e3 <- q3
+	
+	# test
+	expect_equal(c1, e1)
+	expect_equal(c2, e2)
+	expect_equal(c3, e3)
+})
