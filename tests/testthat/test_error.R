@@ -76,22 +76,54 @@ test_that("debug.error - general",
 # .process.error
 test_that("debug.error - .process.error",
 {
-	# cases
+	# queries
 	q1 <- "Error in FUN(X[[i]], ...): only defined on a data frame with all numeric variables\n"
 	q2 <- ""
 	q3 <- "an error"
+	q4 <- "\nError in FUN(newX[, i], ...): invalid 'type' (character) of argument\n"
+	q5 <- "\t\tError: object 'a' not found\n\t"
 	
+	# QUOTES REMOVED
+	# cases
 	c1 <- provDebugR:::.process.error(q1)
 	c2 <- provDebugR:::.process.error(q2)
 	c3 <- provDebugR:::.process.error(q3)
+	c4 <- provDebugR:::.process.error(q4)
+	c5 <- provDebugR:::.process.error(q5)
 	
 	# expected
 	e1 <- "only defined on a data frame with all numeric variables"
 	e2 <- q2
 	e3 <- q3
+	e4 <- "invalid  (character) of argument"
+	e5 <- "object  not found"
 	
 	# test
 	expect_equal(c1, e1)
 	expect_equal(c2, e2)
 	expect_equal(c3, e3)
+	expect_equal(c4, e4)
+	expect_equal(c5, e5)
+	
+	# QUOTES RETAINED
+	# cases
+	c6 <- provDebugR:::.process.error(q1, remove.quotes = FALSE)
+	c7 <- provDebugR:::.process.error(q2, remove.quotes = FALSE)
+	c8 <- provDebugR:::.process.error(q3, remove.quotes = FALSE)
+	c9 <- provDebugR:::.process.error(q4, remove.quotes = FALSE)
+	c10 <- provDebugR:::.process.error(q5, remove.quotes = FALSE)
+	
+	# expected
+	e6 <- e1
+	e7 <- e2
+	e8 <- e3
+	e9 <- "invalid 'type' (character) of argument"
+	e10 <- "object 'a' not found"
+	
+	# test
+	expect_equal(c6, e6)
+	expect_equal(c7, e7)
+	expect_equal(c8, e8)
+	expect_equal(c9, e9)
+	expect_equal(c10, e10)
 })

@@ -1227,8 +1227,7 @@ debug.error <- function(stack.overflow = FALSE)
 			.search.stackoverflow(message)
 		},
 		error = function(e){
-			stop(paste("", e$message,"Connection to Stack Overflow did not succeed.", sep="\n"), 
-				 call. = FALSE)
+			stop(e$message, call. = FALSE)
 		})
 	}
 	
@@ -1240,34 +1239,28 @@ debug.error <- function(stack.overflow = FALSE)
 #' @noRd
 .search.stackoverflow <- function(search.query, order = "desc", sort = "votes", tagged = "r") 
 {
-	search.query <- .process.error(search.query)
+	# process the error into a form that can be used to query StackOverflow
+	query <- .process.error(search.query)
 
-	# The url is the name of the api site
-	url <- "http://api.stackexchange.com"
-	# The path shows the version of the API and all the options the
-	# user is choosing
-	path <- paste("/2.2/search?order=", order,
-				  "&sort=", sort,
-				  "&tagged=", tagged, "
-				  &intitle=", search.query,
-				  "&site=stackoverflow",
-				  sep ="")
-
-	# Query the site for the information
-	raw.result <- httr::GET(url = url, path = URLencode(path))
-
-	# A 200 status code is a success, an unsuccesful code would be something
-	# like 400, 404, etc
-	if(raw.result$status_code != 200) {
-		stop("Connection to Stack Overflow Did Not Succeed")
+	# queries StackOverflow
+	result <- .query.stackoverflow(query, order = order, sort = sort, tagged = tagged)
+	
+	# If there are no results, try again with a query that has quotes retained
+	# this is useful for errors like:
+	# invalid 'type' (character) of argument
+	# object 'b' not found
+	if(length(result) == 0) {
+		query <- .process.error(search.query, remove.quotes = FALSE)
+		result <- .query.stackoverflow(query, order = order, sort = sort, tagged = tagged)
 	}
-
-	# parse the content
-	result <- jsonlite::fromJSON(rawToChar(raw.result$content))
-
+	
+	# If, at this point, there are still no results, stop.
+	if(length(result) == 0)
+		stop("No results from Stack Overflow.")
+	
 	# USER INPUT
 	# Grab the titles and links to the questions
-	pos.urls <- head(result$items)[, c("title", "link")]
+	pos.urls <- result[, c("title", "link")]
 	
 	# decode html characters in the titles, if any
 	pos.urls$title <- unname(sapply(pos.urls$title, textutils::HTMLdecode))
@@ -1300,7 +1293,35 @@ debug.error <- function(stack.overflow = FALSE)
 }
 
 #' @noRd
-.process.error <- function(error.message)
+.query.stackoverflow <- function(search.query, order = "desc", sort = "votes", tagged = "r")
+{
+	# The url is the name of the api site
+	url <- "http://api.stackexchange.com"
+	# The path shows the version of the API and all the options the
+	# user is choosing
+	path <- paste("/2.2/search?order=", order,
+				  "&sort=", sort,
+				  "&tagged=", tagged, "
+				  &intitle=", search.query,
+				  "&site=stackoverflow",
+				  sep ="")
+
+	# Query the site for the information
+	raw.result <- httr::GET(url = url, path = URLencode(path))
+	
+	# A 200 status code is a success, an unsuccesful code would be something
+	# like 400, 404, etc
+	if(raw.result$status_code != 200) {
+		stop("Connection to Stack Overflow did not succeed.", call. = FALSE)
+	}
+
+	# parse the content
+	result <- jsonlite::fromJSON(rawToChar(raw.result$content))
+	return(head(result$items))
+}
+
+#' @noRd
+.process.error <- function(error.message, remove.quotes = TRUE)
 {
 	split <- strsplit(error.message, ":")[[1]]
 
@@ -1316,11 +1337,14 @@ debug.error <- function(stack.overflow = FALSE)
 	# Matches to characters surronded by escaped quotes \"dog\"
 	# Matches to characters surronded by single quotes 'dog'
 	# Matches to characters surronded by escaped quotes \'dog\'
-	exp <- "\\\"[^\"\r]*\\\"|\"[^\"\r]*\"|\'[^\"\r]*\'|\\\'[^\"\r]*\\\'"
-	error.message <- gsub(exp, "", error.message, perl = T)
-
+	if(remove.quotes)
+	{
+		exp <- "\\\"[^\"\r]*\\\"|\"[^\"\r]*\"|\'[^\"\r]*\'|\\\'[^\"\r]*\\\'"
+		error.message <- gsub(exp, "", error.message, perl = T)
+	}
+	
 	# remove whitespace from beginning and end
-	exp <- "^ *| *\\\n*$"
+	exp <- '^[[:space:]]*|[[:space:]]*$'
 	error.message <- gsub(exp, "", error.message)
 
 	return(error.message)
