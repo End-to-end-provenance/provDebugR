@@ -1,6 +1,51 @@
+# Copyright (C) President and Fellows of Harvard College and 
+# Trustees of Mount Holyoke College, 2020.
+
+# This program is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public
+#   License along with this program.  If not, see
+#   <http://www.gnu.org/licenses/>.
+
+###############################################################################
+
 # === LINE =================================================================== #
 
+#' debug.line
+#' 
+#' For each line number queried, debug.line returns a data frame of the data 
+#' that the procedure in that line inputs and outputs.
+#' Each data frame contains the following columns:
+#' \itemize{
+#'		\item name: The name of the data.
+#'		\item value: The value of the data.
+#'		\item container: The type of the container of the data.
+#'		\item dimension: The size of the container.
+#'		\item type: The data type(s) contained within the container.
+#' }
+#'
+#' @param ... The line numbers to be queried.
+#' @param script.num The script number of the queried line numbers.
+#'                   Allows for only 1 script number to be queried per function call.
+#'                   Defaults to script number 1 (main script).
+#' @param all If TRUE, the inputs and outputs for all lines in the specified script
+#'            will be returned.
+#'
+#' @return A list of data frames showing the inputs and outputs for the procedure
+#'         in each line queried.
+#'
+#' @examples
+#' 
 #' @export
+#' @rdname debug.line
 debug.line <- function(..., script.num = 1, all = FALSE)
 {
 	# CASE: no provenance
@@ -200,7 +245,35 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 
 # === VARIABLE =============================================================== #
 
+#' debug.variable
+#' 
+#' For each variable queried, debug.variable returns a data frame of all
+#' instances (data nodes) of that variable.
+#' Each data frame contains the following columns:
+#' \itemize{
+#'		\item value: The value of the variable.
+#'		\item container: The type of the container of the variable.
+#'		\item dimension: The size of the container.
+#'		\item type: The data type(s) contained within the container.
+#'		\item scriptNum: The script number the variable is associated with.
+#'		\item startLine: The line number the variable is associated with.
+#' }
+#'
+#' @param ... The variable names to be queried.
+#' @param val.type Optional. If not NA, this filters the results to contain
+#'                 only instances where the valType (container or type) has the
+#'                 queried type. Only one type may be queried per function call.
+#' @param script.num The script number of the queried variables.
+#'                   Defaults to script number 1 (main script).
+#' @param all If TRUE, results for all variables of the specified script will be
+#'            returned.
+#'
+#' @return A list of data frames showing all instances of each variable queried.
+#'
+#' @examples
+#'
 #' @export
+#' @rdname debug.variable
 debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 {
 	# CASE: no provenance
@@ -583,7 +656,34 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 
 # === LINEAGE ================================================================ #
 
+#' debug.lineage
+#' 
+#' For each data node queried, debug.lineage returns a data frame representing
+#' its forwards (how the data is used), or backwards (how the data was generated)
+#' lineage.
+#' Each data frame contains the following columns:
+#' \itemize{
+#'		\item scriptNum: The script number the data node is associated with.
+#'		\item startLine: The line number the data node is associated with.
+#'		\item code: The line of code which used/produced the data node.
+#' }
+#'
+#' @param ... The names of data nodes to be queried.
+#' @param start.line The line number of the queried data nodes. Optional.
+#' @param script.num The script number of the queried data nodes. 
+#'                   Defaults to script number 1 (main script).
+#' @param all If TRUE, this function returns the linages of all data node names.
+#' @param forward If TRUE, this function returns the forwards lineage 
+#'                (how the data is used) instead of the backwards lineage
+#'                (how the data was generated).
+#'
+#' @return A list of data frames showing the forwards or backwards lineage of all
+#'         queried data nodes.
+#'
+#' @examples
+#'
 #' @export
+#' @rdname debug.lineage
 debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, forward = FALSE)
 {
 	# CASE: no provenance
@@ -711,7 +811,30 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 
 # === TYPE CHANGES =========================================================== #
 
+#' debug.type.chages
+#' 
+#' Returns a data frame for each variable in the execution containing the 
+#' instances where the data type changed.
+#' Each data frame contains the following columns:
+#' \itemize{
+#'		\item value: The value of the variable.
+#'		\item container: The type of the container of the variable.
+#'		\item dimension: The size of the container.
+#'		\item type: The data type(s) contained within the container.
+#'		\item code: The line of code associated with the variable.
+#'		\item scriptNum: The script number associated with the variable.
+#'		\item startLine: The line number associated with the variable.
+#' }
+#'
+#' @param var Optional. Variable name(s) to be queried. If not NA, the results will
+#'            be filtered to show only those with the given variable name.
+#'
+#' @return A list of data frames for each variable with at least 1 data type change.
+#'
+#' @examples
+#'
 #' @export
+#' @rdname debug.type.changes
 debug.type.changes <- function(var = NA)
 {
 	# case: no provenance
@@ -803,6 +926,12 @@ debug.type.changes <- function(var = NA)
 	return(vars)
 }
 
+#' Form user output.
+#' columns: value, container, dimension, type, code, scriptNum, startLine
+#'
+#' @param data.nodes The data nodes to be displayed to the user.
+#' @return The data frame of type changes to be returned to the user.
+#'
 #' @noRd
 .get.output.type.changes <- function(data.nodes)
 {
@@ -838,9 +967,36 @@ debug.type.changes <- function(var = NA)
 
 # === STATE ================================================================== #
 
-#' assumes that the line had been executed
-#' script num ignored if no line 
+#' debug.state
+#'
+#' For each queried line, debug.state returns a data frame showing the state
+#' at that line. This assumes that the given line has been executed.
+#' Each data frame contains the following columns:
+#' \itemize{
+#'		\item name: The names of variables in the state.
+#'		\item value: The value of each variable.
+#'		\item container: The type of the container of each variable.
+#'		\item dimension: The size of the container.
+#'		\item type: The data type(s) contained within the container.
+#'		\item scriptNum: The script number associated with each variable.
+#'		\item startLine: The line number associated with each variable.
+#' }
+#' If no paramters are given, debug.state will return the state at the end of
+#' execution.
+#'
+#' @param ... The line numbers to be queried.
+#' @param script.num The script number of the queried line numbers. This is ignored
+#'                   if no line numbers are given.
+#'                   Allows for only 1 script number to be queried per function call.
+#'                   Defaults to script number 1 (main script).
+#'
+#' @return A list of data frames of states for each queried line number, or the state
+#'         at the end of execution if no parameters are given to the function. 
+#'
+#' @examples
+#'
 #' @export
+#' @rdname debug.state
 debug.state <- function(..., script.num = 1)
 {
 	# CASE: no provenance
@@ -1083,9 +1239,13 @@ debug.state <- function(..., script.num = 1)
 	return(NULL)
 }
 
-#' get all data nodes up to specified num
-#' for each unique variable name, get the last occurrance of it
-#' this forms the state
+#' Returns the state for a given data node.
+#' This is done by obtaining all data nodes up to the specified data node id
+#' and obtaining the last occurance of each unique variable name.
+#'
+#' @param d.id The data node id for the data node where the state should be
+#'             obtained for.
+#' @return The state. A vector of data node id.
 #'
 #' @noRd
 .get.state <- function(d.id)
@@ -1141,6 +1301,12 @@ debug.state <- function(..., script.num = 1)
 	return(vars$id[order(id.nums)])
 }
 
+#' From the given list of data node id, form user output.
+#' columns: name, value, container, dimension, type, scriptNum, startLine
+#'
+#' @param id.list A list of data node id which forms the state.
+#' @return The state. A data frame.
+#'
 #' @noRd
 .get.output.state <- function(id.list)
 {
@@ -1188,7 +1354,18 @@ debug.state <- function(..., script.num = 1)
 
 # === ERROR ================================================================== #
 
+#' Debugging Errors and Warnings
+#' 
+#' 
+#' 
+#' @param stack.overflow
+#'
+#' @return
+#'
+#' @examples
+#' 
 #' @export
+#' @rdname debug.exceptions
 debug.error <- function(stack.overflow = FALSE)
 {
 	# case: no provenance
@@ -1352,7 +1529,15 @@ debug.error <- function(stack.overflow = FALSE)
 
 # === WARNING ================================================================ #
 
+#' debug.warning
+#'
+#' @param ...
+#' @param all
+#'
+#' @return
+#'
 #' @export
+#' @rdname debug.exceptions
 debug.warning <- function(..., all = FALSE)
 {
 	# case: no provenance
@@ -1364,19 +1549,23 @@ debug.warning <- function(..., all = FALSE)
 	warning.nodes <- warning.nodes[warning.nodes$name == "warning.msg", 
 								   c("id", "value")]
 	
+	# case: no warnings
 	if(nrow(warning.nodes) == 0) {
 		cat("There are no warnings in this script.")
 		return(invisible(NULL))
 	}
 	
+	# get valid queries
 	num.warnings <- 1:nrow(warning.nodes)
 	row.names(warning.nodes) <- num.warnings
 	
 	valid.queries <- .get.valid.query.warn(warning.nodes, ..., all = all)
 	
+	# case: no valid queries
 	if(is.null(valid.queries))
 		return(invisible(NULL))
 	
+	# return lineage for each valid query
 	output <- lapply(valid.queries$id, function(id) {
 		return(.get.output.lineage(.get.lineage(id)))
 	})
@@ -1385,12 +1574,20 @@ debug.warning <- function(..., all = FALSE)
 	return(output)
 }
 
+#' Returns a table of valid warning queries.
+#' Columns: id, value
+#'
+#' @param warning.nodes Table of all possible warning nodes.
+#' @param ... The user's query.
+#' @param all If TRUE, automatically returns the table of all warning nodes.
+#'
 #' @noRd
 .get.valid.query.warn <- function(warning.nodes, ..., all = FALSE)
 {
 	if(all)
 		return(warning.nodes)
 	
+	# get user's query
 	query <- unique(.flatten.args(...))
 	
 	if(is.null(query)) {
@@ -1398,6 +1595,7 @@ debug.warning <- function(..., all = FALSE)
 		return(NULL)
 	}
 	
+	# identify cells which contain valid queries
 	pos.values <- row.names(warning.nodes)
 	
 	valid.cells <- sapply(1:length(query), function(i) {
@@ -1412,6 +1610,7 @@ debug.warning <- function(..., all = FALSE)
 		cat("\n\n")
 	}
 	
+	# extract valid queries
 	valid.queries <- query[valid.cells]
 	
 	if(length(valid.queries) == 0) {
@@ -1425,6 +1624,10 @@ debug.warning <- function(..., all = FALSE)
 	return(warning.nodes[valid.queries, ])
 }
 
+#' Prints the given data frame of all possible warning nodes to standard output.
+#'
+#' @param warning.nodes The data frame of warning nodes.
+#'
 #' @noRd
 .print.pos.warnings <- function(warning.nodes)
 {
@@ -1612,6 +1815,7 @@ debug.warning <- function(..., all = FALSE)
 }
 
 #' Prints the table or list of possible options to standard output.
+#'
 #' @param pos.args The table or list of possible options.
 #'
 #' @noRd
