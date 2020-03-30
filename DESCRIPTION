@@ -1,6 +1,6 @@
 Package: provDebugR
 Title: A Time-Travelling Debugger for R
-Version: 0.1.2.9000
+Version: 1.0
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
     person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
