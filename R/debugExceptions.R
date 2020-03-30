@@ -149,7 +149,7 @@ debug.error <- function(stack.overflow = FALSE)
 		}
 		# Open up the requested link in the default web browser
 		else {
-			browseURL(pos.urls[chosen.result ,]$link)
+			utils::browseURL(pos.urls[chosen.result ,]$link)
 		}
 		
 		chosen.result <- tolower(trimws(readline()))
@@ -180,7 +180,7 @@ debug.error <- function(stack.overflow = FALSE)
 				  sep ="")
 
 	# Query the site for the information
-	raw.result <- httr::GET(url = url, path = URLencode(path))
+	raw.result <- httr::GET(url = url, path = utils::URLencode(path))
 	
 	# A 200 status code is a success, an unsuccesful code would be something
 	# like 400, 404, etc
@@ -190,7 +190,7 @@ debug.error <- function(stack.overflow = FALSE)
 
 	# parse the content
 	result <- jsonlite::fromJSON(rawToChar(raw.result$content))
-	return(head(result$items))
+	return(utils::head(result$items))
 }
 
 #' Processes the error message into a form that can be used to query StackExchange api.

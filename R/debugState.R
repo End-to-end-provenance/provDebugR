@@ -241,7 +241,7 @@ debug.state <- function(..., script.num = 1)
 		if(proc.index == 0)
 			return(NULL)
 		
-		return(proc.nodes$id[index])
+		return(proc.nodes$id[proc.index])
 	}
 	
 	# Case: line falls somewhere in the list or after it.
