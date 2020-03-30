@@ -253,7 +253,7 @@ prov.debug.run <- function(script)
 	}
 	
 	# get full code for each proc node
-	out <- capture.output(codes <- sapply(1:nrow(proc.nodes), function(i)
+	codes <- sapply(1:nrow(proc.nodes), function(i)
 	{
 		node <- proc.nodes[i, ]
 		script.num <- node$scriptNum
@@ -279,7 +279,7 @@ prov.debug.run <- function(script)
 		
 		code <- script.lines[node$startLine:node$endLine]
 		return(paste(code, sep="", collapse = "\n"))
-	}))
+	})
 	
 	return(unname(codes))
 }
