@@ -2,7 +2,7 @@
 % Please edit documentation in R/debugFunctions.R
 \name{debug.lineage}
 \alias{debug.lineage}
-\title{debug.lineage}
+\title{The Lineage of a Variable/Data Node.}
 \usage{
 debug.lineage(
   ...,
@@ -42,5 +42,12 @@ Each data frame contains the following columns:
 }
 }
 \examples{
+\dontrun{
+prov.debug.run("test.R")
+debug.lineage("x")
+debug.lineage("x", start.line = 5, script.num = 2)
+debug.lineage("a", "b", forward = TRUE)
+debug.lineage(all = TRUE)
+}
 
 }

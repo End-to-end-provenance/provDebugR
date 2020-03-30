@@ -2,7 +2,7 @@
 % Please edit documentation in R/debugFunctions.R
 \name{debug.line}
 \alias{debug.line}
-\title{debug.line}
+\title{Tracking the Inputs and Outputs at a Line}
 \usage{
 debug.line(..., script.num = 1, all = FALSE)
 }
@@ -33,5 +33,11 @@ Each data frame contains the following columns:
 }
 }
 \examples{
+\dontrun{
+prov.debug.run("test.R")
+debug.line(5)
+debug.line(all = TRUE)
+debug.line(5, 10, script.num = 2)
+}
 
 }

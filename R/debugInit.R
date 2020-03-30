@@ -35,12 +35,25 @@
 
 # === INIT =================================================================== #
 
-# uses last json generated
-
-#' Provenance
+#' A Time-Travelling Debugger for R - Debugger Initialization
 #'
+#' prov.debug uses the provenance from the last execution of prov.run to 
+#' initialise the debugger.
+#'
+#' provDebugR is a debugger that work post script execution, using the PROV-JSON 
+#' output produced by rdt or rdtLite.
+#'
+#' @references PROV-JSON standard: \url{https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/}
+#' @references PROV-JSON output produced by rdtLite: \url{https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md}
+#' @references rdtLite (Provenance Collection Tool): \url{https://github.com/End-to-end-provenance/rdtLite}
+#'
+#' @examples
+#' \dontrun{
+#' rdtLite::prov.run("test.R")
+#' prov.debug()}
 #'
 #' @export
+#' @rdname prov.debug
 prov.debug <- function()
 {
 	# determine which provenance collection tool to use
@@ -55,15 +68,36 @@ prov.debug <- function()
 	.debug.init(prov.json(), is.file = FALSE)
 }
 
-# uses json from file
+#' A Time-Travelling Debugger for R - Debugger Initialization
+#'
+#' prov.debug.file reads a PROV-JSON file to initialise the debugger.
+#'
+#' @param prov.file Path to a PROV-JSON file.
+#'
+#' @examples
+#' \dontrun{
+#' prov.debug.file("prov_test/prov.json")}
+#'
 #' @export
+#' @rdname prov.debug
 prov.debug.file <- function(prov.file)
 {
 	.debug.init(prov.file, is.file = TRUE)
 }
 
-# runs provenance-collection first
+#' A Time-Travelling Debugger for R - Debugger Initialization
+#'
+#' prov.debug.run executs a R or Rmd script, collects provenance, and
+#' initialises the debugger using the collected provenance.
+#'
+#' @param script Path to an R script.
+#'
+#' @examples
+#' \dontrun{
+#' prov.debug.run("test.R")}
+#'
 #' @export
+#' @rdname prov.debug
 prov.debug.run <- function(script)
 {
 	# determine which provenance collection tool to use
@@ -91,6 +125,13 @@ prov.debug.run <- function(script)
 
 # === HELPER FUNCTIONS ======================================================= #
 
+#' Initialises the debugger.
+#'
+#' @param json Path to a PROV-JSON file, or a PROV-JSON string.
+#' @param is.file If TRUE, this indicates that the value given in the parameter
+#'                'json' is a file.
+#'
+#' @return N/A
 #' @noRd
 .debug.init <- function(json, is.file)
 {
@@ -151,9 +192,10 @@ prov.debug.run <- function(script)
 	stop("One of rdtLite or rdt must be installed.")
 }
 
-#' returns the full code for each Operation procedure node
-#' uses a helper function for testing purposes.
+#' Returns the full code for each Operation procedure node. A vector of strings.
+#' Uses a helper function for testing purposes.
 #'
+#' @return The full code for each Operation procedure node. A vector of strings.
 #' @noRd
 .get.full.code <- function()
 {
@@ -165,8 +207,14 @@ prov.debug.run <- function(script)
 }
 
 #' Helper function for .get.full.code
+#' Given a table of procedure nodes and saved scripts, returns the full code 
+#' for each Operation procedure node as a vector of strings.
 #' Separated from .get.full.code for testing purposes.
 #'
+#' @param proc.nodes Table of procedure nodes.
+#' @param scripts List of paths to saved scripts.
+#'
+#' @return The full code for each Operation procedure node. A vector of strings.
 #' @noRd
 .get.full.code.helper <- function(proc.nodes, scripts)
 {	

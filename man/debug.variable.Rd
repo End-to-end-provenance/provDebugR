@@ -2,7 +2,7 @@
 % Please edit documentation in R/debugFunctions.R
 \name{debug.variable}
 \alias{debug.variable}
-\title{debug.variable}
+\title{Tracking Changes to a Variable}
 \usage{
 debug.variable(..., val.type = NA, script.num = 1, all = FALSE)
 }
@@ -36,5 +36,12 @@ Each data frame contains the following columns:
 }
 }
 \examples{
+\dontrun{
+prov.debug.run("test.R")
+debug.variable("x")
+debug.variable(all = TRUE)
+debug.variable("a", "b", "x", val.type = "logical")
+debug.variable("a", "b", "x", script.num = 3)
+}
 
 }

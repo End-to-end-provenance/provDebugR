@@ -2,7 +2,7 @@
 % Please edit documentation in R/debugFunctions.R
 \name{debug.state}
 \alias{debug.state}
-\title{debug.state}
+\title{The State at a Line}
 \usage{
 debug.state(..., script.num = 1)
 }
@@ -35,5 +35,11 @@ If no paramters are given, debug.state will return the state at the end of
 execution.
 }
 \examples{
+\dontrun{
+prov.debug.run("test.R")
+debug.state()
+debug.state(5)
+debug.state(10, 20, script.num = 2)
+}
 
 }

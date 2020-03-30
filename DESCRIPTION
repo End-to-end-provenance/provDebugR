@@ -1,13 +1,14 @@
 Package: provDebugR
-Title: An R Time-Travelling Debugger
+Title: A Time-Travelling Debugger for R
 Version: 0.1.2.9000
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
+    person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
     person("Joseph", "Wonsil", email = "jwonsil@carthage.edu", role = "aut"),
     person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre") 
     )
 Description: provDebugR is a debugger that works post script execution. Users can query 
-    variables to discover what their types and values were throughout the exectuion of the script.
+    variables to discover what their types and values were throughout the execution of the script.
     The lineage of variable (the lines of the script that contributed to that variable's creation)
     can also be revealed. 
 Depends: R (>= 3.5.0)

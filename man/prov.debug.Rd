@@ -2,10 +2,50 @@
 % Please edit documentation in R/debugInit.R
 \name{prov.debug}
 \alias{prov.debug}
-\title{Provenance}
+\alias{prov.debug.file}
+\alias{prov.debug.run}
+\title{A Time-Travelling Debugger for R - Debugger Initialization}
 \usage{
 prov.debug()
+
+prov.debug.file(prov.file)
+
+prov.debug.run(script)
+}
+\arguments{
+\item{prov.file}{Path to a PROV-JSON file.}
+
+\item{script}{Path to an R script.}
 }
 \description{
-Provenance
+prov.debug uses the provenance from the last execution of prov.run to 
+initialise the debugger.
+
+prov.debug.file reads a PROV-JSON file to initialise the debugger.
+
+prov.debug.run executs a R or Rmd script, collects provenance, and
+initialises the debugger using the collected provenance.
+}
+\details{
+provDebugR is a debugger that work post script execution, using the PROV-JSON 
+output produced by rdt or rdtLite.
+}
+\examples{
+\dontrun{
+rdtLite::prov.run("test.R")
+prov.debug()}
+
+\dontrun{
+prov.debug.file("prov_test/prov.json")}
+
+\dontrun{
+prov.debug.run("test.R")}
+
+}
+\references{
+PROV-JSON standard: \url{https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/}
+
+PROV-JSON output produced by rdtLite: \url{https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md}
+
+rdtLite (Provenance Collection Tool): \url{https://github.com/End-to-end-provenance/rdtLite}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/debugFunctions.R
 \name{debug.type.changes}
 \alias{debug.type.changes}
-\title{debug.type.chages}
+\title{Tracking Type Changes}
 \usage{
 debug.type.changes(var = NA)
 }
@@ -28,5 +28,11 @@ Each data frame contains the following columns:
 }
 }
 \examples{
+\dontrun{
+prov.debug.run("test.R")
+debug.type.changes()
+debug.type.changes("x")
+debug.type.changes(var = c("a", "b"))
+}
 
 }

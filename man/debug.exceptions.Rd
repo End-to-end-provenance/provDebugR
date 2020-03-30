@@ -3,27 +3,51 @@
 \name{debug.error}
 \alias{debug.error}
 \alias{debug.warning}
-\title{Debugging Errors and Warnings}
+\title{Tracking the Lineage of Errors and Warnings}
 \usage{
 debug.error(stack.overflow = FALSE)
 
 debug.warning(..., all = FALSE)
 }
 \arguments{
-\item{stack.overflow}{}
+\item{stack.overflow}{If TRUE, the error message will searched for on Stack Overflow.}
 
-\item{all}{}
+\item{...}{The warning(s) to be queried.}
+
+\item{all}{If TRUE, the lineages of all warnings are returned.}
 }
 \value{
+debug.error returns a data frame representing the backwards lineage 
+of the error in the execution, if any.
 
-
-
+debug.warning returns a list of data frames of lineages for the queried 
+        warnings.
 }
 \description{
-Debugging Errors and Warnings
+debug.error returns a data frame representing the backwards lineage of (the 
+steps leading up to) the error in the execution, if any.
 
-debug.warning
+debug.warning returns a data frame representing the backwards lineage for 
+each warning queried.
+}
+\details{
+Each data frame contains the following columns:
+\itemize{
+	\item scriptNum: The script number the data node is associated with.
+	\item startLine: The line number the data node is associated with.
+	\item code: The line of code which used/produced the data node.
+}
 }
 \examples{
+\dontrun{
+prov.debug.run("test.R")
+
+debug.error()
+debug.error(stack.overflow = TRUE)
+
+debug.warning(1)
+debug.warning(2,3)
+debug.warning(all = TRUE)
+}
 
 }

@@ -19,7 +19,7 @@
 
 # === LINE =================================================================== #
 
-#' debug.line
+#' Tracking the Inputs and Outputs at a Line
 #' 
 #' For each line number queried, debug.line returns a data frame of the data 
 #' that the procedure in that line inputs and outputs.
@@ -43,7 +43,13 @@
 #'         in each line queried.
 #'
 #' @examples
-#' 
+#' \dontrun{
+#' prov.debug.run("test.R")
+#' debug.line(5)
+#' debug.line(all = TRUE)
+#' debug.line(5, 10, script.num = 2)
+#' }
+#'
 #' @export
 #' @rdname debug.line
 debug.line <- function(..., script.num = 1, all = FALSE)
@@ -147,7 +153,16 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	return(output)
 }
 
-#' returned columns: id, startLine, scriptNum, code
+#' Returns a data frame of valid line number queries. Used in debug.line .
+#' columns: id, startLine, scriptNum, code
+#'
+#' @param pos.nodes Table of all possible options. In this case this
+#'                  refers to the table of procedure nodes.
+#' @param query A list of the user's line number queries.
+#' @param script.num The queried script number. Only 1 may be queried per call.
+#'
+#' @return A data frame of valid line number queries
+#'         columns: id, startLine, scriptNum, code
 #'
 #' @noRd
 .get.valid.query.line <- function(pos.nodes, query, script.num)
@@ -200,6 +215,16 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	return(unique(.form.df(rows)))
 }
 
+#' Returns a list of 2 data frames for the input and output data nodes of the
+#' given procedure node.
+#' columns: name, value, container, dimension, type
+#'
+#' @param p.id The procedure node id.
+#'
+#' @return A list of 2 data frames for the input and output data nodes of the
+#'         given procedure node.
+#'         columns: name, value, container, dimension, type
+#'
 #' @noRd
 .get.output.line <- function(p.id)
 {
@@ -229,6 +254,16 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	return(result)
 }
 
+#' A helper function for .get.output.line .
+#' For each data node in the list given, extract node information to be returned to
+#' the user and binds the resulting list of lists into a data frame.
+#' columns: name, value, container, dimension, type
+#'
+#' @param dnum.list A vector of data node id.
+#'
+#' @return A data frame of information about the given data nodes to be returned to the user.
+#'         columns: name, value, container, dimension, type
+#'
 #' @noRd
 .get.output.line.helper <- function(dnum.list)
 {
@@ -245,7 +280,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 
 # === VARIABLE =============================================================== #
 
-#' debug.variable
+#' Tracking Changes to a Variable
 #' 
 #' For each variable queried, debug.variable returns a data frame of all
 #' instances (data nodes) of that variable.
@@ -271,6 +306,13 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 #' @return A list of data frames showing all instances of each variable queried.
 #'
 #' @examples
+#' \dontrun{
+#' prov.debug.run("test.R")
+#' debug.variable("x")
+#' debug.variable(all = TRUE)
+#' debug.variable("a", "b", "x", val.type = "logical")
+#' debug.variable("a", "b", "x", script.num = 3)
+#' }
 #'
 #' @export
 #' @rdname debug.variable
@@ -321,8 +363,14 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(output)
 }
 
-# function shared with debug.lineage
-# columns: d.id, p.id, name, valType, startLine, scriptNum
+#' For each possible data node find its corresponding procedure node.
+#' Function shared with debug.lineage
+#' columns: d.id, p.id, name, valType, startLine, scriptNum
+#'
+#' @param data.nodes A table of all possible data nodes
+#'
+#' @return The table of all possible data nodes, with the necessary fields found.
+#'         columns: d.id, p.id, name, valType, startLine, scriptNum
 #'
 #' @noRd
 .get.pos.var <- function(data.nodes)
@@ -374,8 +422,17 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(rows)
 }
 
-#' function shared with debug.lineage
+#' Get the user's queries, bound into a data frame.
+#' Function shared with debug.lineage
 #' columns: name, valType, startLine, scriptNum
+#'
+#' @param query.vars The queried variables/data node names.
+#' @param val.type valType queries, if any.
+#' @param start.line line number queries, if any.
+#' @param script.num The script number query.
+#'
+#' @return A data frame of the user's queries.
+#'         columns: name, valType, startLine, scriptNum
 #'
 #' @noRd
 .get.query.var <- function(query.vars, val.type = NA, start.line = NA, script.num = 1)
@@ -443,12 +500,16 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(unique(query.table))
 }
 
-#' pos.nodes columns: d.id, p.id, name, valType, startLine, scriptNum
-#' query columns: name, valType, startLine, scriptNum
+#' Get valid queries.
+#' Function shared with debug.lineage
 #'
-#' returned columns: d.id, name, valType, startLine, scriptNum
+#' @param pos.nodes Table of possible data nodes.
+#'                  columns: d.id, p.id, name, valType, startLine, scriptNum
+#' @param query The user's queries.
+#'              columns: name, valType, startLine, scriptNum
 #'
-#' function shared with debug.lineage
+#' @return The valid queries.
+#'         columns: d.id, name, valType, startLine, scriptNum
 #'
 #' @noRd
 .get.valid.query.var <- function(pos.nodes, query, forward = FALSE)
@@ -585,7 +646,13 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	return(valid.queries)
 }
 
-#' returned columns: value, container, dimension, type, scriptNum, startLine, code
+#' Get each instance of the queried data node/variable name, bound into a data frame.
+#'
+#' @param query A query. Must be valid.
+#'              columns: name, valType, startLine, scriptNum
+#'
+#' @return A data frame of all instances of the queried data node.
+#'         columns: value, container, dimension, type, scriptNum, startLine, code
 #'
 #' @noRd
 .get.output.var <- function(query)
@@ -656,7 +723,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 
 # === LINEAGE ================================================================ #
 
-#' debug.lineage
+#' The Lineage of a Variable/Data Node.
 #' 
 #' For each data node queried, debug.lineage returns a data frame representing
 #' its forwards (how the data is used), or backwards (how the data was generated)
@@ -681,6 +748,13 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #'         queried data nodes.
 #'
 #' @examples
+#' \dontrun{
+#' prov.debug.run("test.R")
+#' debug.lineage("x")
+#' debug.lineage("x", start.line = 5, script.num = 2)
+#' debug.lineage("a", "b", forward = TRUE)
+#' debug.lineage(all = TRUE)
+#' }
 #'
 #' @export
 #' @rdname debug.lineage
@@ -760,6 +834,13 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	return(lineages)
 }
 
+#' Get the lineage of the specified data node.
+#' Function shared with debug.error and debug.warning .
+#'
+#' @param node.id The data node id.
+#' @param forward If TRUE, gets the forward lineage instead of the default backwards lineage.
+#'
+#' @return The lineage (vector of procedure nodes, sorted by increasing procedure node id).
 #' @noRd
 .get.lineage <- function(node.id, forward = FALSE)
 {	
@@ -787,6 +868,15 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	return(lineage)
 }
 
+#' Get user output for lineages.
+#' Function shared with debug.error and debug.warning .
+#' columns: scriptNum, startLine, code
+#'
+#' @param id.list A vector of procedure node id (the lineage).
+#'
+#' @return The lineage, formatted for user output.
+#'         columns: scriptNum, startLine, code
+#'
 #' @noRd
 .get.output.lineage <- function(id.list)
 {
@@ -811,7 +901,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 
 # === TYPE CHANGES =========================================================== #
 
-#' debug.type.chages
+#' Tracking Type Changes
 #' 
 #' Returns a data frame for each variable in the execution containing the 
 #' instances where the data type changed.
@@ -832,6 +922,12 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 #' @return A list of data frames for each variable with at least 1 data type change.
 #'
 #' @examples
+#' \dontrun{
+#' prov.debug.run("test.R")
+#' debug.type.changes()
+#' debug.type.changes("x")
+#' debug.type.changes(var = c("a", "b"))
+#' }
 #'
 #' @export
 #' @rdname debug.type.changes
@@ -926,12 +1022,13 @@ debug.type.changes <- function(var = NA)
 	return(vars)
 }
 
-#' Form user output.
+#' Forms user output.
 #' columns: value, container, dimension, type, code, scriptNum, startLine
 #'
 #' @param data.nodes The data nodes to be displayed to the user.
-#' @return The data frame of type changes to be returned to the user.
 #'
+#' @return The data frame of type changes to be returned to the user.
+#'         columns: value, container, dimension, type, code, scriptNum, startLine
 #' @noRd
 .get.output.type.changes <- function(data.nodes)
 {
@@ -967,7 +1064,7 @@ debug.type.changes <- function(var = NA)
 
 # === STATE ================================================================== #
 
-#' debug.state
+#' The State at a Line
 #'
 #' For each queried line, debug.state returns a data frame showing the state
 #' at that line. This assumes that the given line has been executed.
@@ -994,6 +1091,12 @@ debug.type.changes <- function(var = NA)
 #'         at the end of execution if no parameters are given to the function. 
 #'
 #' @examples
+#' \dontrun{
+#' prov.debug.run("test.R")
+#' debug.state()
+#' debug.state(5)
+#' debug.state(10, 20, script.num = 2)
+#' }
 #'
 #' @export
 #' @rdname debug.state
@@ -1083,10 +1186,12 @@ debug.state <- function(..., script.num = 1)
 #' Returns a table of valid queries.
 #' columns: startLine, scriptNum
 #'
-#' @param ... The user's line queries
+#' @param ... The user's line queries.
 #' @param script.num The script number to be queried.
 #' 
 #' @return The table of valid queries.
+#'         columns: startLine, scriptNum
+#'
 #' @noRd
 .get.valid.query.state <- function(..., script.num = 1)
 {
@@ -1193,8 +1298,8 @@ debug.state <- function(..., script.num = 1)
 #' or NULL if none are found. Also returns NULL if the procedure node id given is NULL.
 #'
 #' @param The procedure node id where the search for an variable begins.
-#' @return The data node id of the variable found, or NULL if none are found.
 #'
+#' @return The data node id of the variable found, or NULL if none are found.
 #' @noRd
 .get.last.var <- function(p.id)
 {
@@ -1239,14 +1344,14 @@ debug.state <- function(..., script.num = 1)
 	return(NULL)
 }
 
-#' Returns the state for a given data node.
+#' Returns the state for a given data node as a vector of data node id.
 #' This is done by obtaining all data nodes up to the specified data node id
 #' and obtaining the last occurance of each unique variable name.
 #'
 #' @param d.id The data node id for the data node where the state should be
 #'             obtained for.
-#' @return The state. A vector of data node id.
 #'
+#' @return The state. A vector of data node id.
 #' @noRd
 .get.state <- function(d.id)
 {
@@ -1304,8 +1409,10 @@ debug.state <- function(..., script.num = 1)
 #' From the given list of data node id, form user output.
 #' columns: name, value, container, dimension, type, scriptNum, startLine
 #'
-#' @param id.list A list of data node id which forms the state.
+#' @param id.list A vector of data node id which forms the state.
+#' 
 #' @return The state. A data frame.
+#'         columns: name, value, container, dimension, type, scriptNum, startLine
 #'
 #' @noRd
 .get.output.state <- function(id.list)
@@ -1354,16 +1461,28 @@ debug.state <- function(..., script.num = 1)
 
 # === ERROR ================================================================== #
 
-#' Debugging Errors and Warnings
+#' Tracking the Lineage of Errors and Warnings
 #' 
-#' 
-#' 
-#' @param stack.overflow
+#' debug.error returns a data frame representing the backwards lineage of (the 
+#' steps leading up to) the error in the execution, if any.
 #'
-#' @return
+#' @param stack.overflow If TRUE, the error message will searched for on Stack Overflow. 
+#'
+#' @return debug.error returns a data frame representing the backwards lineage 
+#' of the error in the execution, if any.
 #'
 #' @examples
-#' 
+#' \dontrun{
+#' prov.debug.run("test.R")
+#'
+#' debug.error()
+#' debug.error(stack.overflow = TRUE)
+#'
+#' debug.warning(1)
+#' debug.warning(2,3)
+#' debug.warning(all = TRUE)
+#' }
+#'
 #' @export
 #' @rdname debug.exceptions
 debug.error <- function(stack.overflow = FALSE)
@@ -1413,6 +1532,16 @@ debug.error <- function(stack.overflow = FALSE)
 	return(lineage)
 }
 
+#' Searches the error on Stack Overflow.
+#' The user may choose a number between 1 and 6 (inclusive) and the corresponding
+#' Stack Overflow page will be opened.
+#'
+#' @param search.query The error message.
+#' @param order A parameter to query StackExchange api. Determines how the results are ordered.
+#' @param sort A parameter to query StackExchange api. Determines how the results are sorted.
+#' @param tagged A parameter to query StackExchange api.
+#'
+#' @return N/A
 #' @noRd
 .search.stackoverflow <- function(search.query, order = "desc", sort = "votes", tagged = "r") 
 {
@@ -1469,6 +1598,15 @@ debug.error <- function(stack.overflow = FALSE)
 	}
 }
 
+#' Queries StackExchange api.
+#' A helper function to .search.stackoverflow .
+#'
+#' @param search.query The error message, in a form that can be used to query StackExchange api.
+#' @param order A parameter to query StackExchange api. Determines how the results are ordered.
+#' @param sort A parameter to query StackExchange api. Determines how the results are sorted.
+#' @param tagged A parameter to query StackExchange api.
+#'
+#' @return The results from StackExchange api, if any.
 #' @noRd
 .query.stackoverflow <- function(search.query, order = "desc", sort = "votes", tagged = "r")
 {
@@ -1497,6 +1635,12 @@ debug.error <- function(stack.overflow = FALSE)
 	return(head(result$items))
 }
 
+#' Processes the error message into a form that can be used to query StackExchange api.
+#'
+#' @param error.message The error message.
+#' @param remove.quotes If TRUE, elements surrounded by quotes will be removed.
+#'
+#' @return The error message, in a form that can be used to query StackExchange api.
 #' @noRd
 .process.error <- function(error.message, remove.quotes = TRUE)
 {
@@ -1529,12 +1673,23 @@ debug.error <- function(stack.overflow = FALSE)
 
 # === WARNING ================================================================ #
 
-#' debug.warning
+#' Debugging Errors and Warnings
 #'
-#' @param ...
-#' @param all
+#' debug.warning returns a data frame representing the backwards lineage for 
+#' each warning queried.
 #'
-#' @return
+#' Each data frame contains the following columns:
+#' \itemize{
+#'		\item scriptNum: The script number the data node is associated with.
+#'		\item startLine: The line number the data node is associated with.
+#'		\item code: The line of code which used/produced the data node.
+#' }
+#'
+#' @param ... The warning(s) to be queried.
+#' @param all If TRUE, the lineages of all warnings are returned.
+#'
+#' @return debug.warning returns a list of data frames of lineages for the queried 
+#'         warnings.
 #'
 #' @export
 #' @rdname debug.exceptions
@@ -1575,12 +1730,14 @@ debug.warning <- function(..., all = FALSE)
 }
 
 #' Returns a table of valid warning queries.
-#' Columns: id, value
+#' columns: id, value
 #'
 #' @param warning.nodes Table of all possible warning nodes.
 #' @param ... The user's query.
 #' @param all If TRUE, automatically returns the table of all warning nodes.
 #'
+#' @return A data frame of valid warning queries.
+#'         columns: id, value
 #' @noRd
 .get.valid.query.warn <- function(warning.nodes, ..., all = FALSE)
 {
@@ -1628,6 +1785,7 @@ debug.warning <- function(..., all = FALSE)
 #'
 #' @param warning.nodes The data frame of warning nodes.
 #'
+#' @return N/A
 #' @noRd
 .print.pos.warnings <- function(warning.nodes)
 {
@@ -1640,8 +1798,8 @@ debug.warning <- function(..., all = FALSE)
 #' Collapses the given parameters into a single list.
 #'
 #' @param ... The parameteres to be collapsed.
-#' @return The given parameters, collapsed into a single list.
 #'
+#' @return The given parameters, collapsed into a single list.
 #' @noRd
 .flatten.args <- function(...)
 {
@@ -1653,8 +1811,8 @@ debug.warning <- function(..., all = FALSE)
 #' @param list The list of data frames to be combined.
 #'			   All data frames in this list must have the same columns.
 #'			   Guarenteed to have at least one element.
-#' @return The combined data frame.
 #'
+#' @return The combined data frame.
 #' @noRd
 .form.df <- function(list)
 {	
@@ -1681,8 +1839,8 @@ debug.warning <- function(..., all = FALSE)
 #' This is used in checking the validity of queried line or script numbers.
 #'
 #' @param arg The argument to be converted to an integer.
-#' @return The argument as an integer, NA, or NULL if the argument is not an integer.
 #'
+#' @return The argument as an integer, NA, or NULL if the argument is not an integer.
 #' @noRd
 .to.int <- function(arg)
 {
@@ -1718,8 +1876,8 @@ debug.warning <- function(..., all = FALSE)
 #' Finds the location of a number within an ordered list of numbers.
 #'
 #' @param num The number. Guarenteed to fall within the list.
-#' @return The index of the given list where the number falls right after.
 #'
+#' @return The index of the given list where the number falls right after.
 #' @noRd
 .find.num.loc <- function(nums.list, num)
 {
@@ -1763,8 +1921,8 @@ debug.warning <- function(..., all = FALSE)
 #' Finds the associated proc node id from the given data node id.
 #'
 #' @param d.id The data node id.
-#' @return The associated procedure node id, or a list of id if there are multiple.
 #'
+#' @return The associated procedure node id, or a list of id if there are multiple.
 #' @noRd
 .get.p.id <- function(d.id)
 {
@@ -1785,8 +1943,8 @@ debug.warning <- function(..., all = FALSE)
 #' into the data frame.
 #'
 #' @param df The data frame. May have no rows.
+#'
 #' @return The data frame with NA rows, if any, removed. Could have no rows.
-#' 
 #' @noRd
 .remove.na.rows <- function(df)
 {
@@ -1805,8 +1963,8 @@ debug.warning <- function(..., all = FALSE)
 #' Remove elements which are NULL in a given list. 
 #' 
 #' @param list The list. Has at least 1 element.
-#' @return The list with NULL elements are removed. Could be empty.
 #'
+#' @return The list with NULL elements are removed. Could be empty.
 #' @noRd
 .remove.null <- function(list)
 {
@@ -1818,6 +1976,7 @@ debug.warning <- function(..., all = FALSE)
 #'
 #' @param pos.args The table or list of possible options.
 #'
+#' @return N/A
 #' @noRd
 .print.pos.options <- function(pos.args)
 {
