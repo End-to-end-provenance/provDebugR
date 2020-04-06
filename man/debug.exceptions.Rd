@@ -31,12 +31,20 @@ debug.warning returns a data frame representing the backwards lineage for
 each warning queried.
 }
 \details{
-Each data frame contains the following columns:
+Each data frame returned by debug.error and debug.warning contains the 
+following columns:
 \itemize{
 	\item scriptNum: The script number the data node is associated with.
 	\item startLine: The line number the data node is associated with.
 	\item code: The line of code which used/produced the data node.
 }
+
+debug.error and debug.warning belong to provDebugR, a debugger which utilises 
+provenance collected post-execution to facilitate understanding of the
+execution and aid in debugging.
+
+These functions may be used only after the debugger has been initialised using
+one its initialisation functions (listed below).
 }
 \examples{
 \dontrun{
@@ -50,4 +58,32 @@ debug.warning(2,3)
 debug.warning(all = TRUE)
 }
 
+}
+\seealso{
+provDebugR Initialisation Functions:
+
+\code{\link{prov.debug}}
+
+\code{\link{prov.debug.file}}
+
+\code{\link{prov.debug.run}}
+
+Other provDebugR Functions (non-initialisation):
+
+\code{\link{debug.line}}: Returns all immediate inputs and outputs
+             for the line(s) queried.
+
+\code{\link{debug.lineage}}: Returns the forwards or backwards lineage
+             of the data object(s) queried. The forwards lineage shows how the
+             data object was used, and the backwards lineage shows how it was produced.
+
+\code{\link{debug.state}}: Returns the state at the line(s) queried,
+             after the line had been executed. The state is the list of all 
+             variables and their values in the environment at the queried line.
+
+\code{\link{debug.type.changes}}: Returns a data frame for each variable in
+             the execution containing the instances where the data type changed.
+
+\code{\link{debug.variable}}: Returns a data frame showing all instances
+             of the variable(s) queried.
 }

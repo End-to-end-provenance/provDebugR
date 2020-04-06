@@ -27,8 +27,23 @@ prov.debug.run executs a R or Rmd script, collects provenance, and
 initialises the debugger using the collected provenance.
 }
 \details{
-provDebugR is a debugger that work post script execution, using the PROV-JSON 
-output produced by rdt or rdtLite.
+Provenance is a detailed record of the execution of a script which includes
+information about the steps that were excecuted and the intermediate data values
+that were used and/or created. After it is collected, it can be used in a
+variety of ways to better understand the execution.
+
+This package, provDebugR, is one such application, using provenance post-execution
+to help the user understand and debug their script by providing functions to
+look at intermediate steps and data values, as well as their forwards or backwards 
+lineage. These functions may be used only after provDebugR has been initialised using 
+one of the initialisation functions above.
+
+The forwards lineage of a data object is the list of steps showing how the data object
+was used. The backwards lineage of a data object is the list of steps showing how the
+data object was produced.
+
+provDebugR uses provenance produced by rdtLite (a provenance collection package
+available on CRAN), stored in PROV-JSON format.
 }
 \examples{
 \dontrun{
@@ -43,9 +58,41 @@ prov.debug.run("test.R")}
 
 }
 \references{
-PROV-JSON standard: \url{https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/}
+rdtLite (Provenance Collection Tool): 
+            \url{https://cran.r-project.org/web/packages/rdtLite/index.html}
 
-PROV-JSON output produced by rdtLite: \url{https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md}
+PROV-JSON output produced by rdtLite: 
+            \url{https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md}
 
-rdtLite (Provenance Collection Tool): \url{https://github.com/End-to-end-provenance/rdtLite}
+PROV-JSON standard: 
+            \url{https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/}
+}
+\seealso{
+Other provDebugR Functions (non-initialisation):
+
+\code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
+             The error may be queried on StackOverflow.
+
+\code{\link{debug.line}}: Returns all immediate inputs and outputs
+             for the line(s) queried.
+
+\code{\link{debug.lineage}}: Returns the forwards or backwards lineage
+             of the data object(s) queried. The forwards lineage shows how the
+             data object was used, and the backwards lineage shows how it was produced.
+
+\code{\link{debug.state}}: Returns the state at the line(s) queried,
+             after the line had been executed. The state is the list of all 
+             variables and their values in the environment at the queried line.
+
+\code{\link{debug.type.changes}}: Returns a data frame for each variable in
+             the execution containing the instances where the data type changed.
+
+\code{\link{debug.variable}}: Returns a data frame showing all instances
+             of the variable(s) queried.
+
+\code{\link{debug.warning}}: Returns the backwards lineage of the queried
+             warning(s), if any.
+
+Other tools that use provenance: 
+         \url{https://github.com/End-to-end-provenance}
 }

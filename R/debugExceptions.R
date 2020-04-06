@@ -24,10 +24,44 @@
 #' debug.error returns a data frame representing the backwards lineage of (the 
 #' steps leading up to) the error in the execution, if any.
 #'
+#' Each data frame returned by debug.error and debug.warning contains the 
+#' following columns:
+#' \itemize{
+#'		\item scriptNum: The script number the data node is associated with.
+#'		\item startLine: The line number the data node is associated with.
+#'		\item code: The line of code which used/produced the data node.
+#' }
+#'
+#' debug.error and debug.warning belong to provDebugR, a debugger which utilises 
+#' provenance collected post-execution to facilitate understanding of the
+#' execution and aid in debugging.
+#'
+#' These functions may be used only after the debugger has been initialised using
+#' one its initialisation functions (listed below).
+#'
 #' @param stack.overflow If TRUE, the error message will searched for on Stack Overflow. 
 #'
 #' @return debug.error returns a data frame representing the backwards lineage 
 #' of the error in the execution, if any.
+#'
+#' @seealso provDebugR Initialisation Functions: 
+#' @seealso \code{\link{prov.debug}}
+#' @seealso \code{\link{prov.debug.file}} 
+#' @seealso \code{\link{prov.debug.run}}
+#'
+#' @seealso Other provDebugR Functions (non-initialisation):
+#' @seealso \code{\link{debug.line}}: Returns all immediate inputs and outputs
+#'              for the line(s) queried.
+#' @seealso \code{\link{debug.lineage}}: Returns the forwards or backwards lineage
+#'              of the data object(s) queried. The forwards lineage shows how the
+#'              data object was used, and the backwards lineage shows how it was produced. 
+#' @seealso \code{\link{debug.state}}: Returns the state at the line(s) queried,
+#'              after the line had been executed. The state is the list of all 
+#'              variables and their values in the environment at the queried line.
+#' @seealso \code{\link{debug.type.changes}}: Returns a data frame for each variable in
+#'              the execution containing the instances where the data type changed.
+#' @seealso \code{\link{debug.variable}}: Returns a data frame showing all instances
+#'              of the variable(s) queried.
 #'
 #' @examples
 #' \dontrun{
@@ -235,13 +269,6 @@ debug.error <- function(stack.overflow = FALSE)
 #'
 #' debug.warning returns a data frame representing the backwards lineage for 
 #' each warning queried.
-#'
-#' Each data frame contains the following columns:
-#' \itemize{
-#'		\item scriptNum: The script number the data node is associated with.
-#'		\item startLine: The line number the data node is associated with.
-#'		\item code: The line of code which used/produced the data node.
-#' }
 #'
 #' @param ... The warning(s) to be queried.
 #' @param all If TRUE, the lineages of all warnings are returned.

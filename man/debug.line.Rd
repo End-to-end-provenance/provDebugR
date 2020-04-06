@@ -32,6 +32,13 @@ Each data frame contains the following columns:
 	\item type: The data type(s) contained within the container.
 }
 }
+\details{
+debug.line belongs to provDebugR, a debugger which utilises provenance collected
+post-execution to facilitate understanding of the execution and aid in debugging.
+
+This function may be used only after the debugger has been initialised using
+one its initialisation functions (listed below).
+}
 \examples{
 \dontrun{
 prov.debug.run("test.R")
@@ -40,4 +47,35 @@ debug.line(all = TRUE)
 debug.line(5, 10, script.num = 2)
 }
 
+}
+\seealso{
+provDebugR Initialisation Functions:
+
+\code{\link{prov.debug}}
+
+\code{\link{prov.debug.file}}
+
+\code{\link{prov.debug.run}}
+
+Other provDebugR Functions (non-initialisation):
+
+\code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
+             The error may be queried on StackOverflow.
+
+\code{\link{debug.lineage}}: Returns the forwards or backwards lineage
+             of the data object(s) queried. The forwards lineage shows how the
+             data object was used, and the backwards lineage shows how it was produced.
+
+\code{\link{debug.state}}: Returns the state at the line(s) queried,
+             after the line had been executed. The state is the list of all 
+             variables and their values in the environment at the queried line.
+
+\code{\link{debug.type.changes}}: Returns a data frame for each variable in
+             the execution containing the instances where the data type changed.
+
+\code{\link{debug.variable}}: Returns a data frame showing all instances
+             of the variable(s) queried.
+
+\code{\link{debug.warning}}: Returns the backwards lineage of the queried
+             warning(s), if any.
 }

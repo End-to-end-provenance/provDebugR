@@ -33,6 +33,13 @@
 #'		\item startLine: The line number the variable is associated with.
 #' }
 #'
+#' debug.variable belongs to provDebugR, a debugger which utilises provenance 
+#' collected post-execution to facilitate understanding of the execution and aid 
+#' in debugging.
+#'
+#' This function may be used only after the debugger has been initialised using
+#' one its initialisation functions (listed below).
+#'
 #' @param ... The variable names to be queried.
 #' @param val.type Optional. If not NA, this filters the results to contain
 #'                 only instances where the valType (container or type) has the
@@ -43,6 +50,27 @@
 #'            returned.
 #'
 #' @return A list of data frames showing all instances of each variable queried.
+#'
+#' @seealso provDebugR Initialisation Functions: 
+#' @seealso \code{\link{prov.debug}}
+#' @seealso \code{\link{prov.debug.file}} 
+#' @seealso \code{\link{prov.debug.run}}
+#'
+#' @seealso Other provDebugR Functions (non-initialisation):
+#' @seealso \code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
+#'              The error may be queried on StackOverflow.
+#' @seealso \code{\link{debug.line}}: Returns all immediate inputs and outputs
+#'              for the line(s) queried.
+#' @seealso \code{\link{debug.lineage}}: Returns the forwards or backwards lineage
+#'              of the data object(s) queried. The forwards lineage shows how the
+#'              data object was used, and the backwards lineage shows how it was produced. 
+#' @seealso \code{\link{debug.state}}: Returns the state at the line(s) queried,
+#'              after the line had been executed. The state is the list of all 
+#'              variables and their values in the environment at the queried line.
+#' @seealso \code{\link{debug.type.changes}}: Returns a data frame for each variable in
+#'              the execution containing the instances where the data type changed.
+#' @seealso \code{\link{debug.warning}}: Returns the backwards lineage of the queried
+#'              warning(s), if any.
 #'
 #' @examples
 #' \dontrun{
