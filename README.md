@@ -1,8 +1,10 @@
 # provDebugR
 
-A debugging tool that leverages provenance to provide handy information about R scripts to assist in writing them.
+A debugging tool that leverages provenance to provide handy information 
+about R scripts to assist in writing them.
 
-For a more in-depth description of the functions available in this package please [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+For a more in-depth description of the functions available in this package 
+please [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
 
 # Installation
 
@@ -50,7 +52,9 @@ prov.debug.file("provJsonFileName.json")
 
 Once the debugger has been initialised, the rest of the functions the package
 provides can be used.
-To find out more about what each function does, [refer to the Wiki!](https://github.com/ProvTools/provDebugR/wiki)
+
+To find out more about what each function does, please 
+[refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
 * debug.error
 * debug.line
 * debug.lineage
