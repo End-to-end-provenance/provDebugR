@@ -55,10 +55,10 @@ provides can be used.
 
 To find out more about what each function does, please 
 [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
-* debug.error
-* debug.line
-* debug.lineage
-* debug.state
-* debug.type.changes
-* debug.variable
-* debug.warning
+* [debug.error](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.error)
+* [debug.line](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.line)
+* [debug.lineage](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.lineage)
+* [debug.state](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.state)
+* [debug.type.changes](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.type.changes)
+* [debug.variable](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.variable)
+* [debug.warning](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.warning)

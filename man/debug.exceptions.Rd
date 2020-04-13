@@ -10,7 +10,7 @@ debug.error(stack.overflow = FALSE)
 debug.warning(..., all = FALSE)
 }
 \arguments{
-\item{stack.overflow}{If TRUE, the error message will searched for on Stack Overflow.}
+\item{stack.overflow}{If TRUE, the error message will be searched for on Stack Overflow.}
 
 \item{...}{The warning(s) to be queried.}
 

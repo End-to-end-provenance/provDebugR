@@ -39,7 +39,7 @@
 #' These functions may be used only after the debugger has been initialised using
 #' one its initialisation functions (listed below).
 #'
-#' @param stack.overflow If TRUE, the error message will searched for on Stack Overflow. 
+#' @param stack.overflow If TRUE, the error message will be searched for on Stack Overflow. 
 #'
 #' @return debug.error returns a data frame representing the backwards lineage 
 #' of the error in the execution, if any.
@@ -333,7 +333,7 @@ debug.warning <- function(..., all = FALSE)
 	query <- unique(.flatten.args(...))
 	
 	if(is.null(query)) {
-		.print.pos.warnings(warning.nodes)
+		.print.pos.warnings(warning.nodes$value)
 		return(NULL)
 	}
 	
