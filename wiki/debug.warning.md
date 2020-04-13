@@ -6,7 +6,7 @@ Each data frame contains the following columns:
 * startLine: The line number the data node is associated with.
 * code: The line of code which used/produced the data node.
 
-### Usage
+## Usage
 
 The function signature for `debug.warning` is:
 ```
@@ -28,7 +28,7 @@ debug.warning(all = TRUE)
 ```
 
 
-### Output Examples
+## Output Examples
 
 Let `myScript.R` be the following:
 ```

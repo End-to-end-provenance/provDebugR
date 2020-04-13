@@ -7,7 +7,7 @@ Each data frame contains the following columns:
 * code: The line of code which used/produced the data node.
 
 
-### Usage
+## Usage
 
 The function signature for `debug.error` is:
 ```
@@ -26,7 +26,7 @@ debug.error(stack.overflow = TRUE)
 ```
 
 
-### Usage Examples
+## Usage Examples
 
 Let `myScript.R` be the following:
 ```
