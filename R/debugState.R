@@ -22,7 +22,7 @@
 #' The State at a Line
 #'
 #' For each queried line, debug.state returns a data frame showing the state
-#' at that line. This assumes that the given line has been executed.
+#' at that line, after it has been executed.
 #' Each data frame contains the following columns:
 #' \itemize{
 #'		\item name: The names of variables in the state.
