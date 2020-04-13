@@ -71,7 +71,7 @@
 #' \dontrun{
 #' prov.debug.run("test.R")
 #' debug.type.changes()
-#' debug.type.changes("x")
+#' debug.type.changes(var = "x")
 #' debug.type.changes(var = c("a", "b"))
 #' }
 #'
