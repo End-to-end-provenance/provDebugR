@@ -10,12 +10,17 @@ prov.debug()
 
 prov.debug.file(prov.file)
 
-prov.debug.run(script)
+prov.debug.run(script, snapshot.size = 0)
 }
 \arguments{
 \item{prov.file}{Path to a PROV-JSON file.}
 
 \item{script}{Path to an R script.}
+
+\item{snapshot.size}{The maximum size for snapshot files, in kilobytes.
+If 0, no snapshots are saved. If Inf, the complete state of an object
+ is stored in the snapshot file. For other values, the head of the  
+ object, truncated to a size near the specified limit, is saved.}
 }
 \description{
 prov.debug uses the provenance from the last execution of prov.run to 
@@ -54,7 +59,7 @@ prov.debug()}
 prov.debug.file("prov_test/prov.json")}
 
 \dontrun{
-prov.debug.run("test.R")}
+prov.debug.run("test.R", snapshot.size = 100)}
 
 }
 \references{

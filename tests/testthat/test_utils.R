@@ -18,6 +18,8 @@ test_that("Utility - .clear",
 	expect_false(is.null(provDebugR:::.debug.env$data.nodes))
 	expect_false(is.null(provDebugR:::.debug.env$data.proc))
 	expect_false(is.null(provDebugR:::.debug.env$proc.data))
+	expect_false(is.null(provDebugR:::.debug.env$var.env))
+	expect_false(is.null(provDebugR:::.debug.env$prov.dir))
 	
 	# clear .debug.env
 	provDebugR:::.clear()
@@ -30,6 +32,8 @@ test_that("Utility - .clear",
 	expect_true(is.null(provDebugR:::.debug.env$data.nodes))
 	expect_true(is.null(provDebugR:::.debug.env$data.proc))
 	expect_true(is.null(provDebugR:::.debug.env$proc.data))
+	expect_true(is.null(provDebugR:::.debug.env$var.env))
+	expect_true(is.null(provDebugR:::.debug.env$prov.dir))
 })
 
 # .extract.vars

@@ -33,11 +33,10 @@
 .debug.env$data.proc <- NULL
 .debug.env$proc.data <- NULL
 
-# EDITS
-# variable environment
+# environment for loaded variables
 .debug.env$var.env <- NULL
 
-# prov folder
+# path to provenance directory
 .debug.env$prov.dir <- NULL
 
 # === INIT =================================================================== #
@@ -197,9 +196,10 @@ prov.debug.run <- function(script, snapshot.size = 0)
 	.debug.env$data.proc <- provParseR::get.data.proc(.debug.env$prov)
 	.debug.env$proc.data <- provParseR::get.proc.data(.debug.env$prov)
 	
-	# EDITS
+	# var.env (for loading variables for viewing)
 	.debug.env$var.env <- new.env(parent = .debug.env)
 	
+	# path to provenance directory
 	environment <- provParseR::get.environment(.debug.env$prov)
 	.debug.env$prov.dir <- environment$value[environment$label == "provDirectory"]
 	
@@ -362,7 +362,9 @@ prov.debug.run <- function(script, snapshot.size = 0)
 	.debug.env$data.proc <- NULL
 	.debug.env$proc.data <- NULL
 	
-	# EDITS
+	# environment for loaded variables
 	.debug.env$var.env <- NULL
+	
+	# path to provenance directory
 	.debug.env$prov.dir <- NULL
 }
