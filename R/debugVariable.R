@@ -91,10 +91,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	
 	# STEP: get all possible variables
 	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
-	data.nodes <- .debug.env$data.nodes
-	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
-	
 	# columns: d.id, p.id, name, valType, startLine, scriptNum
+	data.nodes <- .extract.vars(.debug.env$data.nodes)
 	pos.vars <- .get.pos.var(data.nodes)
 	
 	# CASE: no variables

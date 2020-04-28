@@ -30,6 +30,24 @@
 	return(unlist(list(...)))
 }
 
+#' Extract all possible variables from the given data nodes table.
+#' Data nodes must have type = "Data" or "Snapshot" to be considered a variable.
+#'
+#' @param data.nodes The data nodes table.
+#'
+#' @return Table of variables extracted from the given data nodes table.
+#' @noRd
+.extract.vars <- function(data.nodes)
+{
+	if(nrow(data.nodes) == 0)
+		return(data.nodes)
+	
+	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
+	data.nodes <- .remove.na.rows(data.nodes)
+	
+	return(data.nodes)
+}
+
 #' Combine a list of data frames into a single data frame.
 #'
 #' @param list The list of data frames to be combined.

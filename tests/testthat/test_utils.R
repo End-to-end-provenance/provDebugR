@@ -32,6 +32,44 @@ test_that("Utility - .clear",
 	expect_true(is.null(provDebugR:::.debug.env$proc.data))
 })
 
+# .extract.vars
+test_that("Utility - .extract.vars",
+{
+	# CASES
+	df1 <- data.frame(name = character(),                     # no data nodes
+					 type = character(),
+					 stringsAsFactors = FALSE)
+	
+	df2 <- data.frame(name = "dev.off",                       # no variables
+					 type = "Device",
+					 stringsAsFactors = FALSE)
+	
+	df3 <- data.frame(name = c("x","y"),                      # all variables
+					 type = c("Data", "Snapshot"),
+					 stringsAsFactors = FALSE)
+	
+	df4 <- data.frame(name = c("x","dev.off","y"),            # some vars
+					 type = c("Snapshot", "Device", "Data"),
+					 stringsAsFactors = FALSE)
+	
+	c1 <- provDebugR:::.extract.vars(df1)
+	c2 <- provDebugR:::.extract.vars(df2)
+	c3 <- provDebugR:::.extract.vars(df3)
+	c4 <- provDebugR:::.extract.vars(df4)
+	
+	# EXPECTED
+	e1 <- df1
+	e2 <- df1
+	e3 <- df3
+	e4 <- df4[-2, ]
+	
+	# TEST
+	expect_equivalent(c1, e1)
+	expect_equivalent(c2, e2)
+	expect_equivalent(c3, e3)
+	expect_equivalent(c4, e4)
+})
+
 # .form.df
 test_that("Utility - .form.df",
 {

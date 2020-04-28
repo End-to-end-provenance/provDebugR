@@ -84,9 +84,7 @@ debug.type.changes <- function(var = NA)
 		stop("There is no provenance.")
 	
 	# Get all data nodes with type "Data" or "Snapshot"
-	data.nodes <- .debug.env$data.nodes
-	data.nodes <- data.nodes[data.nodes$type == "Data" | data.nodes$type == "Snapshot", ]
-	data.nodes <- .remove.na.rows(data.nodes)
+	data.nodes <- .extract.vars(.debug.env$data.nodes)
 	
 	# case: no variables
 	if(nrow(data.nodes) == 0) {

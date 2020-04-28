@@ -22,7 +22,13 @@
 #' @export
 debug.view <- function(var, start.line = NA, script.num = 1)
 {
-	# Get all possible variables
+	# CASE: no provenance
+	if(!.debug.env$has.graph)
+		stop("There is no provenance.")
+	
+	# STEP: get all possible variables
+	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
+	data.nodes <- .extract.vars(.debug.env$data.nodes)
 	
 	# Get user's query
 	# remove column 2 (valType)
