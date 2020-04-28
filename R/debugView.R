@@ -20,7 +20,7 @@
 # === VIEW ================================================================== #
 
 #' @export
-debug.view <- function(var, start.line = NA, script.num = 1)
+debug.view <- function(..., start.line = NA, script.num = 1)
 {
 	# CASE: no provenance
 	if(!.debug.env$has.graph)
@@ -28,33 +28,85 @@ debug.view <- function(var, start.line = NA, script.num = 1)
 	
 	# STEP: get all possible variables
 	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
-	data.nodes <- .extract.vars(.debug.env$data.nodes)
+	pos.vars <- .extract.vars(.debug.env$data.nodes)
 	
-	# Get user's query
-	# remove column 2 (valType)
-	# resulting cols: name, startLine, scriptNum
+	# case: no variables
+	if(nrow(pos.vars) == 0) {
+		cat("There are no variables.\n")
+		return(invisible(NULL))
+	}
 	
+	# STEP: Get user's query
+	# cols: name, valType, startLine, scriptNum
+	query.vars <- .flatten.args(...)
+	queries <- .get.query.var(query.vars, val.type = NA, 
+							  start.line = start.line, script.num = script.num)
 	
+	# STEP: Get valid queries
+	# remove valType column (col 3)
+	# resulting cols: d.id, name, startLine, scriptNum
+	valid.queries <- .get.valid.query.var(pos.vars, queries, forward = FALSE)
+	valid.queries <- valid.queries[ ,-3]
 	
-	# for every query
-}
-
-# EDITS
-load.variables <- function(d.id, prov.folder)
-{
-	data.nodes <- .debug.env$data.nodes
+	# case: no valid queries
+	if(is.null(valid.queries)) {
+		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum")])
+		return(invisible(NULL))
+	}
 	
-	load.env <- new.env()
+	# STEP: get pointer to var.env and clear it before loading variables
+	var.env <- .debug.env$var.env
+	rm(list = ls(var.env), envir = var.env)
 	
-	sapply(c(1:nrow(d.id)), function(i)
+	# STEP: get path to prov directory
+	prov.dir <- .debug.env$prov.dir
+	
+	# STEP: for every valid query, load variables into var.env before viewing
+	results <- lapply(c(1:nrow(valid.queries)), function(i)
 	{
-		#d.node <- 
+		query <- valid.queries[i, ]
+		
+		# get row from data nodes table
+		data.node <- pos.vars[pos.vars$id == query$d.id, ]
+		
+		# since there could be multiple of the same var names, lines, script num,
+		# form a new var name the data is loaded into
+		# this becomes the title when View is called
+		var.name <- paste(query$name, "_", "line", query$startLine, "_",
+						  "script", query$scriptNum, sep="")
+		
+		# load variable into var.env
+		load <- load.var(var.env, var.name, data.node$value, 
+						 data.node$valType, prov.dir)
+		
+		# form and return row showing load status
+		# view those with load == TRUE
+		if(load)
+		{
+			View(get(var.name, envir = var.env), title = var.name)
+			
+			return(cbind(query[ ,-1], 
+						 title = var.name, 
+						 notes = NA, 
+						 stringsAsFactors = FALSE))
+		}
+		else
+		{
+			return(cbind(query[ ,-1], 
+						 title = var.name, 
+						 notes = "INCOMPLETE", 
+						 stringsAsFactors = FALSE))
+		}
 	})
+	
+	# STEP: bind results into single data frame and return
+	results <- form.df(results)
+	return(results)
 }
 
 # EDITS
 # what must happen for all variables, regardless of how i load the rest of the vars
-load.var <- function(var.env, var.name, var.value, val.type, prov.folder)
+load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 {
 	# check for snapshot
 	# data/<name>.<ext>
@@ -69,7 +121,7 @@ load.var <- function(var.env, var.name, var.value, val.type, prov.folder)
 		# has been stored as an RObject
 		if(file.ext == "txt")
 		{
-			full.path <- paste(prov.folder, "/", file.name, ".RObject", sep = "")
+			full.path <- paste(prov.dir, "/", file.name, ".RObject", sep = "")
 			
 			# if file exists, use separate environment to load into
 			# to prevent overwriting anything in .GlobalEnv
@@ -80,7 +132,7 @@ load.var <- function(var.env, var.name, var.value, val.type, prov.folder)
 				assign(var.name, get(var, envir = load.env), envir = var.env)
 				
 				# clear load.env before returning
-				rm(list=ls(load.env), envir = load.env)
+				rm(list = ls(load.env), envir = load.env)
 				return(TRUE)
 			}
 			
@@ -91,7 +143,7 @@ load.var <- function(var.env, var.name, var.value, val.type, prov.folder)
 		# csv
 		if(file.ext == "csv")
 		{
-			full.path <- paste(prov.folder, "/", file.name, ".csv", sep = "")
+			full.path <- paste(prov.dir, "/", file.name, ".csv", sep = "")
 			
 			# file does not exist
 			if(!file.exists(full.path)) {
@@ -158,6 +210,5 @@ load.var <- function(var.env, var.name, var.value, val.type, prov.folder)
 	# this works on simple values only. does not work for lists
 	val.type <- jsonlite::fromJSON(val.type)
 	assign(var.name, methods::as(var.value, val.type$type), envir = var.env)
-	return
-	(TRUE)
+	return(TRUE)
 }

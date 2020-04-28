@@ -37,6 +37,9 @@
 # variable environment
 .debug.env$var.env <- NULL
 
+# prov folder
+.debug.env$prov.dir <- NULL
+
 # === INIT =================================================================== #
 
 #' A Time-Travelling Debugger for R - Debugger Initialization
@@ -192,6 +195,10 @@ prov.debug.run <- function(script)
 	
 	# EDITS
 	.debug.env$var.env <- new.env(parent = .debug.env)
+	
+	environment <- provParseR::get.environment(.debug.env$prov)
+	.debug.env$prov.dir <- environment$value[environment$label == "provDirectory"]
+	
 	
 	# empty case
 	if(is.null(.debug.env$graph)) {
@@ -353,4 +360,5 @@ prov.debug.run <- function(script)
 	
 	# EDITS
 	.debug.env$var.env <- NULL
+	.debug.env$prov.dir <- NULL
 }

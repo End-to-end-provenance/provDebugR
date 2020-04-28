@@ -272,6 +272,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #'                  columns: d.id, p.id, name, valType, startLine, scriptNum
 #' @param query The user's queries.
 #'              columns: name, valType, startLine, scriptNum
+#' @param forward For lineage queries. This determines which d.id is returned.
 #'
 #' @return The valid queries.
 #'         columns: d.id, name, valType, startLine, scriptNum
