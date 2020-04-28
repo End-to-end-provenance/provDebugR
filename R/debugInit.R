@@ -33,6 +33,10 @@
 .debug.env$data.proc <- NULL
 .debug.env$proc.data <- NULL
 
+# EDITS
+# variable environment
+.debug.env$var.env <- NULL
+
 # === INIT =================================================================== #
 
 #' A Time-Travelling Debugger for R - Debugger Initialization
@@ -185,6 +189,9 @@ prov.debug.run <- function(script)
 	# data-to-procedure edges, procedure-to-data edges
 	.debug.env$data.proc <- provParseR::get.data.proc(.debug.env$prov)
 	.debug.env$proc.data <- provParseR::get.proc.data(.debug.env$prov)
+	
+	# EDITS
+	.debug.env$var.env <- new.env(parent = .debug.env)
 	
 	# empty case
 	if(is.null(.debug.env$graph)) {
@@ -343,4 +350,7 @@ prov.debug.run <- function(script)
 	# data-to-procedure edges, procedure-to-data edges
 	.debug.env$data.proc <- NULL
 	.debug.env$proc.data <- NULL
+	
+	# EDITS
+	.debug.env$var.env <- NULL
 }
