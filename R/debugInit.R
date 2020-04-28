@@ -137,14 +137,18 @@ prov.debug.file <- function(prov.file)
 #' initialises the debugger using the collected provenance.
 #'
 #' @param script Path to an R script.
+#' @param snapshot.size The maximum size for snapshot files, in kilobytes.
+#'            If 0, no snapshots are saved. If Inf, the complete state of an object
+#'             is stored in the snapshot file. For other values, the head of the  
+#'             object, truncated to a size near the specified limit, is saved.
 #'
 #' @examples
 #' \dontrun{
-#' prov.debug.run("test.R")}
+#' prov.debug.run("test.R", snapshot.size = 100)}
 #'
 #' @export
 #' @rdname prov.debug
-prov.debug.run <- function(script)
+prov.debug.run <- function(script, snapshot.size = 0)
 {
 	# determine which provenance collection tool to use
 	tool <- .get.tool()
@@ -160,7 +164,7 @@ prov.debug.run <- function(script)
 	
 	# collect provenance
 	tryCatch({
-		prov.run(script)
+		prov.run(script, snapshot.size = snapshot.size)
 	}, finally = {
 		cat(paste (tool, "is finished running.\n"))
 		

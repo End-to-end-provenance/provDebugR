@@ -36,7 +36,7 @@ using [rdtLite](https://cran.r-project.org/web/packages/rdtLite/index.html) to
 collect provenance before initialising the debugger.
 ```
 library(provDebugR)
-prov.debug.run("myScript.R")
+prov.debug.run("myScript.R", snapshot.size = 100)
 ```
 
 ### `prov.debug()`
@@ -47,8 +47,8 @@ directly to initialise the debugger.
 ```
 library(rdtLite)
 library(provDebugR)
-prov.run("myScript.R")
-prov.debug.run()
+prov.run("myScript.R", snapshot.size = 100)
+prov.debug()
 ```
 
 ### `prov.debug.file`

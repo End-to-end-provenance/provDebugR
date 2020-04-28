@@ -38,7 +38,7 @@ library("provDebugR")
 
 To initialise the debugger with a script, call:
 ```{r}
-prov.debug.run("scriptName.R")
+prov.debug.run("scriptName.R", snapshot.size = 100)
 ```
 Alternatively, if you just called [`rdtLite`](https://cran.r-project.org/web/packages/rdtLite/index.html)'s
 `prov.run` function, you can call:
