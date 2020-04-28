@@ -86,14 +86,14 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		{
 			View(get(var.name, envir = var.env), title = var.name)
 			
-			return(cbind(query[ ,-1], 
+			return(cbind(node[ , c("name", "startLine", "scriptNum")], 
 						 title = var.name, 
 						 notes = NA, 
 						 stringsAsFactors = FALSE))
 		}
 		else
 		{
-			return(cbind(query[ ,-1], 
+			return(cbind(node[ , c("name", "startLine", "scriptNum")], 
 						 title = var.name, 
 						 notes = "INCOMPLETE", 
 						 stringsAsFactors = FALSE))
