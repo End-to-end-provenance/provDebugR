@@ -73,8 +73,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		# since there could be multiple of the same var names, lines, script num,
 		# form a new var name the data is loaded into
 		# this becomes the title when View is called
-		var.name <- paste(query$name, "_", "line", query$startLine, "_",
-						  "script", query$scriptNum, sep="")
+		var.name <- paste(node$name, "_", "line", node$startLine, "_",
+						  "script", node$scriptNum, sep="")
 		
 		# load variable into var.env
 		load <- .load.var(var.env, var.name, node$value, 
