@@ -81,23 +81,15 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 						 node$valType, prov.dir)
 		
 		# form and return row showing load status
-		# view those with load == TRUE
-		if(load)
-		{
+		# view those with load == NA
+		if(is.na(load) || load == "PARTIAL") {
 			View(get(var.name, envir = var.env), title = var.name)
-			
-			return(cbind(node[ , c("name", "startLine", "scriptNum")], 
-						 title = var.name, 
-						 notes = NA, 
-						 stringsAsFactors = FALSE))
 		}
-		else
-		{
-			return(cbind(node[ , c("name", "startLine", "scriptNum")], 
-						 title = var.name, 
-						 notes = "INCOMPLETE", 
-						 stringsAsFactors = FALSE))
-		}
+		
+		return(cbind(node[ , c("name", "startLine", "scriptNum")], 
+					 title = var.name, 
+					 notes = load, 
+					 stringsAsFactors = FALSE))
 	})
 	
 	# STEP: bind results into single data frame and return
@@ -125,6 +117,13 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		len <- length(file.name)
 		file.name <- paste(file.name[c(len-1, len)], collapse = "/")
 		
+		# Check if it is a partial snapshot.
+		# If it is, return PARTIAL instead of NA on successful load.
+		load.notes <- NA
+		
+		if(grepl("PARTIAL", file.name))
+			load.notes <- "PARTIAL"
+		
 		# STEP: Check if RObject exists.
 		# If it does, use load function.
 		full.path <- paste(prov.dir, "/", file.name, ".RObject", sep = "")
@@ -139,7 +138,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 				
 			# clear load.env before returning
 			rm(list = ls(load.env), envir = load.env)
-			return(TRUE)
+			return(load.notes)
 		}
 		
 		# STEP: If RObject does not exist, load manually based on file extension
@@ -157,11 +156,11 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 				close(file)
 				
 				assign(var.name, lines, envir = var.env)
-				return(TRUE)
+				return(load.notes)
 			}
 			
 			assign(var.name, var.value, envir = var.env)
-			return(FALSE)
+			return("INCOMPLETE")
 		}
 		
 		# case: csv
@@ -172,7 +171,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 			# file does not exist
 			if(!file.exists(full.path)) {
 				assign(var.name, var.value, envir = var.env)
-				return(FALSE)
+				return("INCOMPLETE")
 			}
 			
 			# split valtype into parts to get container
@@ -187,7 +186,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 			if(container == "data_frame") 
 			{
 				assign(var.name, var, envir = var.env)
-				return(TRUE)
+				return(load.notes)
 			}
 			
 			# vector
@@ -195,7 +194,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 			{
 				var <- rep("", length.out = as.integer(dim))
 				assign(var.name, var, envir = var.env)
-				return(TRUE)
+				return(load.notes)
 			}
 			
 			# extract each column and bind together for multi-dimensional objects
@@ -209,7 +208,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 			{
 				var <- as.matrix(var)
 				assign(var.name, var, envir = var.env)
-				return(TRUE)
+				return(load.notes)
 			}
 			
 			# array
@@ -217,17 +216,17 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 			{
 				var <- as.array(var)
 				assign(var.name, var, envir = var.env)
-				return(TRUE)
+				return(load.notes)
 			}
 			
 			# no identifiable container
 			assign(var.name, var.value, envir = var.env)
-			return(FALSE)
+			return("INCOMPLETE")
 		}
 		
 		# no identifiable file extension
 		assign(var.name, var.value, envir = var.env)
-		return(FALSE)
+		return("INCOMPLETE")
 	}
 	
 	# Not a snapshot
@@ -235,5 +234,5 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	# to coerce var.value into its listed type fails for lists.
 	val.type <- jsonlite::fromJSON(val.type)
 	assign(var.name, var.value, envir = var.env)
-	return(TRUE)
+	return(NA)
 }
