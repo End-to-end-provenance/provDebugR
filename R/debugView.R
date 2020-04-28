@@ -28,7 +28,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	
 	# STEP: get all possible variables
 	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
-	pos.vars <- .extract.vars(.debug.env$data.nodes)
+	data.nodes <- .extract.vars(.debug.env$data.nodes)
+	pos.vars <- .get.pos.var(data.nodes)
 	
 	# case: no variables
 	if(nrow(pos.vars) == 0) {
@@ -66,8 +67,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	{
 		query <- valid.queries[i, ]
 		
-		# get row from data nodes table
-		data.node <- pos.vars[pos.vars$id == query$d.id, ]
+		# get row from pos.vars table
+		node <- pos.vars[pos.vars$d.id == query$d.id, ]
 		
 		# since there could be multiple of the same var names, lines, script num,
 		# form a new var name the data is loaded into
@@ -76,8 +77,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 						  "script", query$scriptNum, sep="")
 		
 		# load variable into var.env
-		load <- load.var(var.env, var.name, data.node$value, 
-						 data.node$valType, prov.dir)
+		load <- .load.var(var.env, var.name, node$value, 
+						 node$valType, prov.dir)
 		
 		# form and return row showing load status
 		# view those with load == TRUE
@@ -100,39 +101,62 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	})
 	
 	# STEP: bind results into single data frame and return
-	results <- form.df(results)
+	results <- .form.df(results)
+	
+	cat("Viewing:\n\n")
 	return(results)
 }
 
 # EDITS
 # what must happen for all variables, regardless of how i load the rest of the vars
-load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
+.load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 {
 	# check for snapshot
-	# data/<name>.<ext>
-	if(grepl("^data/.*\\.[^\\]+$", var.value))
+	# var.value could be: <path>/data/<name>.<ext> or data/<name>.<ext>
+	if(grepl("^.*[^\\]*data/.*\\.[^\\]+$", var.value))
 	{
-		# split into file name and file extension
+		# split into file extension and extract file name
 		file.parts <- strsplit(var.value, "\\.")[[1]]
 		file.ext <- tolower(file.parts[length(file.parts)])
-		file.name <- paste(file.parts[-length(file.parts)], collapse = ".")
 		
-		# text file
-		# has been stored as an RObject
+		# var.value could be: <path>/data/<name>.<ext> or data/<name>.<ext>
+		file.name <- paste(file.parts[-length(file.parts)], collapse = ".")
+		file.name <- strsplit(file.name, "/")[[1]]
+		len <- length(file.name)
+		file.name <- paste(file.name[c(len-1, len)], collapse = "/")
+		
+		# STEP: Check if RObject exists.
+		# If it does, use load function.
+		full.path <- paste(prov.dir, "/", file.name, ".RObject", sep = "")
+		
+		if(file.exists(full.path))
+		{
+			# Also use separate environment to load into.
+			# This is to prevent overwriting anything in .GlobalEnv
+			load.env <- new.env()
+			var <- load(full.path, envir = load.env)
+			assign(var.name, get(var, envir = load.env), envir = var.env)
+				
+			# clear load.env before returning
+			rm(list = ls(load.env), envir = load.env)
+			return(TRUE)
+		}
+		
+		# STEP: If RObject does not exist, load manually based on file extension
+		# case: txt
 		if(file.ext == "txt")
 		{
-			full.path <- paste(prov.dir, "/", file.name, ".RObject", sep = "")
+			full.path <- paste(prov.dir, "/", file.name, ".txt", sep = "")
 			
-			# if file exists, use separate environment to load into
-			# to prevent overwriting anything in .GlobalEnv
+			# if file exists, read lines can concatenate them to form full text
 			if(file.exists(full.path)) 
 			{
-				load.env <- new.env()
-				var <- load(full.path, envir = load.env)
-				assign(var.name, get(var, envir = load.env), envir = var.env)
+				file <- file(full.path)
+				lines <- readLines(file)
+				lines <- paste(lines, collapse = "\n")
+				close(file)
 				
-				# clear load.env before returning
-				rm(list = ls(load.env), envir = load.env)
+				assign(var.name, lines, envir = var.env)
 				return(TRUE)
 			}
 			
@@ -140,7 +164,7 @@ load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 			return(FALSE)
 		}
 		
-		# csv
+		# case: csv
 		if(file.ext == "csv")
 		{
 			full.path <- paste(prov.dir, "/", file.name, ".csv", sep = "")
@@ -206,9 +230,10 @@ load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 		return(FALSE)
 	}
 	
-	# not a snapshot
-	# this works on simple values only. does not work for lists
+	# Not a snapshot
+	# This works on simple values only. Trying to use the as function 
+	# to coerce var.value into its listed type fails for lists.
 	val.type <- jsonlite::fromJSON(val.type)
-	assign(var.name, methods::as(var.value, val.type$type), envir = var.env)
+	assign(var.name, var.value, envir = var.env)
 	return(TRUE)
 }

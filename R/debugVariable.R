@@ -135,7 +135,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' @param data.nodes A table of all possible data nodes
 #'
 #' @return The table of all possible data nodes, with the necessary fields found.
-#'         columns: d.id, p.id, name, valType, startLine, scriptNum
+#'         columns: d.id, p.id, name, value, valType, startLine, scriptNum
 #'
 #' @noRd
 .get.pos.var <- function(data.nodes)
@@ -144,10 +144,10 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	if(nrow(data.nodes) == 0)
 		return(NULL)
 	
-	# from data nodes, keep columns: id, name, valType
+	# from data nodes, keep columns: id, name, value, valType
 	# rename id column to d.id
-	data.nodes <- data.nodes[ , c("id", "name", "valType")]
-	colnames(data.nodes) <- c("d.id", "name", "valType")
+	data.nodes <- data.nodes[ , c("id", "name", "value", "valType")]
+	colnames(data.nodes) <- c("d.id", "name", "value", "valType")
 	
 	# for each data node, get the corresponding procedure node
 	# some may have multiple proc nodes associated with this (files, url, fromEnv nodes etc.)
@@ -181,8 +181,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	rows <- .form.df(rows)
 	
 	# rename and rearrange columns
-	colnames(rows) <- c("d.id", "name", "valType", "p.id", "startLine", "scriptNum")
-	rows <- rows[ , c("d.id", "p.id", "name", "valType", "startLine", "scriptNum")]
+	colnames(rows) <- c("d.id", "name", "value", "valType", "p.id", "startLine", "scriptNum")
+	rows <- rows[ , c("d.id", "p.id", "name", "value", "valType", "startLine", "scriptNum")]
 	
 	return(rows)
 }

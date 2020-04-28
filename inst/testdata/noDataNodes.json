@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "noDataNodes.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "5.74",
+			"rdt:elapsedTime": "1.12",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -44,7 +44,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(utils)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.53",
+			"rdt:elapsedTime": "0.13",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "library(testthat)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.8",
+			"rdt:elapsedTime": "0.17",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -64,7 +64,7 @@
 		"rdt:p4": {
 			"rdt:name": "noDataNodes.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.01",
+			"rdt:elapsedTime": "0.0",
 			"rdt:scriptNum": "NA",
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -82,12 +82,12 @@
 			"rdt:langVersion": "R version 3.6.2 (2019-12-12)",
 			"rdt:script": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst/testscripts/noDataNodes.R",
 			"rdt:scriptTimeStamp": "2020-02-03T15.25.40EST",
-			"rdt:totalElapsedTime": "7.08",
+			"rdt:totalElapsedTime": "1.42",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/Elizabeth/Documents/Programming/HarvardForest/provDebugR/inst",
 			"rdt:provDirectory": "testdata/prov_noDataNodes",
-			"rdt:provTimestamp": "2020-02-25T18.20.19EST",
+			"rdt:provTimestamp": "2020-04-28T10.32.48EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

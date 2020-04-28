@@ -1,8 +1,9 @@
-"","d.id","p.id","name","valType","startLine","scriptNum"
-"1","d1","p3","col1","{""container"":""vector"", ""dimension"":[11], ""type"":[""integer""]}",3,1
-"2","d2","p5","warning.msg","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",1,2
-"3","d3","p5","col1","{""container"":""vector"", ""dimension"":[10], ""type"":[""integer""]}",1,2
-"4","d4","p6","warning.msg","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",6,2
-"5","d5","p9","get.error.df","function",1,3
-"6","d6","p10","df","{""container"":""data_frame"", ""dimension"":[10,3], ""type"":[""integer"",""character"",""integer""]}",8,3
-"7","d7","p11","error.msg","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",10,3
+"","d.id","p.id","name","value","valType","startLine","scriptNum"
+"1","d1","p3","col1"," 1  2  3  4  5  6  7  8  9 10 11","{""container"":""vector"", ""dimension"":[11], ""type"":[""integer""]}",3,1
+"2","d2","p5","warning.msg","In  eval(annot, environ, NULL) :  length was greater than 10","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",1,2
+"3","d3","p5","col1"," 1  2  3  4  5  6  7  8  9 10","{""container"":""vector"", ""dimension"":[10], ""type"":[""integer""]}",1,2
+"4","d4","p6","warning.msg","In  eval(annot, environ, NULL) :  another warning thrown","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",6,2
+"5","d5","p9","get.error.df","function()...","function",1,3
+"6","d6","p10","df","Row 1	1   ll   21","{""container"":""data_frame"", ""dimension"":[10,3], ""type"":[""integer"",""character"",""integer""]}",8,3
+"7","d7","p11","error.msg","Error in FUN(X[[i]], ...): only defined on a data frame with all numeric variables
+","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",10,3
