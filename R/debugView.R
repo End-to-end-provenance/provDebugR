@@ -178,7 +178,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 # what must happen for all variables, regardless of how i load the rest of the vars
 .load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 {
-	# check for snapshot
+	# check for snapshot/file
 	# var.value could be: <path>/data/<name>.<ext> or data/<name>.<ext>
 	if(grepl("^.*[^\\]*data/.*\\.[^\\]+$", var.value))
 	{
@@ -305,9 +305,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	}
 	
 	# Not a snapshot
-	# This works on simple values only. Trying to use the as function 
-	# to coerce var.value into its listed type fails for lists.
-	val.type <- jsonlite::fromJSON(val.type)
+	# This works on simple values only.
+	# Don't try to change its type. It will fail for the most part.
 	assign(var.name, var.value, envir = var.env)
 	return(NA)
 }

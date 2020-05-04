@@ -101,6 +101,9 @@
 #' @rdname prov.debug
 prov.debug <- function()
 {
+	# clear debug environment first!
+	.clear()
+	
 	# determine which provenance collection tool to use
 	tool <- .get.tool()
 	
@@ -127,6 +130,9 @@ prov.debug <- function()
 #' @rdname prov.debug
 prov.debug.file <- function(prov.file)
 {
+	# clear debug environment first!
+	.clear()
+	
 	.debug.init(prov.file, is.file = TRUE)
 }
 
@@ -149,6 +155,9 @@ prov.debug.file <- function(prov.file)
 #' @rdname prov.debug
 prov.debug.run <- function(script, snapshot.size = 0)
 {
+	# clear debug environment first!
+	.clear()
+	
 	# determine which provenance collection tool to use
 	tool <- .get.tool()
 	
@@ -344,7 +353,6 @@ prov.debug.run <- function(script, snapshot.size = 0)
 # === FOR TESTING ONLY ======================================================= #
 
 # This function returns provDebugR's debug environment to its initial state. 
-# Used only for testing.
 #
 #' @noRd
 .clear <- function()
