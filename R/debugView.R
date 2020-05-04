@@ -37,17 +37,14 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		return(invisible(NULL))
 	}
 	
-	# STEP: Get user's query
-	# cols: name, valType, startLine, scriptNum
-	query.vars <- .flatten.args(...)
-	queries <- .get.query.var(query.vars, val.type = NA, 
-							  start.line = start.line, script.num = script.num)
-	
-	# STEP: Get valid queries
-	# remove valType column (col 3)
+	# STEP: Get user's valid queries
 	# resulting cols: d.id, name, startLine, scriptNum
-	valid.queries <- .get.valid.query.var(pos.vars, queries, forward = FALSE)
-	valid.queries <- valid.queries[ ,-3]
+	# This is trickier than normal because if start.line = NA,
+	# all instances of each valid queried variable is loaded and opened.
+	# cols: d.id, name, startLine, scriptNum
+	valid.queries <- .get.valid.query.view(..., pos.vars = pos.vars,
+										   start.line = start.line,
+										   script.num = script.num)
 	
 	# case: no valid queries
 	if(is.null(valid.queries)) {
@@ -97,6 +94,84 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	
 	cat("Viewing:\n\n")
 	return(results)
+}
+
+# returned cols: d.id, name, startLine, scriptNum
+.get.valid.query.view <- function(..., pos.vars, start.line = NA, script.num = 1)
+{
+	# STEP: first, make sure each queried variable name is unique
+	query.vars <- unique(.flatten.args(...))
+	
+	# CASE: if there are no queried variables, return NULL
+	if(is.null(query.vars))
+		return(NULL)
+	
+	# STEP: filter for queried script.num
+	# keep columns: d.id, name, valType, startLine, scriptNum
+	pos.vars <- pos.vars[pos.vars$scriptNum == script.num, 
+						 c("d.id", "name", "valType", "startLine", "scriptNum")]
+	pos.vars <- .remove.na.rows(pos.vars)
+	
+	# CASE: script.num is not valid
+	if(nrow(pos.vars) == 0)
+		return(NULL)
+	
+	# STEP: if start.line is not NA, 
+	# get and return table of valid queries normally
+	if(!is.na(start.line))
+	{
+		queries <- .get.query.var(query.vars, val.type = NA, 
+								  start.line = start.line, 
+								  script.num = script.num)
+	
+		return(.get.valid.query.var(pos.vars, queries, forward = FALSE))
+	}
+	
+	# STEP: if start line is NA, get all possible lines for every variable queried.
+	# must make sure the queried variables are valid
+	# grow list of invalid queries as it (most likely) occurs less frequently.
+	invalid <- c()
+	
+	# get table of queries for each variable
+	queries <- lapply(c(1:length(query.vars)), function(i)
+	{
+		# check for variable validity
+		var <- query.vars[i]
+		pos.nodes <- .remove.na.rows(pos.vars[pos.vars$name == var, ])
+		
+		# return NULL and record index if variable is invalid
+		if(nrow(pos.nodes) == 0) {
+			invalid <<- append(invalid, i)
+			return(NULL)
+		}
+		
+		# otherwise, call .get.query.var to get full table for var
+		queries.list <- .get.query.var(var, val.type = NA,
+									   start.line = pos.nodes$startLine,
+									   script.num = script.num)
+		
+		# cbind with list of d.id before returning
+		queries.list <- cbind(d.id = pos.nodes$d.id, queries.list, 
+						stringsAsFactors = FALSE)
+		return(queries.list)
+	})
+	
+	# remove invalid vars from list of queries, if any
+	# return null if all variables are invalid
+	if(length(invalid) > 0) {
+		queries <- queries[0-invalid]
+	}
+	else if(length(invalid) == length(query.vars)) {
+		return(NULL)
+	}
+	
+	# combine all data frames in list into 1, return
+	if(length(queries) == 1)
+		queries <- queries[[1]]
+	else
+		queries <- .form.df(queries)
+	
+	return(queries)
 }
 
 # EDITS

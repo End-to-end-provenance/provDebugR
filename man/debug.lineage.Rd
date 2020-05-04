@@ -4,13 +4,8 @@
 \alias{debug.lineage}
 \title{The Lineage of a Variable/Data Node.}
 \usage{
-debug.lineage(
-  ...,
-  start.line = NA,
-  script.num = 1,
-  all = FALSE,
-  forward = FALSE
-)
+debug.lineage(..., start.line = NA, script.num = 1, all = FALSE,
+  forward = FALSE)
 }
 \arguments{
 \item{...}{The names of data nodes to be queried.}

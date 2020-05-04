@@ -188,7 +188,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 }
 
 #' Get the user's queries, bound into a data frame.
-#' Function shared with debug.lineage
+#' Function shared with debug.lineage and debug.view
 #' columns: name, valType, startLine, scriptNum
 #'
 #' @param query.vars The queried variables/data node names.
@@ -266,7 +266,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 }
 
 #' Get valid queries.
-#' Function shared with debug.lineage
+#' Function shared with debug.lineage and debug.view
 #'
 #' @param pos.nodes Table of possible data nodes.
 #'                  columns: d.id, p.id, name, valType, startLine, scriptNum

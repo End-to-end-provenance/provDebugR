@@ -66,7 +66,7 @@
 	
 	cols <- lapply(col.length, function(i) 
 	{
-		return(unlist(mapply(`[[`, list, i)))
+		return(.flatten.args(mapply(`[[`, list, i)))
 	})
 	
 	names(cols) <- col.names
