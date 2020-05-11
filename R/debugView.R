@@ -28,8 +28,9 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	
 	# STEP: get all possible variables
 	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
-	data.nodes <- .extract.vars(.debug.env$data.nodes)
-	pos.vars <- .get.pos.var(data.nodes)
+	#data.nodes <- .extract.vars(.debug.env$data.nodes)
+	#pos.vars <- .get.pos.var(data.nodes)
+	pos.vars <- .get.pos.var(.debug.env$data.nodes)
 	
 	# case: no variables
 	if(nrow(pos.vars) == 0) {
@@ -41,7 +42,6 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	# resulting cols: d.id, name, startLine, scriptNum
 	# This is trickier than normal because if start.line = NA,
 	# all instances of each valid queried variable is loaded and opened.
-	# cols: d.id, name, startLine, scriptNum
 	valid.queries <- .get.valid.query.view(..., pos.vars = pos.vars,
 										   start.line = start.line,
 										   script.num = script.num)
@@ -52,7 +52,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		return(invisible(NULL))
 	}
 	
-	# STEP: get pointer to var.env and clear it before loading variables
+	# STEP: get pointer to var.env and clear it before loading/viewing variables
 	var.env <- .debug.env$var.env
 	rm(list = ls(var.env), envir = var.env)
 	
@@ -73,19 +73,12 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		var.name <- paste(node$name, "_", "line", node$startLine, "_",
 						  "script", node$scriptNum, sep="")
 		
-		# load variable into var.env
-		load <- .load.var(var.env, var.name, node$value, 
-						 node$valType, prov.dir)
-		
-		# form and return row showing load status
-		# view those with load == NA
-		if(is.na(load) || load == "PARTIAL") {
-			View(get(var.name, envir = var.env), title = var.name)
-		}
+		status <- .view.var(var.env, var.name, node$value,
+							node$valType, prov.dir)
 		
 		return(cbind(node[ , c("name", "startLine", "scriptNum")], 
 					 title = var.name, 
-					 notes = load, 
+					 notes = status, 
 					 stringsAsFactors = FALSE))
 	})
 	
@@ -96,7 +89,19 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	return(results)
 }
 
-# returned cols: d.id, name, startLine, scriptNum
+#' Get user's valid queries.
+#' If start.line = NA, all instances of each valid queried variable are to be viewed.
+#' 
+#' @param ... The user's variable queries.
+#' @param pos.vars The table of all possible variables.
+#' @param start.line The line of the variable. If NA, all instances of each
+#'            queried variable are to be viewed.
+#' @param script.num The script number of the queried variable.
+#'
+#' @return A data frame of all valid user queries.
+#'         colums: d.id, name, startLine, scriptNum
+#'
+#' @noRd
 .get.valid.query.view <- function(..., pos.vars, start.line = NA, script.num = 1)
 {
 	# STEP: first, make sure each queried variable name is unique
@@ -174,18 +179,37 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	return(queries)
 }
 
-# EDITS
-# what must happen for all variables, regardless of how i load the rest of the vars
-.load.var <- function(var.env, var.name, var.value, val.type, prov.dir)
+#'
+#'
+#'
+#' @param var.env
+#' @param var.name
+#' @param var.value
+#' @param val.type
+#' @param prov.dir
+#'
+#' @return NONE.
+#' @noRd
+.view.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 {
-	# check for snapshot/file
-	# var.value could be: <path>/data/<name>.<ext> or data/<name>.<ext>
-	if(grepl("^.*[^\\]*data/.*\\.[^\\]+$", var.value))
-	{
-		# split into file extension and extract file name
+	# keep a variable for returning the status of the view to the user.
+	# default is NA for successful load/view
+	status <- NA
+	
+	# Check for snapshot/file, check that data dir exists.
+	# for snapshots/files, var.value could be: 
+	# <path>/data/<name>.<ext>
+	# data/<name>.<ext>
+	is.file <- grepl("^.*[^\\]*data/.*\\.[^\\]+$", var.value)
+	data.dir <- paste0(prov.dir, "/data")
+	
+	if(is.file && dir.exists(data.dir))
+	{		
+		# Split into file extension
 		file.parts <- strsplit(var.value, "\\.")[[1]]
 		file.ext <- tolower(file.parts[length(file.parts)])
 		
+		# Extract file name in the form of data/<name>
 		# var.value could be: <path>/data/<name>.<ext> or data/<name>.<ext>
 		file.name <- paste(file.parts[-length(file.parts)], collapse = ".")
 		file.name <- strsplit(file.name, "/")[[1]]
@@ -193,120 +217,124 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		file.name <- paste(file.name[c(len-1, len)], collapse = "/")
 		
 		# Check if it is a partial snapshot.
-		# If it is, return PARTIAL instead of NA on successful load.
-		load.notes <- NA
-		
+		# If it is, return PARTIAL instead of NA on successful view.
 		if(grepl("PARTIAL", file.name))
-			load.notes <- "PARTIAL"
+			status <- "PARTIAL"
 		
-		# STEP: Check if RObject exists.
-		# If it does, use load function.
-		full.path <- paste(prov.dir, "/", file.name, ".RObject", sep = "")
-		
-		if(file.exists(full.path))
+		# CASES: .RObject, .txt, .csv
+		# for these cases, load value into var.env before viewing
+		if(file.ext == "RObject" || file.ext == "csv" || file.ext == "txt")
 		{
-			# Also use separate environment to load into.
-			# This is to prevent overwriting anything in .GlobalEnv
-			load.env <- new.env()
-			var <- load(full.path, envir = load.env)
-			assign(var.name, get(var, envir = load.env), envir = var.env)
-				
-			# clear load.env before returning
-			rm(list = ls(load.env), envir = load.env)
-			return(load.notes)
-		}
-		
-		# STEP: If RObject does not exist, load manually based on file extension
-		# case: txt
-		if(file.ext == "txt")
-		{
-			full.path <- paste(prov.dir, "/", file.name, ".txt", sep = "")
+			path.robject <- paste0(prov.dir, "/", file.name, ".RObject")
+			path.csv <- paste0(prov.dir, "/", file.name, ".csv")
+			path.txt <- paste0(prov.dir, "/", file.name, ".txt")
 			
-			# if file exists, read lines can concatenate them to form full text
-			if(file.exists(full.path)) 
-			{
-				file <- file(full.path)
-				lines <- readLines(file)
-				lines <- paste(lines, collapse = "\n")
-				close(file)
-				
-				assign(var.name, lines, envir = var.env)
-				return(load.notes)
+			if(file.exists(path.robject)) {
+				.load.robject(path.robject, var.env, var.name)	
 			}
-			
-			assign(var.name, var.value, envir = var.env)
-			return("INCOMPLETE")
-		}
-		
-		# case: csv
-		if(file.ext == "csv")
-		{
-			full.path <- paste(prov.dir, "/", file.name, ".csv", sep = "")
-			
-			# file does not exist
-			if(!file.exists(full.path)) {
+			else if(file.exists(path.csv)) {
+				.load.csv(path.csv, var.env, var.name, val.type)
+			}
+			else if(file.exists(path.txt)) {
+				.load.txt(path.txt, var.env, var.name)
+			}
+			else {
+				# reaching here means file can not be found
 				assign(var.name, var.value, envir = var.env)
-				return("INCOMPLETE")
+				status <- "File not found."
 			}
 			
-			# split valtype into parts to get container
-			val.type <- jsonlite::fromJSON(val.type)
-			container <- val.type$container
-			dim <- val.type$dimension
-			
-			# use read.csv
-			var <- utils::read.csv(full.path, stringsAsFactors = FALSE)
-			
-			# data frame
-			if(container == "data_frame") 
-			{
-				assign(var.name, var, envir = var.env)
-				return(load.notes)
-			}
-			
-			# vector
-			if(container == "vector")
-			{
-				var <- rep("", length.out = as.integer(dim))
-				assign(var.name, var, envir = var.env)
-				return(load.notes)
-			}
-			
-			# extract each column and bind together for multi-dimensional objects
-			cols <- c(1:ncol(var))
-			var <- cbind(sapply(cols, function(i){
-				return(var[[i]])
-			}))
-			
-			# matrix
-			if(container == "matrix")
-			{
-				var <- as.matrix(var)
-				assign(var.name, var, envir = var.env)
-				return(load.notes)
-			}
-			
-			# array
-			if(container == "array")
-			{
-				var <- as.array(var)
-				assign(var.name, var, envir = var.env)
-				return(load.notes)
-			}
-			
-			# no identifiable container
-			assign(var.name, var.value, envir = var.env)
-			return("INCOMPLETE")
+			View(get(var.name, envir = var.env), title = var.name)
 		}
-		
-		# no identifiable file extension
+		else  # everything else (not .RObject, .txt, or .csv)
+		{
+			# Use system to view file using system default application
+			cmd <- paste0('open "', var.value, '"')
+			system(cmd)
+		}
+	}
+	else  # Not a snapshot or path to data folder does not exist.
+	{
+		# assign the value directly to var.env
+		# don't try to change its type as it will not work for anything
+		# but simple values.
 		assign(var.name, var.value, envir = var.env)
-		return("INCOMPLETE")
+		View(get(var.name, envir = var.env), title = var.name)
+		
+		if(!dir.exists(data.dir))
+			status <- "Provenance directory not found."
 	}
 	
-	# Not a snapshot
-	# This works on simple values only.
-	# Don't try to change its type. It will fail for the most part.
-	assign(var.name, var.value, envir = var.env)
-	return(NA)
+	return(status)
+}
+
+#' @noRd
+.load.robject <- function(full.path, var.env, var.name)
+{
+	# use separate environment to load value into
+	# this is to prevent overwriting anything in .GlobalEnv
+	load.env <- new.env()
+	var <- load(full.path, envir = load.env)
+	assign(var.name, get(var, envir = load.env), envir = var.env)
+	
+	# clear load.env before returning
+	rm(list = ls(load.env), envir = load.env)
+}
+
+#' @noRd
+.load.csv <- function(full.path, var.env, var.name, val.type)
+{	
+	# split valtype into parts to get container
+	val.type <- jsonlite::fromJSON(val.type)
+	container <- val.type$container
+	dim <- val.type$dimension
+	
+	# use read.csv
+	var <- utils::read.csv(full.path, stringsAsFactors = FALSE)
+	
+	# data frame
+	if(container == "data_frame") 
+	{
+		assign(var.name, var, envir = var.env)
+	}
+	else if(container == "vector")
+	{
+		var <- rep("", length.out = as.integer(dim))
+		assign(var.name, var, envir = var.env)
+	}
+	else   # multi-dimensional
+	{
+		# extract each column and bind together for multi-dimensional objects
+		cols <- c(1:ncol(var))
+		var <- cbind(sapply(cols, function(i) {
+			return(var[[i]])
+		}))
+	
+		# matrix
+		if(container == "matrix")
+		{
+			var <- as.matrix(var)
+			assign(var.name, var, envir = var.env)
+		}
+		else if(container == "array")
+		{
+			var <- as.array(var)
+			assign(var.name, var, envir = var.env)
+		}
+		else  # unidentifiable container
+		{
+			assign(var.name, var.value, envir = var.env)
+		}
+	}
+}
+
+#' @noRd
+.load.txt <- function(full.path, var.env, var.name)
+{
+	file <- file(full.path)
+	lines <- readLines(file)
+	lines <- paste(lines, collapse = "\n")
+	close(file)
+
+	assign(var.name, lines, envir = var.env)
 }
