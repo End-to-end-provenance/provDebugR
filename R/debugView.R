@@ -36,6 +36,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	
 	# STEP: get all possible variables & files
 	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
+	data.nodes <- .debug.env$data.nodes
 	data.nodes <- data.nodes[data.nodes$type == "Data" | 
 							 data.nodes$type == "Snapshot" |
 							 data.nodes$type == "File", ]
