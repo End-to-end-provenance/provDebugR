@@ -19,6 +19,14 @@
 
 # === VIEW ================================================================== #
 
+#'
+#'
+#'
+#'
+#'
+#'
+#'
+#'
 #' @export
 debug.view <- function(..., start.line = NA, script.num = 1)
 {
@@ -26,11 +34,14 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	if(!.debug.env$has.graph)
 		stop("There is no provenance.")
 	
-	# STEP: get all possible variables
+	# STEP: get all possible variables & files
 	# data nodes must have type = "Data" or "Snapshot" to be considered a variable
-	#data.nodes <- .extract.vars(.debug.env$data.nodes)
-	#pos.vars <- .get.pos.var(data.nodes)
-	pos.vars <- .get.pos.var(.debug.env$data.nodes)
+	data.nodes <- data.nodes[data.nodes$type == "Data" | 
+							 data.nodes$type == "Snapshot" |
+							 data.nodes$type == "File", ]
+	data.nodes <- .remove.na.rows(data.nodes)
+	
+	pos.vars <- .get.pos.var(data.nodes)
 	
 	# case: no variables
 	if(nrow(pos.vars) == 0) {
@@ -179,16 +190,18 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	return(queries)
 }
 
+#' Views the contents of a variable.
 #'
 #'
+#' @param var.env The variable environment, the environment into which the
+#'            data should be loaded into.
+#' @param var.name The name of the variable which the data, once loaded, is
+#'            assigned to.
+#' @param var.value The value of the variable, as stored in the prov.json file.
+#' @param val.type The valType of the data.
+#' @param prov.dir The path to the provenance directory.
 #'
-#' @param var.env
-#' @param var.name
-#' @param var.value
-#' @param val.type
-#' @param prov.dir
-#'
-#' @return NONE.
+#' @return NA
 #' @noRd
 .view.var <- function(var.env, var.name, var.value, val.type, prov.dir)
 {
@@ -249,7 +262,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		else  # everything else (not .RObject, .txt, or .csv)
 		{
 			# Use system to view file using system default application
-			cmd <- paste0('open "', var.value, '"')
+			path <- paste0(prov.dir, "/", file.name, ".", file.ext)
+			cmd <- paste0('open "', path, '"')
 			system(cmd)
 		}
 	}
@@ -268,6 +282,15 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	return(status)
 }
 
+#' Loads the contents of a .RObject file into the debugger environment.
+#'
+#' @param full.path The full path to the file.
+#' @param var.env The variable environment, the environment into which the
+#'            data should be loaded into.
+#' @param var.name The name of the variable which the data, once loaded, is
+#'            assigned to.
+#'
+#' @return NA
 #' @noRd
 .load.robject <- function(full.path, var.env, var.name)
 {
@@ -281,6 +304,18 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	rm(list = ls(load.env), envir = load.env)
 }
 
+#' Loads the contents of a .csv file into the debugger environment.
+#' This function will coerce the data into the type specified by the 'container'
+#' attribute of its valType before it is assigned to var.env.
+#'
+#' @param full.path The full path to the file.
+#' @param var.env The variable environment, the environment into which the
+#'            data should be loaded into.
+#' @param var.name The name of the variable which the data, once loaded, is
+#'            assigned to.
+#' @param val.type The valType of the data.
+#'
+#' @return NA
 #' @noRd
 .load.csv <- function(full.path, var.env, var.name, val.type)
 {	
@@ -328,6 +363,15 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	}
 }
 
+#' Loads the contents of a .txt file into the debugger environment.
+#'
+#' @param full.path The full path to the file.
+#' @param var.env The variable environment, the environment into which the
+#'            data should be loaded into.
+#' @param var.name The name of the variable which the data, once loaded, is
+#'            assigned to.
+#'
+#' @return NA
 #' @noRd
 .load.txt <- function(full.path, var.env, var.name)
 {
