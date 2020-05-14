@@ -19,15 +19,68 @@
 
 # === VIEW ================================================================== #
 
+#' Viewing Files and Variables
 #'
+#' debug.view displays the contents of each file or variable queried.
+#' For snapshots or files with the file extension of .csv or .txt, the data
+#' will be loaded into the debugger environment before it is viewed. Otherwise,
+#' the data will be viewed using the system's default program for that type of file.
+#' Additionally, a data frame showing what the function has opened will be returned,
+#' which contains the following columns:
+#' \itemize{
+#'  	\item name: The name of the variable or file being viewed.
+#'  	\item startLine: The line number the variable or file is associated with. 
+#'  	\item scriptNum: The script number the variable or file is associated with.
+#'  	\itme title: The title of the variable or file when viewed.
+#'  	\item notes: Will display PARTIAL if the variable is a partial snapshot, or
+#'  	             indicate that the provenance directory or a file is not found.
+#'  	             NA otherwise.
+#' }
 #'
+#' debug.variable belongs to provDebugR, a debugger which utilises provenance 
+#' collected post-execution to facilitate understanding of the execution and aid 
+#' in debugging.
 #'
+#' This function may be used only after the debugger has been initialised using
+#' one its initialisation functions (listed below).
 #'
+#' @param ... The variable names or file names to be queried.
+#' @param start.line The line number of the queried variables or files. Optional.
+#' @param script.num The script number of the queried variables or files.
+#'                    Defaults to 1.
 #'
+#' @seealso provDebugR Initialisation Functions: 
+#' @seealso \code{\link{prov.debug}}
+#' @seealso \code{\link{prov.debug.file}} 
+#' @seealso \code{\link{prov.debug.run}}
 #'
+#' @seealso Other provDebugR Functions (non-initialisation):
+#' @seealso \code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
+#'              The error may be queried on StackOverflow.
+#' @seealso \code{\link{debug.line}}: Returns all immediate inputs and outputs
+#'              for the line(s) queried.
+#' @seealso \code{\link{debug.lineage}}: Returns the forwards or backwards lineage
+#'              of the data object(s) queried. The forwards lineage shows how the
+#'              data object was used, and the backwards lineage shows how it was produced. 
+#' @seealso \code{\link{debug.state}}: Returns the state at the line(s) queried,
+#'              after the line had been executed. The state is the list of all 
+#'              variables and their values in the environment at the queried line.
+#' @seealso \code{\link{debug.type.changes}}: Returns a data frame for each variable in
+#'              the execution containing the instances where the data type changed.
+#' @seealso \code{\link{debug.variable}}: Returns a data frame showing all instances
+#'              of the variable(s) queried.
+#' @seealso \code{\link{debug.warning}}: Returns the backwards lineage of the queried
+#'              warning(s), if any.
 #'
+#' @examples
+#' \dontrun{
+#' prov.debug.run("test.R")
+#' debug.view("x")
+#' debug.view("x", "y", start.line = 5, script.num = 2)
+#' }
 #'
 #' @export
+#' @rdname debug.view
 debug.view <- function(..., start.line = NA, script.num = 1)
 {
 	# CASE: no provenance
@@ -191,8 +244,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	return(queries)
 }
 
-#' Views the contents of a variable.
-#'
+#' Views the contents of a variable or file.
 #'
 #' @param var.env The variable environment, the environment into which the
 #'            data should be loaded into.

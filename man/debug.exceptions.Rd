@@ -86,4 +86,7 @@ Other provDebugR Functions (non-initialisation):
 
 \code{\link{debug.variable}}: Returns a data frame showing all instances
              of the variable(s) queried.
+
+\code{\link{debug.view}}: Opens and displays the contents of each file or variable
+             or variable queried.
 }

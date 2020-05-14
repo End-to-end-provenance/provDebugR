@@ -68,6 +68,8 @@
 #'              the execution containing the instances where the data type changed.
 #' @seealso \code{\link{debug.variable}}: Returns a data frame showing all instances
 #'              of the variable(s) queried.
+#' @seealso \code{\link{debug.view}}: Opens and displays the contents of each file or variable
+#'              or variable queried.
 #' @seealso \code{\link{debug.warning}}: Returns the backwards lineage of the queried
 #'              warning(s), if any.
 #'
