@@ -90,5 +90,8 @@ instances where the data type changed.
 For each variable queried, this function returns a data frame showing all instances of
 the queried variable.
 
+### [`debug.view`](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.view)
+Opens and displays the contents of each file or variable or variable queried.
+
 ### [`debug.warning`](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.warning)
 This function returns the backwards lineage of the queried warning(s), if any.
