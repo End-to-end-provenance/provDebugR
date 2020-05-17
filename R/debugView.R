@@ -121,8 +121,8 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	var.env <- .debug.env$var.env
 	rm(list = ls(var.env), envir = var.env)
 	
-	# STEP: get path to prov directory
-	prov.dir <- .debug.env$prov.dir
+	# STEP: get path to data directory
+	data.dir <- paste0(.debug.env$prov.dir, "/data")
 	
 	# STEP: for every valid query, load variables into var.env before viewing
 	results <- lapply(c(1:nrow(valid.queries)), function(i)
@@ -139,7 +139,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 						  "script", node$scriptNum, sep="")
 		
 		status <- .view.var(var.env, var.name, node$value,
-							node$valType, prov.dir)
+							node$valType, data.dir)
 		
 		return(cbind(node[ , c("name", "startLine", "scriptNum")], 
 					 title = var.name, 
@@ -252,22 +252,21 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 #'            assigned to.
 #' @param var.value The value of the variable, as stored in the prov.json file.
 #' @param val.type The valType of the data.
-#' @param prov.dir The path to the provenance directory.
+#' @param data.dir The path to the data folder of the provenance directory.
 #'
 #' @return NA
 #' @noRd
-.view.var <- function(var.env, var.name, var.value, val.type, prov.dir)
+.view.var <- function(var.env, var.name, var.value, val.type, data.dir)
 {
 	# keep a variable for returning the status of the view to the user.
 	# default is NA for successful load/view
 	status <- NA
 	
-	# Check for snapshot/file, check that data dir exists.
+	# Check that var.value is a file and the the data directory exists
 	# for snapshots/files, var.value could be: 
 	# <path>/data/<name>.<ext>
 	# data/<name>.<ext>
 	is.file <- grepl("^.*[^\\]*data/.*\\.[^\\]+$", var.value)
-	data.dir <- paste0(prov.dir, "/data")
 	
 	if(is.file && dir.exists(data.dir))
 	{		
@@ -275,12 +274,11 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		file.parts <- strsplit(var.value, "\\.")[[1]]
 		file.ext <- tolower(file.parts[length(file.parts)])
 		
-		# Extract file name in the form of data/<name>
+		# Extract file name
 		# var.value could be: <path>/data/<name>.<ext> or data/<name>.<ext>
 		file.name <- paste(file.parts[-length(file.parts)], collapse = ".")
 		file.name <- strsplit(file.name, "/")[[1]]
-		len <- length(file.name)
-		file.name <- paste(file.name[c(len-1, len)], collapse = "/")
+		file.name <- file.name[length(file.name)]
 		
 		# Check if it is a partial snapshot.
 		# If it is, return PARTIAL instead of NA on successful view.
@@ -291,15 +289,15 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		# for these cases, load value into var.env before viewing
 		if(file.ext == "RObject" || file.ext == "csv" || file.ext == "txt")
 		{
-			path.robject <- paste0(prov.dir, "/", file.name, ".RObject")
-			path.csv <- paste0(prov.dir, "/", file.name, ".csv")
-			path.txt <- paste0(prov.dir, "/", file.name, ".txt")
+			path.RObject <- paste0(data.dir, "/", file.name, ".RObject")
+			path.csv <- paste0(data.dir, "/", file.name, ".csv")
+			path.txt <- paste0(data.dir, "/", file.name, ".txt")
 			
-			if(file.exists(path.robject)) {
-				.load.robject(path.robject, var.env, var.name)	
+			if(file.exists(path.RObject)) {
+				.load.RObject(path.RObject, var.env, var.name)	
 			}
 			else if(file.exists(path.csv)) {
-				.load.csv(path.csv, var.env, var.name, val.type)
+				.load.csv(path.csv, var.env, var.name, var.value, val.type)
 			}
 			else if(file.exists(path.txt)) {
 				.load.txt(path.txt, var.env, var.name)
@@ -315,9 +313,17 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		else  # everything else (not .RObject, .txt, or .csv)
 		{
 			# Use system to view file using system default application
-			path <- paste0(prov.dir, "/", file.name, ".", file.ext)
-			cmd <- paste0('open "', path, '"')
-			system(cmd)
+			path <- paste0(data.dir, "/", file.name, ".", file.ext)
+			
+			if(file.exists(path)) {
+				cmd <- paste0('open "', path, '"')
+				system(cmd)
+			}
+			else {
+				assign(var.name, var.value, envir = var.env)
+				View(get(var.name, envir = var.env), title = var.name)
+				status <- "File not found."
+			}
 		}
 	}
 	else  # Not a snapshot or path to data folder does not exist.
@@ -345,7 +351,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 #'
 #' @return NA
 #' @noRd
-.load.robject <- function(full.path, var.env, var.name)
+.load.RObject <- function(full.path, var.env, var.name)
 {
 	# use separate environment to load value into
 	# this is to prevent overwriting anything in .GlobalEnv
@@ -366,19 +372,21 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 #'            data should be loaded into.
 #' @param var.name The name of the variable which the data, once loaded, is
 #'            assigned to.
+#' @param var.value The value of the variable, as stored in the prov.json file.
 #' @param val.type The valType of the data.
 #'
 #' @return NA
 #' @noRd
-.load.csv <- function(full.path, var.env, var.name, val.type)
+.load.csv <- function(full.path, var.env, var.name, var.value, val.type)
 {	
 	# split valtype into parts to get container
 	val.type <- jsonlite::fromJSON(val.type)
 	container <- val.type$container
 	dim <- val.type$dimension
+	type <- val.type$type
 	
 	# use read.csv
-	var <- utils::read.csv(full.path, stringsAsFactors = FALSE)
+	var <- utils::read.csv(full.path, colClasses = type, stringsAsFactors = FALSE)
 	
 	# data frame
 	if(container == "data_frame") 
@@ -387,7 +395,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	}
 	else if(container == "vector")
 	{
-		var <- rep("", length.out = as.integer(dim))
+		var <- var[,1]
 		assign(var.name, var, envir = var.env)
 	}
 	else   # multi-dimensional
@@ -429,7 +437,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 .load.txt <- function(full.path, var.env, var.name)
 {
 	file <- file(full.path)
-	lines <- readLines(file)
+	lines <- readLines(full.path, warn = FALSE)
 	lines <- paste(lines, collapse = "\n")
 	close(file)
 
