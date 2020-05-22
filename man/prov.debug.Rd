@@ -10,17 +10,15 @@ prov.debug()
 
 prov.debug.file(prov.file)
 
-prov.debug.run(script, snapshot.size = 0)
+prov.debug.run(script, ...)
 }
 \arguments{
 \item{prov.file}{Path to a PROV-JSON file.}
 
 \item{script}{Path to an R script.}
 
-\item{snapshot.size}{The maximum size for snapshot files, in kilobytes.
-If 0, no snapshots are saved. If Inf, the complete state of an object
- is stored in the snapshot file. For other values, the head of the  
- object, truncated to a size near the specified limit, is saved.}
+\item{...}{extra parameters are passed to the provenance collector.  See rdt's prov.run function
+or rdtLites's prov.run function for details.}
 }
 \description{
 prov.debug uses the provenance from the last execution of prov.run to 

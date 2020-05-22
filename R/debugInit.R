@@ -144,10 +144,8 @@ prov.debug.file <- function(prov.file)
 #' initialises the debugger using the collected provenance.
 #'
 #' @param script Path to an R script.
-#' @param snapshot.size The maximum size for snapshot files, in kilobytes.
-#'            If 0, no snapshots are saved. If Inf, the complete state of an object
-#'             is stored in the snapshot file. For other values, the head of the  
-#'             object, truncated to a size near the specified limit, is saved.
+#' @param ... extra parameters are passed to the provenance collector.  See rdt's prov.run function
+#'    or rdtLites's prov.run function for details.
 #'
 #' @examples
 #' \dontrun{
@@ -155,7 +153,7 @@ prov.debug.file <- function(prov.file)
 #'
 #' @export
 #' @rdname prov.debug
-prov.debug.run <- function(script, snapshot.size = 0)
+prov.debug.run <- function(script, ...)
 {
 	# clear debug environment first!
 	.clear()
@@ -174,7 +172,7 @@ prov.debug.run <- function(script, snapshot.size = 0)
 	
 	# collect provenance
 	tryCatch({
-		prov.run(script, snapshot.size = snapshot.size)
+		prov.run(script, ...)
 	}, finally = {
 		cat(paste (tool, "is finished running.\n"))
 		
