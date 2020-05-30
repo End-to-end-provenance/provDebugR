@@ -38,6 +38,42 @@ test_that("Utility - .clear",
 	expect_true(is.null(provDebugR:::.debug.env$prov.dir))
 })
 
+# .flatten.args
+test_that("Utility - .flatten.args",
+{
+	x <- 11
+	y <- 12
+	
+	# Cases
+	c1 <- provDebugR:::.flatten.args(x)                      # single args
+	c2 <- provDebugR:::.flatten.args(1)
+	c3 <- provDebugR:::.flatten.args(NA)
+	c4 <- provDebugR:::.flatten.args(NULL)
+	
+	c5 <- provDebugR:::.flatten.args(c(1:5), list(x,y))      # multiple args
+	c6 <- provDebugR:::.flatten.args(x, c(1:5))
+	c7 <- provDebugR:::.flatten.args(c(1:5), x, list(x,y))
+	
+	# Expected
+	e1 <- "x"
+	e2 <- 1
+	e3 <- NA
+	e4 <- NULL
+	
+	e5 <- c(1,2,3,4,5,11,12)
+	e6 <- c("x","1","2","3","4","5")    # type change because unlist is trying to be helpful
+	e7 <- c("1","2","3","4","5","x","11","12")
+	
+	# Test
+	expect_equivalent(c1, e1)
+	expect_equivalent(c2, e2)
+	expect_equivalent(c3, e3)
+	expect_equivalent(c4, e4)
+	expect_equivalent(c5, e5)
+	expect_equivalent(c6, e6)
+	expect_equivalent(c7, e7)
+})
+
 # .extract.vars
 test_that("Utility - .extract.vars",
 {
@@ -163,22 +199,6 @@ test_that("Utility - .to.int",
 	expect_null(c6)
 	expect_null(c7)
 	expect_null(c8)
-})
-
-# .get.arg.namme
-test_that("Utility - .get.arg.namme",
-{
-	# Cases
-	c1 <- provDebugR:::.get.arg.name(x)
-	c2 <- provDebugR:::.get.arg.name(1)
-	c3 <- provDebugR:::.get.arg.name(NULL)
-	c4 <- provDebugR:::.get.arg.name(NA)
-	
-	# Test
-	expect_equal(c1, "x")
-	expect_equal(c2, 1)
-	expect_null(c3)
-	expect_equivalent(c4, NA)
 })
 
 # .find.num.loc

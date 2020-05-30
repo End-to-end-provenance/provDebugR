@@ -22,12 +22,33 @@
 #' Collapses the given parameters into a single list.
 #'
 #' @param ... The parameteres to be collapsed.
+#' @param get.name If TRUE, returns the names of variables in the given parameters
 #'
 #' @return The given parameters, collapsed into a single list.
 #' @noRd
-.flatten.args <- function(...)
+.flatten.args <- function(..., get.name = FALSE)
 {
-	return(unlist(list(...)))
+	# call substitute to obtain parse trees for every argument, bound into a list
+	args <- substitute(...())
+	
+	args <- lapply(args, function(arg)
+	{
+		# if arg is a symbol (a variable), deparse and return
+		if(is.symbol(arg))
+			return(deparse(arg))
+		
+		# if arg is a function call, evaluate and return
+		# make sure the evaluate environment is one which called
+		# .flatten.args to begin with or it won't find the objects
+		# to evaluate
+		if(is.call(arg))
+			return(eval(arg, envir = parent.frame(n=3)))
+		
+		# otherwise, return argument as is
+		return(arg)
+	})
+	
+	return(unlist(args))
 }
 
 #' Extract all possible variables from the given data nodes table.
@@ -74,25 +95,6 @@
 	
 	rownames(df) <- 1:nrow(df)
 	return(df)
-}
-
-#' Returns the name of a given variable.
-#' If the given argument is not a variable, nothing is done and the original
-#' argument is returned to the caller.
-#'
-#' @param arg The argument whose name will be returned if it is a variable.
-#'
-#' @return The name of the argument, if it is a variable. If not, the argument
-#'         will be returned as is.
-#' @noRd
-.get.arg.name <- function(arg)
-{
-	parsed.arg <- substitute(arg)
-	
-	if(is.symbol(parsed.arg))
-		return(deparse(parsed.arg))
-	
-	return(arg)
 }
 
 #' Converts a query to an integer.
