@@ -8,7 +8,57 @@ context("debug.view")
 # debug.view
 test_that("debug.view",
 {
-	skip("tbd")
+	json <- system.file("testdata", "view.json", package = "provDebugR")
+	expect_warning(prov.debug.file(json))   # warning due to removed prov folder
+	
+	# Cases
+	c2 <- utils::capture.output(
+		c1 <- debug.view())
+	
+	c4 <- utils::capture.output(                        # all invalid queries
+		c3 <- debug.view(1,2))
+	
+	c6 <- utils::capture.output(
+		c5 <- debug.view(m,s, script.num = 2))
+	
+	c8 <- utils::capture.output(
+		c7 <- debug.view(m,s, start.line = 5, script.num = 1))
+	
+	c10 <- utils::capture.output(                       # valid and invalid
+		c9 <- debug.view(m,c(1:3), "plot.pdf")[ ,-6])
+	
+	c12 <- utils::capture.output(                       # valid
+		c11 <- debug.view(m, start.line = 3, script.num = 1)[ ,-6])
+	
+	# Expected
+	e9 <- data.frame(name = c("m","plot.pdf"),          # valid and invalid
+					 startLine = as.integer(c(3,4)),
+					 scriptNum = as.integer(c(1,2)),
+					 script.name = c("view.R","source_plot.R"),
+					 title = c("m_line3_script1","plot.pdf_line4_script2"),
+					 stringsAsFactors = FALSE)
+	
+	e11 <- data.frame(name = "m",                       # valid
+					  startLine = 3L,
+					  scriptNum = 1L,
+					  script.name = "view.R",
+					  title = "m_line3_script1",
+					  stringsAsFactors = FALSE)
+	
+	# Test
+	expect_null(c1)
+	expect_null(c3)
+	expect_null(c5)
+	expect_null(c7)
+	expect_equivalent(c9, e9)
+	expect_equivalent(c11, e11)
+	
+	expect_true(nchar(paste(c2, collapse='\n')) > 0)
+	expect_true(nchar(paste(c4, collapse='\n')) > 0)
+	expect_true(nchar(paste(c6, collapse='\n')) > 0)
+	expect_true(nchar(paste(c8, collapse='\n')) > 0)
+	expect_true(nchar(paste(c10, collapse='\n')) > 0)
+	expect_true(nchar(paste(c12, collapse='\n')) > 0)
 })
 
 # .view.var

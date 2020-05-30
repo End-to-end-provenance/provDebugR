@@ -31,7 +31,7 @@
 		"rdt:p1": {
 			"rdt:name": "Console",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.76",
+			"rdt:elapsedTime": "0.89",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -41,7 +41,7 @@
 		"rdt:p2": {
 			"rdt:name": "source_fromEnv.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.06",
+			"rdt:elapsedTime": "0.05",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -51,7 +51,7 @@
 		"rdt:p3": {
 			"rdt:name": "d <- 10",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.1",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -61,7 +61,7 @@
 		"rdt:p4": {
 			"rdt:name": "vector.1 <- c(a:d)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.13",
+			"rdt:elapsedTime": "0.12",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -71,7 +71,7 @@
 		"rdt:p5": {
 			"rdt:name": "print(vector.1)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -81,7 +81,7 @@
 		"rdt:p6": {
 			"rdt:name": "e <- a + 10",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.07",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 5,
 			"rdt:startCol": 1,
@@ -111,7 +111,7 @@
 		"rdt:p9": {
 			"rdt:name": "print(vector.2)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 8,
 			"rdt:startCol": 1,
@@ -121,7 +121,7 @@
 		"rdt:p10": {
 			"rdt:name": "plot(vector.1, vector.2)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.11",
+			"rdt:elapsedTime": "0.16",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 11,
 			"rdt:startCol": 1,
@@ -131,7 +131,7 @@
 		"rdt:p11": {
 			"rdt:name": "title(\"Plot 1\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 12,
 			"rdt:startCol": 1,
@@ -141,7 +141,7 @@
 		"rdt:p12": {
 			"rdt:name": "vector.3 <- vector.1 + 20L",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 15,
 			"rdt:startCol": 1,
@@ -151,7 +151,7 @@
 		"rdt:p13": {
 			"rdt:name": "vector.4 <- vector.2 + 30L",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 16,
 			"rdt:startCol": 1,
@@ -415,8 +415,8 @@
 			"rdt:type": "File",
 			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "6d21aa00bbab46e2baff5d752282a173",
-			"rdt:timestamp": "2020-05-28T04.04.15EDT",
+			"rdt:hash": "11811f24e28f0db46b363b0d97eaf13c",
+			"rdt:timestamp": "2020-05-30T18.19.27EDT",
 			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/Rplots.pdf"
 		},
 
@@ -428,12 +428,12 @@
 			"rdt:langVersion": "R version 3.6.3 (2020-02-29)",
 			"rdt:script": "",
 			"rdt:scriptTimeStamp": "",
-			"rdt:totalElapsedTime": "2.11",
+			"rdt:totalElapsedTime": "2.34",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
 			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_console",
-			"rdt:provTimestamp": "2020-05-28T04.04.12EDT",
+			"rdt:provTimestamp": "2020-05-30T18.19.24EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

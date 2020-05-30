@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "noVars.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.83",
+			"rdt:elapsedTime": "1.02",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "print(\"No variables\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -105,12 +105,12 @@
 			"rdt:langVersion": "R version 3.6.3 (2020-02-29)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/noVars.R",
 			"rdt:scriptTimeStamp": "2020-01-13T19.12.40EST",
-			"rdt:totalElapsedTime": "1.03",
+			"rdt:totalElapsedTime": "1.24",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
 			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_noVars",
-			"rdt:provTimestamp": "2020-05-28T04.04.18EDT",
+			"rdt:provTimestamp": "2020-05-30T18.19.31EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

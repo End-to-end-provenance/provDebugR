@@ -162,12 +162,15 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		# try to get the procedure node that produced/used the data node (could be multiple)
 		p.id <- .get.p.id(d.id)
 		
-		# get startLine and scriptNum from proc nodes table, 
+		# get startLine and scriptNum from proc nodes table, scriptName
 		# cbind with row from data nodes table
 		row <- lapply(p.id, function(id) {
 			p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == id,
 											  c("id", "startLine", "scriptNum")]
-			return(cbind(d.fields, p.fields, stringsAsFactors = FALSE))
+			scriptName <- .debug.env$scripts[p.fields$scriptNum]
+			
+			return(cbind(d.fields, p.fields, scriptName = scriptName, 
+						 stringsAsFactors = FALSE))
 		})
 		
 		# if there are multiple rows, combine into data frame
@@ -183,8 +186,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	rows <- .form.df(rows)
 	
 	# rename and rearrange columns
-	colnames(rows) <- c("d.id", "name", "value", "valType", "p.id", "startLine", "scriptNum")
-	rows <- rows[ , c("d.id", "p.id", "name", "value", "valType", "startLine", "scriptNum")]
+	colnames(rows) <- c("d.id", "name", "value", "valType", "p.id", "startLine", "scriptNum", "scriptName")
+	rows <- rows[ , c("d.id", "p.id", "name", "value", "valType", "startLine", "scriptNum", "scriptName")]
 	
 	return(rows)
 }
@@ -202,69 +205,66 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #'         columns: name, valType, startLine, scriptNum
 #'
 #' @noRd
-.get.query.var <- function(query.vars, val.type = NA, start.line = NA, script.num = 1)
+.get.query.var <- function(query.vars, val.type = "all", start.line = "all", script.num = "all")
 {
 	# CASE: no queried variables
 	if(is.null(query.vars))
 		return(NULL)
 	
-	# CASE: more than 1 script number queried
-	if(length(script.num) > 1) {
-		warning("Please query only 1 script number.", call. = FALSE)
-		return(NULL)
-	}
+	# script.num == "all"
+	if(length(script.num) == 1 && tolower(script.num) == "all")
+		script.num <- c(1:nrow(provParseR::get.scripts(.debug.env$prov)))
 	
-	# CASE: more than 1 valType queried
-	if(length(val.type) > 1) {
-		warning("Please query only 1 valType.", call. = FALSE)
-		return(NULL)
-	}
+	# get all queries for each queried node & combine
+	queries <- lapply(query.vars, function(var)
+	{	
+		q.lines <- start.line
+		
+		# start.line = "all"
+		# get all start lines for the node queried. leave NA if none found
+		if(length(q.lines) == 1 && tolower(q.lines) == "all") 
+		{
+			# get data node ids
+			d.id <- .debug.env$data.nodes$id[.debug.env$data.nodes$name == var]
+			
+			if(length(d.id) == 0) {
+				q.lines <- NA
+			}
+			else {
+				# get corresponding proc node ids & start lines
+				q.lines <- unique(sapply(d.id, function(id) {
+					p.id <- .get.p.id(id)
+					return(.debug.env$proc.nodes$startLine[.debug.env$proc.nodes$id == p.id])
+				}))
+			}
+		}
+		
+		# match start lines to script numbers
+		query.lines <- rep(q.lines, length(script.num))
+		query.scripts <- rep(script.num, each = length(q.lines))
+		
+		# Match valType query to script numbers and start lines.
+		length.scripts <- length(query.scripts)
+		length.types <- length(val.type)
 	
-	# Generate user's queries 
-	# each query is a different possible combination of parameters
-	query.types <- c()
-	query.lines <- c()
-	query.scripts <- c()
+		query.lines <- rep(query.lines, each = length.types)
+		query.scripts <- rep(query.scripts, each = length.types)
+		query.types <- rep(val.type, length.scripts)
+		
+		# replicate var query to match length of other columns
+		vars <- rep(var, length(query.lines))
+		
+		# combine each column into a table
+		query.table <- data.frame(vars, query.types, query.lines, query.scripts, stringsAsFactors = FALSE)
+		names(query.table) <- c("name", "valType", "startLine", "scriptNum")
+		
+		return(query.table)
+	})
 	
-	if(length(start.line) == 1)
-	{
-		# queried only 1 start line (could be NA)
-		query.lines <- rep(start.line, length(query.vars))
-		query.types <- rep(val.type, length(query.vars))
-		query.scripts <- rep(script.num, length(query.vars))
-	}
-	else if(length(query.vars) == 1)
-	{
-		# there's only 1 variable queried
-		# there could be multiple start lines queried
-		query.lines <- start.line
-		query.vars <- rep(query.vars, length(query.lines))
-		query.types <- rep(val.type, length(query.lines))
-		query.scripts <- rep(script.num, length(query.lines))
-	}
-	else if(length(query.vars) == length(start.line))
-	{
-		# equal numbers of start lines and queried variables
-		query.lines <- start.line
-		query.types <- rep(val.type, length(query.vars))
-		query.scripts <- rep(script.num, length(query.vars))
-	}
-	else
-	{
-		warning("Please query either:\n
-				1 object (e.g. \"x\"),\n
-				1 start line number, or\n
-				an equal number of objects and start lines.",
-				call. = FALSE)
-		return(NULL)
-	}
-	
-	# combine each column into a table
-	query.table <- data.frame(query.vars, query.types, query.lines, query.scripts, stringsAsFactors = FALSE)
-	names(query.table) <- c("name", "valType", "startLine", "scriptNum")
+	queries <- .form.df(queries)
 	
 	# return unique rows (queries)
-	return(unique(query.table))
+	return(unique(queries))
 }
 
 #' Get valid queries.
@@ -277,7 +277,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' @param forward For lineage queries. This determines which d.id is returned.
 #'
 #' @return The valid queries.
-#'         columns: d.id, name, valType, startLine, scriptNum
+#'         columns: d.id, name, valType, startLine, scriptNum, scriptName
 #'
 #' @noRd
 .get.valid.query.var <- function(pos.nodes, query, forward = FALSE)
@@ -285,32 +285,6 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	# CASE: no queries
 	if(is.null(query))
 		return(invisible(NULL))
-	
-	# QUERY: subset by script number
-	# Since there can only be 1 script number queried per call,
-	# check for its validity first.
-	script.num <- .to.int(query$scriptNum[1])
-	
-	if(is.null(script.num)) {
-		warning("Script number must be a single integer.", call. = FALSE)
-		return(invisible(NULL))
-	}
-	
-	# case: script number could be NA
-	if(is.na(script.num)) {
-		pos.nodes <- pos.nodes[is.na(pos.nodes$scriptNum), ]
-		pos.nodes <- .remove.na.rows(pos.nodes)
-	}
-	else {
-		pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
-		pos.nodes <- .remove.na.rows(pos.nodes)
-	}
-	
-	# CASE: invalid script num
-	if(nrow(pos.nodes) == 0) {
-		cat(paste("Script number", script.num, "is not a possible input.\n\n"))
-		return(invisible(NULL))
-	}
 	
 	# STEP: check validity of each query (row)
 	query.indices <- c(1:nrow(query))
@@ -330,17 +304,23 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		query.var <- query$name[i]
 		query.valType <- query$valType[i]
 		query.line <- query$startLine[i]
+		query.script <- .to.int(query$scriptNum[i])
 		
-		# QUERY: filter by node name
-		subset <- pos.nodes[pos.nodes$name == query.var, ]
+		# CASE: script number is not an int
+		if(is.null(query.script))
+			return(FALSE)
+		
+		# QUERY: filter by node name and script num
+		subset <- pos.nodes[pos.nodes$name == query.var &
+							pos.nodes$scriptNum == query.script, ]
 		subset <- .remove.na.rows(subset)
 		
 		# CASE: no row with queried node name found - return false
 		if(nrow(subset) == 0)
 			return(FALSE)
 		
-		# QUERY: filter by valType, if queried valType is not NA
-		if(!is.na(query.valType))
+		# QUERY: filter by valType, if queried valType is not "all"
+		if(tolower(query.valType) != "all")
 		{
 			# get the regex form for the valType query
 			query.valType <- paste("*", query.valType, "*", sep="")
@@ -355,7 +335,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		}
 		
 		# (for lineage queries)
-		# QUERY: start line queried is NA, 
+		# QUERY: start line queried is "all" or NA, 
 		# find the id of the node to be used
 		query.line.int <- .to.int(query.line)
 		
@@ -364,7 +344,7 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		
 		query.line <- query.line.int
 		
-		if(is.na(query.line))
+		if(is.na(query.line.int))
 		{
 			# extract data node id
 			d.id <- subset$`d.id`

@@ -423,101 +423,61 @@ test_that(".get.pos.var (no variables)",
 	expect_null(c1)
 })
 
-# .get.query.var - valid queries
-test_that(".get.query.var (valid queries)",
-{	
-	# 1 object queried
-	c1 <- provDebugR:::.get.query.var("x")
+# .get.query.var
+test_that(".get.query.var",
+{
+	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	expect_warning(provDebugR::prov.debug.file(json))
 	
-	e1 <- data.frame(name="x", valType=NA, startLine=NA, scriptNum=1, 
+	# no vars
+	expect_null(provDebugR:::.get.query.var(NULL))
+	
+	# 1 object queried
+	c1 <- provDebugR:::.get.query.var("col1")
+	
+	e1 <- data.frame(name = rep("col1", 6), 
+					 valType = rep("all", 6),
+					 startLine = c(3,1,3,1,3,1), 
+					 scriptNum = c(1,1,2,2,3,3), 
 					 stringsAsFactors = FALSE)
+	
 	expect_equivalent(c1, e1)
 	
-	# 1 object queried, multiple start line numbers
-	c2 <- provDebugR:::.get.query.var("x", start.line = c(4,2,7))
+	# multiple queries
+	c2 <- provDebugR:::.get.query.var(c("x","y","z"),
+									  val.type = c(5,6),
+									  start.line = c(3:4),
+									  script.num = c(1:2))
 	
-	e2 <- data.frame(name = c("x","x","x"), 
-					 valType = c(NA,NA,NA),
-					 startLine = c(4,2,7), 
-					 scriptNum = c(1,1,1), 
+	e2 <- data.frame(name = rep(c("x","y","z"), each = 8), 
+					 valType =   rep(c(5,6,5,6,5,6,5,6), 3),
+					 startLine = rep(c(3,3,4,4,3,3,4,4), 3),
+					 scriptNum = rep(c(1,1,1,1,2,2,2,2), 3), 
 					 stringsAsFactors = FALSE)
+	
 	expect_equivalent(c2, e2)
 	
-	# multiple objects queried, 1 start line number
-	c3 <- provDebugR:::.get.query.var(c("x","y"), start.line = 5)
-	
-	e3 <- data.frame(name = c("x","y"), 
-					 valType = c(NA,NA),
-					 startLine = c(5,5), 
-					 scriptNum = c(1,1), 
-					 stringsAsFactors = FALSE)
-	expect_equivalent(c3, e3)
-	
-	# same number of objects and start line numbers
-	c4 <- provDebugR:::.get.query.var(c("x","z","y"), start.line = c(3:5))
-	
-	e4 <- data.frame(name = c("x","z","y"), 
-					 valType = c(NA,NA,NA),
-					 startLine = c(3:5), 
-					 scriptNum = c(1,1,1), 
-					 stringsAsFactors = FALSE)
-	expect_equivalent(c4, e4)
-	
-	# same number of objects and start line numbers, with NA as a line number
-	c5 <- provDebugR:::.get.query.var(c("x","y","z"), start.line = c(3,NA,5))
-	
-	e5 <- data.frame(name = c("x","y","z"), 
-					 valType = c(NA,NA,NA),
-					 startLine = c(3,NA,5), 
-					 scriptNum = c(1,1,1), 
-					 stringsAsFactors = FALSE)
-	expect_equivalent(c5, e5)
-	
-	# val.type and script.num not their default values
-	c6 <- provDebugR:::.get.query.var(c("x","y"), 
-									  val.type = "logical", 
-									  start.line = c(NA,5), 
-									  script.num = 2)
-
-	e6 <- data.frame(name = c("x","y"), 
-					 valType = c("logical", "logical"),
-					 startLine = c(NA,5), 
-					 scriptNum = c(2,2), 
-					 stringsAsFactors = FALSE)
-	expect_equivalent(c6, e6)
-	
 	# repeated queries
-	c7 <- provDebugR:::.get.query.var("x","x","y")
+	c3 <- provDebugR:::.get.query.var(c("col1","df","df"), script.num = 1)
 	
-	e7 <- data.frame(name = c("x","y"), 
-					 valType = c(NA,NA),
-					 startLine = c(NA,NA), 
-					 scriptNum = c(1,1), 
+	e3 <- data.frame(name = c("col1","col1","df"), 
+					 valType = c("all","all","all"),
+					 startLine = c(3,1,8), 
+					 scriptNum = c(1,1,1), 
 					 stringsAsFactors = FALSE)
+	
 	expect_equivalent(c3, e3)
-})
-
-# .get.query var - invalid queries
-test_that(".get.query.var (invalid queries)",
-{
-	# no queried variables
-	c1 <- provDebugR:::.get.query.var(NULL)
-	expect_null(c1)
 	
-	# queried more than 1 script numbers
-	expect_warning(c2 <- provDebugR:::.get.query.var("x", script.num = c(1:2)))
-	expect_null(c2)
+	# with invalid query
+	c4 <- provDebugR:::.get.query.var(c("col1","4","5"), script.num = 1)
 	
-	# queried more than 1 valTypes
-	expect_warning(c3 <- provDebugR:::.get.query.var("x", val.type = c("logical", "character")))
-	expect_null(c3)
+	e4 <- data.frame(name = c("col1","col1","4","5"), 
+					 valType = c("all","all","all","all"),
+					 startLine = c(3,1,NA,NA), 
+					 scriptNum = c(1,1,1,1), 
+					 stringsAsFactors = FALSE)
 	
-	# objects and start line numbers queried are greater than 1, and do not match
-	obj <- c("x","y")
-	lines <- c(1:3)
-	
-	expect_warning(c4 <- provDebugR:::.get.query.var(obj, start.line = lines))
-	expect_null(c4)
+	expect_equivalent(c4, e4)
 })
 
 # .get.valid.query.var - all valid queries
@@ -534,12 +494,12 @@ test_that(".get.valid.query.var (all valid queries)",
 	# QUERIES
 	# cols: name, valType, startLine, scriptNum
 	q1 <- data.frame(name = 'a',                 # single data node for variable
-					 valType = NA,
+					 valType = "all",
 					 startLine = NA,
 					 scriptNum = 1,
 					 stringsAsFactors = FALSE)
 	q2 <- data.frame(name = 's',                 # multiple datas node for variable
-					 valType = NA,
+					 valType = "all",
 					 startLine = NA,
 					 scriptNum = 1,
 					 stringsAsFactors = FALSE)
@@ -559,19 +519,19 @@ test_that(".get.valid.query.var (all valid queries)",
 					 scriptNum = 1,
 					 stringsAsFactors = FALSE)
 	q6 <- data.frame(name = 's',                 # line query is string, script num is string
-					 valType = NA,
+					 valType = "all",
 					 startLine = "40",
 					 scriptNum = "1",
 					 stringsAsFactors = FALSE)
 	q7 <- data.frame(name = "dev.2",             # is data node, but not variable
-					 valType = NA, 
+					 valType = "all", 
 					 startLine = NA, 
 					 scriptNum = 1,
 					 stringsAsFactors = FALSE)
 	q8 <- data.frame(name = "Rplots.pdf",        # NA for startLine and scriptNum
-					 valType = NA, 
+					 valType = "all", 
 					 startLine = as.integer(NA), 
-					 scriptNum = as.integer(NA),
+					 scriptNum = 1,
 					 stringsAsFactors = FALSE)
 	
 	# CASES
@@ -698,38 +658,38 @@ test_that(".get.valid.query.var (all invalid queries)",
 	# cols: name, valType, startLine, scriptNum
 	q1 <- NULL                                   # no query
 	q2 <- data.frame("name" = "invalid",         # data node with name does not exist
-					 "valType"= NA, 
-					 "startLine" = NA, 
+					 "valType"= "all", 
+					 "startLine" = "all", 
 					 "scriptNum" = 1,
 					 stringsAsFactors = FALSE)
 	q3 <- data.frame("name" = "dev.2",           # is data node, but not variable
-					 "valType"= NA, 
-					 "startLine" = NA, 
+					 "valType"= "all", 
+					 "startLine" = "all", 
 					 "scriptNum" = 1,
 					 stringsAsFactors = FALSE)
 	q4 <- data.frame("name" = c("a","s"),        # invalid valType
 					 "valType"= c("language","language"), 
-					 "startLine" = c(NA,NA), 
+					 "startLine" = c("all","all"), 
 					 "scriptNum" = c(1,1),
 					 stringsAsFactors = FALSE)
 	q5 <- data.frame("name" = c("a","s"),        # invalid start lines
-					 "valType"= c(NA,NA), 
+					 "valType"= c("all","all"), 
 					 "startLine" = c(50,2), 
 					 "scriptNum" = c(1,1),
 					 stringsAsFactors = FALSE)
 	q6 <- data.frame("name" = "a",               # invalid script num
-					 "valType"= NA, 
-					 "startLine" = NA, 
+					 "valType"= "all", 
+					 "startLine" = "all", 
 					 "scriptNum" = 5,
 					 stringsAsFactors = FALSE)
 	q7 <- data.frame("name" = "a",               # start line is not an integer
-					 "valType"= NA, 
+					 "valType"= "all", 
 					 "startLine" = 1.5, 
 					 "scriptNum" = 1,
 					 stringsAsFactors = FALSE)
 	q8 <- data.frame("name" = "a",               # script num is not an integer
-					 "valType"= NA, 
-					 "startLine" = NA, 
+					 "valType"= "all", 
+					 "startLine" = "all", 
 					 "scriptNum" = 1.5,
 					 stringsAsFactors = FALSE)
 	
@@ -765,10 +725,10 @@ test_that(".get.valid.query.var (all invalid queries)",
 	c24 <- utils::capture.output(
 		c23 <- provDebugR:::.get.valid.query.var(p.vars, q7))
 	
-	expect_warning(                                       # script num is not an integer
+	c26 <- utils::capture.output(                                      # script num is not an integer
 		c25 <- provDebugR:::.get.valid.query.var(p.full, q8))
-	expect_warning(
-		c26 <- provDebugR:::.get.valid.query.var(p.vars, q8))
+	c28 <- utils::capture.output(
+		c27 <- provDebugR:::.get.valid.query.var(p.vars, q8))
 	
 	# TEST: returned values
 	expect_null(c1)
@@ -785,7 +745,7 @@ test_that(".get.valid.query.var (all invalid queries)",
 	expect_null(c21)
 	expect_null(c23)
 	expect_null(c25)
-	expect_null(c26)
+	expect_null(c27)
 	
 	# TEST: output messages
 	expect_true(nchar(paste(c4, collapse='\n')) > 0)
@@ -799,6 +759,8 @@ test_that(".get.valid.query.var (all invalid queries)",
 	expect_true(nchar(paste(c20, collapse='\n')) > 0)
 	expect_true(nchar(paste(c22, collapse='\n')) > 0)
 	expect_true(nchar(paste(c24, collapse='\n')) > 0)
+	expect_true(nchar(paste(c26, collapse='\n')) > 0)
+	expect_true(nchar(paste(c28, collapse='\n')) > 0)
 })
 
 # .get.valid.query.var - some valid, some invalid queries
@@ -815,7 +777,7 @@ test_that(".get.valid.query.var (some valid, some invalid queries)",
 	# QUERIES 
 	# cols: name, valType, startLine, scriptNum
 	q1 <- data.frame(name = c('a','s'),                 # start line queries
-					 valType = c(NA,NA),
+					 valType = c("all","all"),
 					 startLine = c(40,40),
 					 scriptNum = c(1,1),
 					 stringsAsFactors = FALSE)
@@ -835,7 +797,7 @@ test_that(".get.valid.query.var (some valid, some invalid queries)",
 					 scriptNum = c(1,1),
 					 stringsAsFactors = FALSE)
 	q5 <- data.frame(name = c('a','invalid','dev.2'),   # name queries
-					 valType = c(NA,NA,NA),
+					 valType = c("all","all","all"),
 					 startLine = c(NA,NA,NA),
 					 scriptNum = c(1,1,1),
 					 stringsAsFactors = FALSE)

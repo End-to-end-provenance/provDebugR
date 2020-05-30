@@ -81,6 +81,12 @@
 		</antcall>
 		<delete file="inst/Rplots.pdf"/>
 		
+		<!-- view -->
+		<antcall target="json">
+			<param name="theFile" value="view.R"/>
+		</antcall>
+		<delete file="inst/plot.pdf"/>
+		
 	</target>
 	
 	
