@@ -17,4 +17,4 @@
 "16","d15","p15","g","55","{""container"":""vector"", ""dimension"":[1], ""type"":[""numeric""]}",20,1
 "17","d16","p16","output","55","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",21,1
 "18","d17","p17","output","""End of script!""","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",24,1
-"19","d18","p19","Rplots.pdf","data/18-Rplots.pdf","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",NA,NA
+"19","d18","p19","Rplots.pdf","data/18-Rplots.pdf","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",NA,1

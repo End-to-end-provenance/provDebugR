@@ -24,4 +24,4 @@
 "23","d23","p23","s","function(x) print(x)","function",40,1
 "24","d24","p24","s","red   green blue  red   green red  ...","factor",41,1
 "25","d25","p25","s","""2008-04-06 10:11:00 UTC""","POSIXct",42,1
-"26","d26","p26","Rplots.pdf","data/26-Rplots.pdf","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",NA,NA
+"26","d26","p26","Rplots.pdf","data/26-Rplots.pdf","{""container"":""vector"", ""dimension"":[1], ""type"":[""character""]}",NA,1
