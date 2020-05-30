@@ -4,7 +4,7 @@
 \alias{debug.view}
 \title{Viewing Files and Variables}
 \usage{
-debug.view(..., start.line = NA, script.num = 1)
+debug.view(..., start.line = "all", script.num = "all")
 }
 \arguments{
 \item{...}{The variable names or file names to be queried.}
@@ -25,7 +25,8 @@ which contains the following columns:
  	\item name: The name of the variable or file being viewed.
  	\item startLine: The line number the variable or file is associated with. 
  	\item scriptNum: The script number the variable or file is associated with.
- 	\itme title: The title of the variable or file when viewed.
+ 	\item scriptName: The name of the script the variable or file is associated with.
+ 	\item title: The title of the variable or file when viewed.
  	\item notes: Will display PARTIAL if the variable is a partial snapshot, or
  	             indicate that the provenance directory or a file is not found.
  	             NA otherwise.
@@ -42,8 +43,9 @@ one its initialisation functions (listed below).
 \examples{
 \dontrun{
 prov.debug.run("test.R")
-debug.view("x")
-debug.view("x", "y", start.line = 5, script.num = 2)
+debug.view()
+debug.view(x)
+debug.view("x", y, start.line = 5, script.num = 2)
 }
 
 }

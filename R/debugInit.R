@@ -33,11 +33,16 @@
 .debug.env$data.proc <- NULL
 .debug.env$proc.data <- NULL
 
+# script names
+.debug.env$scripts <- NULL
+
 # environment for loaded variables
 .debug.env$var.env <- NULL
 
 # path to provenance directory
 .debug.env$prov.dir <- NULL
+
+
 
 # === INIT =================================================================== #
 
@@ -205,6 +210,10 @@ prov.debug.run <- function(script, ...)
 	.debug.env$data.proc <- provParseR::get.data.proc(.debug.env$prov)
 	.debug.env$proc.data <- provParseR::get.proc.data(.debug.env$prov)
 	
+	# get table of scripts (sourced & main script), save only basename
+	.debug.env$scripts <- provParseR::get.scripts(.debug.env$prov)$script
+	.debug.env$scripts <- unname(sapply(.debug.env$scripts, basename))
+	
 	# var.env (for loading variables for viewing)
 	.debug.env$var.env <- new.env(parent = .debug.env)
 	
@@ -369,6 +378,9 @@ prov.debug.run <- function(script, ...)
 	# data-to-procedure edges, procedure-to-data edges
 	.debug.env$data.proc <- NULL
 	.debug.env$proc.data <- NULL
+	
+	# script names
+	.debug.env$scripts <- NULL
 	
 	# environment for loaded variables
 	.debug.env$var.env <- NULL

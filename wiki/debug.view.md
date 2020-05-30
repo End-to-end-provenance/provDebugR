@@ -5,11 +5,12 @@ the data will be viewed using the system's default program for that type of file
 
 Additionally, a data frame showing what the function has opened will be returned,
 which contains the following columns:
-* name: The name of the variable or file being viewed.
-* startLine: The line number the variable or file is associated with. 
-* scriptNum: The script number the variable or file is associated with.
-* title: The title of the variable or file when viewed.
-*  notes: Will display PARTIAL if the variable is a partial snapshot, or
+* `name` The name of the variable or file being viewed.
+* `startLine` The line number the variable or file is associated with. 
+* `scriptNum` The script number the variable or file is associated with.
+* `scriptName` The name of the script the variable or file is associated with.
+* `title` The title of the variable or file when viewed.
+* `notes` Will display PARTIAL if the variable is a partial snapshot, or
 		  indicate that the provenance directory or a file is not found.
 		  NA otherwise.
 
@@ -17,22 +18,19 @@ which contains the following columns:
 
 The function signature for `debug.view` is:
 ```
-debug.view(..., start.line = NA, script.num = 1)
+debug.view(..., start.line = "all", script.num = "all")
 ```
 
 The parameters of this function are:
 * `...` The variable names or file names to be queried.
-* `start.line` The line number of the queried variables or files. Optional.
-* `script.num` The script number of the queried variables or files. Defaults to 1.
-
-Only 1 script number may be queried per function call.Multiple start lines
-may be queried if and only if 1 object name is queried.
+* `start.line` The line number of the queried variables or files.
+* `script.num` The script number of the queried variables or files.
 
 This function may be called only after initialising the debugger using either 
 `prov.debug`, `prov.debug.run`, or `prov.debug.file`. For example:
 ```
 prov.debug.run("myScript.R")
-debug.view("x")
-debug.view("x", "y", start.line = 5, script.num = 2)
+debug.view()
+debug.view(x)
+debug.view("x", y, start.line = 5, script.num = 2)
 ```
-

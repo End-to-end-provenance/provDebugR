@@ -31,7 +31,8 @@
 #'  	\item name: The name of the variable or file being viewed.
 #'  	\item startLine: The line number the variable or file is associated with. 
 #'  	\item scriptNum: The script number the variable or file is associated with.
-#'  	\itme title: The title of the variable or file when viewed.
+#'  	\item scriptName: The name of the script the variable or file is associated with.
+#'  	\item title: The title of the variable or file when viewed.
 #'  	\item notes: Will display PARTIAL if the variable is a partial snapshot, or
 #'  	             indicate that the provenance directory or a file is not found.
 #'  	             NA otherwise.
@@ -75,13 +76,14 @@
 #' @examples
 #' \dontrun{
 #' prov.debug.run("test.R")
-#' debug.view("x")
-#' debug.view("x", "y", start.line = 5, script.num = 2)
+#' debug.view()
+#' debug.view(x)
+#' debug.view("x", y, start.line = 5, script.num = 2)
 #' }
 #'
 #' @export
 #' @rdname debug.view
-debug.view <- function(..., start.line = NA, script.num = 1)
+debug.view <- function(..., start.line = "all", script.num = "all")
 {
 	# CASE: no provenance
 	if(!.debug.env$has.graph)
@@ -95,25 +97,24 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 							 data.nodes$type == "File", ]
 	data.nodes <- .remove.na.rows(data.nodes)
 	
-	pos.vars <- .get.pos.var(data.nodes)
+	pos.nodes <- .get.pos.var(data.nodes)
 	
 	# case: no variables
-	if(nrow(pos.vars) == 0) {
+	if(nrow(pos.nodes) == 0) {
 		cat("There are no variables.\n")
 		return(invisible(NULL))
 	}
 	
 	# STEP: Get user's valid queries
 	# resulting cols: d.id, name, startLine, scriptNum
-	# This is trickier than normal because if start.line = NA,
-	# all instances of each valid queried variable is loaded and opened.
-	valid.queries <- .get.valid.query.view(..., pos.vars = pos.vars,
-										   start.line = start.line,
-										   script.num = script.num)
+	queries <- .get.query.var(unique(.flatten.args(...)),
+							  start.line = start.line,
+							  script.num = script.num)
+	valid.queries <- .get.valid.query.var(pos.nodes, queries)
 	
 	# case: no valid queries
 	if(is.null(valid.queries)) {
-		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum")])
+		.print.pos.options(pos.nodes[ , c("name", "startLine", "scriptNum", "scriptName")])
 		return(invisible(NULL))
 	}
 	
@@ -129,8 +130,10 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	{
 		query <- valid.queries[i, ]
 		
-		# get row from pos.vars table
-		node <- pos.vars[pos.vars$d.id == query$d.id, ]
+		# get row from pos.nodes table & cbind scriptName informatiion
+		node <- pos.nodes[pos.nodes$d.id == query$d.id, ]
+		node <- cbind(node, scriptName = .debug.env$scripts[node$scriptNum],
+					  stringsAsFactors = FALSE)
 		
 		# since there could be multiple of the same var names, lines, script num,
 		# form a new var name the data is loaded into
@@ -141,7 +144,7 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 		status <- .view.var(var.env, var.name, node$value,
 							node$valType, data.dir)
 		
-		return(cbind(node[ , c("name", "startLine", "scriptNum")], 
+		return(cbind(node[ , c("name", "startLine", "scriptNum", "scriptName")], 
 					 title = var.name, 
 					 notes = status, 
 					 stringsAsFactors = FALSE))
@@ -152,96 +155,6 @@ debug.view <- function(..., start.line = NA, script.num = 1)
 	
 	cat("Viewing:\n\n")
 	return(results)
-}
-
-#' Get user's valid queries.
-#' If start.line = NA, all instances of each valid queried variable are to be viewed.
-#' 
-#' @param ... The user's variable queries.
-#' @param pos.vars The table of all possible variables.
-#' @param start.line The line of the variable. If NA, all instances of each
-#'            queried variable are to be viewed.
-#' @param script.num The script number of the queried variable.
-#'
-#' @return A data frame of all valid user queries.
-#'         colums: d.id, name, startLine, scriptNum
-#'
-#' @noRd
-.get.valid.query.view <- function(..., pos.vars, start.line = NA, script.num = 1)
-{
-	# STEP: first, make sure each queried variable name is unique
-	query.vars <- unique(.flatten.args(...))
-	
-	# CASE: if there are no queried variables, return NULL
-	if(is.null(query.vars))
-		return(NULL)
-	
-	# STEP: filter for queried script.num
-	# keep columns: d.id, name, valType, startLine, scriptNum
-	pos.vars <- pos.vars[pos.vars$scriptNum == script.num, 
-						 c("d.id", "name", "valType", "startLine", "scriptNum")]
-	pos.vars <- .remove.na.rows(pos.vars)
-	
-	# CASE: script.num is not valid
-	if(nrow(pos.vars) == 0)
-		return(NULL)
-	
-	# STEP: if start.line is not NA, 
-	# get and return table of valid queries normally
-	if(!is.na(start.line))
-	{
-		queries <- .get.query.var(query.vars, val.type = NA, 
-								  start.line = start.line, 
-								  script.num = script.num)
-	
-		return(.get.valid.query.var(pos.vars, queries, forward = FALSE))
-	}
-	
-	# STEP: if start line is NA, get all possible lines for every variable queried.
-	# must make sure the queried variables are valid
-	# grow list of invalid queries as it (most likely) occurs less frequently.
-	invalid <- c()
-	
-	# get table of queries for each variable
-	queries <- lapply(c(1:length(query.vars)), function(i)
-	{
-		# check for variable validity
-		var <- query.vars[i]
-		pos.nodes <- .remove.na.rows(pos.vars[pos.vars$name == var, ])
-		
-		# return NULL and record index if variable is invalid
-		if(nrow(pos.nodes) == 0) {
-			invalid <<- append(invalid, i)
-			return(NULL)
-		}
-		
-		# otherwise, call .get.query.var to get full table for var
-		queries.list <- .get.query.var(var, val.type = NA,
-									   start.line = pos.nodes$startLine,
-									   script.num = script.num)
-		
-		# cbind with list of d.id before returning
-		queries.list <- cbind(d.id = pos.nodes$d.id, queries.list, 
-						stringsAsFactors = FALSE)
-		return(queries.list)
-	})
-	
-	# remove invalid vars from list of queries, if any
-	# return null if all variables are invalid
-	if(length(invalid) > 0) {
-		queries <- queries[0-invalid]
-	}
-	else if(length(invalid) == length(query.vars)) {
-		return(NULL)
-	}
-	
-	# combine all data frames in list into 1, return
-	if(length(queries) == 1)
-		queries <- queries[[1]]
-	else
-		queries <- .form.df(queries)
-	
-	return(queries)
 }
 
 #' Views the contents of a variable or file.

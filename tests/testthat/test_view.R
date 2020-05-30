@@ -11,12 +11,6 @@ test_that("debug.view",
 	skip("tbd")
 })
 
-# .get.valid.query.view
-test_that("debug.view - .get.valid.query.view",
-{
-	skip("tbd")
-})
-
 # .view.var
 test_that("debug.view - .view.var",
 {
