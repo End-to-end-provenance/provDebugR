@@ -18,6 +18,7 @@ test_that("Utility - .clear",
 	expect_false(is.null(provDebugR:::.debug.env$data.nodes))
 	expect_false(is.null(provDebugR:::.debug.env$data.proc))
 	expect_false(is.null(provDebugR:::.debug.env$proc.data))
+	expect_false(is.null(provDebugR:::.debug.env$scripts))
 	expect_false(is.null(provDebugR:::.debug.env$var.env))
 	expect_false(is.null(provDebugR:::.debug.env$prov.dir))
 	
@@ -32,6 +33,7 @@ test_that("Utility - .clear",
 	expect_true(is.null(provDebugR:::.debug.env$data.nodes))
 	expect_true(is.null(provDebugR:::.debug.env$data.proc))
 	expect_true(is.null(provDebugR:::.debug.env$proc.data))
+	expect_true(is.null(provDebugR:::.debug.env$scripts))
 	expect_true(is.null(provDebugR:::.debug.env$var.env))
 	expect_true(is.null(provDebugR:::.debug.env$prov.dir))
 })
@@ -161,6 +163,22 @@ test_that("Utility - .to.int",
 	expect_null(c6)
 	expect_null(c7)
 	expect_null(c8)
+})
+
+# .get.arg.namme
+test_that("Utility - .get.arg.namme",
+{
+	# Cases
+	c1 <- provDebugR:::.get.arg.name(x)
+	c2 <- provDebugR:::.get.arg.name(1)
+	c3 <- provDebugR:::.get.arg.name(NULL)
+	c4 <- provDebugR:::.get.arg.name(NA)
+	
+	# Test
+	expect_equal(c1, "x")
+	expect_equal(c2, 1)
+	expect_null(c3)
+	expect_equivalent(c4, NA)
 })
 
 # .find.num.loc

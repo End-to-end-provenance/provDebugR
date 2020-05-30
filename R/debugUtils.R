@@ -76,6 +76,25 @@
 	return(df)
 }
 
+#' Returns the name of a given variable.
+#' If the given argument is not a variable, nothing is done and the original
+#' argument is returned to the caller.
+#'
+#' @param arg The argument whose name will be returned if it is a variable.
+#'
+#' @return The name of the argument, if it is a variable. If not, the argument
+#'         will be returned as is.
+#' @noRd
+.get.arg.name <- function(arg)
+{
+	parsed.arg <- substitute(arg)
+	
+	if(is.symbol(parsed.arg))
+		return(deparse(parsed.arg))
+	
+	return(arg)
+}
+
 #' Converts a query to an integer.
 #' NA and negative integers are accepted.
 #' This is used in checking the validity of queried line or script numbers.
