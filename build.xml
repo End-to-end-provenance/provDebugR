@@ -63,7 +63,7 @@
 			<param name="theFile" value="fromEnv.R"/>
 			<param name="console.mode" value="true"/>
 		</antcall>
-		<delete file="inst/Rplots.pdf"/>
+		<delete file="inst/plot.pdf"/>
 		
 		<!-- no data nodes -->
 		<antcall target="json">

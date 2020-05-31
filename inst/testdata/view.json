@@ -34,7 +34,7 @@
 		"rdt:p1": {
 			"rdt:name": "view.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.81",
+			"rdt:elapsedTime": "1.39",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -44,7 +44,7 @@
 		"rdt:p2": {
 			"rdt:name": "library(rdtLite)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.13",
+			"rdt:elapsedTime": "0.19",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -54,7 +54,7 @@
 		"rdt:p3": {
 			"rdt:name": "m <- matrix(1:100, 10)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.13",
+			"rdt:elapsedTime": "0.14",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -64,7 +64,7 @@
 		"rdt:p4": {
 			"rdt:name": "s <- \"this is a string\"",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 4,
 			"rdt:startCol": 1,
@@ -74,7 +74,7 @@
 		"rdt:p5": {
 			"rdt:name": "source_plot.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.06",
+			"rdt:elapsedTime": "0.03",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -84,7 +84,7 @@
 		"rdt:p6": {
 			"rdt:name": "pdf(\"plot.pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.11",
+			"rdt:elapsedTime": "0.16",
 			"rdt:scriptNum": 2,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -94,7 +94,7 @@
 		"rdt:p7": {
 			"rdt:name": "plot(c(1:10), c(11:20))",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 2,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -104,7 +104,7 @@
 		"rdt:p8": {
 			"rdt:name": "title(\"plot to pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 2,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -114,7 +114,7 @@
 		"rdt:p9": {
 			"rdt:name": "dev.off()",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 2,
 			"rdt:startLine": 4,
 			"rdt:startCol": 1,
@@ -134,7 +134,7 @@
 		"rdt:p11": {
 			"rdt:name": "view.R",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.07",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -206,8 +206,8 @@
 			"rdt:type": "File",
 			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "2d20093de40f221248e168ebc842d654",
-			"rdt:timestamp": "2020-05-30T18.19.39EDT",
+			"rdt:hash": "900811e184315562f407b177ea6d32c9",
+			"rdt:timestamp": "2020-05-31T10.07.38EDT",
 			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/plot.pdf"
 		},
 
@@ -219,12 +219,12 @@
 			"rdt:langVersion": "R version 3.6.3 (2020-02-29)",
 			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/view.R",
 			"rdt:scriptTimeStamp": "2020-05-30T18.19.08EDT",
-			"rdt:totalElapsedTime": "1.68",
+			"rdt:totalElapsedTime": "2.43",
 			"rdt:sourcedScripts": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/source_plot.R",
 			"rdt:sourcedScriptTimeStamps": "2020-05-30T18.14.47EDT",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
 			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_view",
-			"rdt:provTimestamp": "2020-05-30T18.19.37EDT",
+			"rdt:provTimestamp": "2020-05-31T10.07.35EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 

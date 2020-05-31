@@ -31,7 +31,7 @@
 		"rdt:p1": {
 			"rdt:name": "Console",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.89",
+			"rdt:elapsedTime": "1.26",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -41,7 +41,7 @@
 		"rdt:p2": {
 			"rdt:name": "source_fromEnv.R",
 			"rdt:type": "Start",
-			"rdt:elapsedTime": "0.05",
+			"rdt:elapsedTime": "0.08",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -51,7 +51,7 @@
 		"rdt:p3": {
 			"rdt:name": "d <- 10",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.11",
+			"rdt:elapsedTime": "0.17",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 1,
 			"rdt:startCol": 1,
@@ -61,7 +61,7 @@
 		"rdt:p4": {
 			"rdt:name": "vector.1 <- c(a:d)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.12",
+			"rdt:elapsedTime": "0.13",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 2,
 			"rdt:startCol": 1,
@@ -71,7 +71,7 @@
 		"rdt:p5": {
 			"rdt:name": "print(vector.1)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 3,
 			"rdt:startCol": 1,
@@ -81,7 +81,7 @@
 		"rdt:p6": {
 			"rdt:name": "e <- a + 10",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.07",
+			"rdt:elapsedTime": "0.1",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 5,
 			"rdt:startCol": 1,
@@ -91,7 +91,7 @@
 		"rdt:p7": {
 			"rdt:name": "f <- d + 10",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 6,
 			"rdt:startCol": 1,
@@ -101,7 +101,7 @@
 		"rdt:p8": {
 			"rdt:name": "vector.2 <- c(e:f)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 7,
 			"rdt:startCol": 1,
@@ -119,86 +119,136 @@
 			"rdt:endCol": 15
 		},
 		"rdt:p10": {
-			"rdt:name": "plot(vector.1, vector.2)",
+			"rdt:name": "X11()",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.16",
+			"rdt:elapsedTime": "0.13",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 11,
 			"rdt:startCol": 1,
 			"rdt:endLine": 11,
-			"rdt:endCol": 24
+			"rdt:endCol": 5
 		},
 		"rdt:p11": {
-			"rdt:name": "title(\"Plot 1\")",
+			"rdt:name": "plot(vector.1, vector.2)",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.09",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 12,
 			"rdt:startCol": 1,
 			"rdt:endLine": 12,
-			"rdt:endCol": 15
+			"rdt:endCol": 24
 		},
 		"rdt:p12": {
-			"rdt:name": "vector.3 <- vector.1 + 20L",
+			"rdt:name": "title(\"Plot 1\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.1",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 15,
+			"rdt:startLine": 13,
 			"rdt:startCol": 1,
-			"rdt:endLine": 15,
-			"rdt:endCol": 26
+			"rdt:endLine": 13,
+			"rdt:endCol": 15
 		},
 		"rdt:p13": {
-			"rdt:name": "vector.4 <- vector.2 + 30L",
+			"rdt:name": "dev.off()",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.17",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 16,
+			"rdt:startLine": 14,
 			"rdt:startCol": 1,
-			"rdt:endLine": 16,
-			"rdt:endCol": 26
+			"rdt:endLine": 14,
+			"rdt:endCol": 9
 		},
 		"rdt:p14": {
-			"rdt:name": "plot(vector.3, vector.4)",
+			"rdt:name": "pdf(\"plot.pdf\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.09",
+			"rdt:elapsedTime": "0.22",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 17,
 			"rdt:startCol": 1,
 			"rdt:endLine": 17,
-			"rdt:endCol": 24
+			"rdt:endCol": 15
 		},
 		"rdt:p15": {
-			"rdt:name": "g <- b + 50",
+			"rdt:name": "vector.3 <- vector.1 + 20L",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.1",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 18,
+			"rdt:startCol": 1,
+			"rdt:endLine": 18,
+			"rdt:endCol": 26
+		},
+		"rdt:p16": {
+			"rdt:name": "vector.4 <- vector.2 + 30L",
 			"rdt:type": "Operation",
 			"rdt:elapsedTime": "0.08",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 19,
+			"rdt:startCol": 1,
+			"rdt:endLine": 19,
+			"rdt:endCol": 26
+		},
+		"rdt:p17": {
+			"rdt:name": "plot(vector.3, vector.4)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 20,
 			"rdt:startCol": 1,
 			"rdt:endLine": 20,
-			"rdt:endCol": 11
+			"rdt:endCol": 24
 		},
-		"rdt:p16": {
-			"rdt:name": "print(g)",
+		"rdt:p18": {
+			"rdt:name": "title(\"pdf plot\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.13",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": 21,
 			"rdt:startCol": 1,
 			"rdt:endLine": 21,
+			"rdt:endCol": 17
+		},
+		"rdt:p19": {
+			"rdt:name": "dev.off()",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.11",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 22,
+			"rdt:startCol": 1,
+			"rdt:endLine": 22,
+			"rdt:endCol": 9
+		},
+		"rdt:p20": {
+			"rdt:name": "g <- b + 50",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.1",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 25,
+			"rdt:startCol": 1,
+			"rdt:endLine": 25,
+			"rdt:endCol": 11
+		},
+		"rdt:p21": {
+			"rdt:name": "print(g)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.1",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 26,
+			"rdt:startCol": 1,
+			"rdt:endLine": 26,
 			"rdt:endCol": 8
 		},
-		"rdt:p17": {
+		"rdt:p22": {
 			"rdt:name": "print(\"End of script!\")",
 			"rdt:type": "Operation",
-			"rdt:elapsedTime": "0.08",
+			"rdt:elapsedTime": "0.11",
 			"rdt:scriptNum": 1,
-			"rdt:startLine": 24,
+			"rdt:startLine": 29,
 			"rdt:startCol": 1,
-			"rdt:endLine": 24,
+			"rdt:endLine": 29,
 			"rdt:endCol": 23
 		},
-		"rdt:p18": {
+		"rdt:p23": {
 			"rdt:name": "source_fromEnv.R",
 			"rdt:type": "Finish",
 			"rdt:elapsedTime": "0.0",
@@ -208,10 +258,10 @@
 			"rdt:endLine": "NA",
 			"rdt:endCol": "NA"
 		},
-		"rdt:p19": {
+		"rdt:p24": {
 			"rdt:name": "Console",
 			"rdt:type": "Finish",
-			"rdt:elapsedTime": "0.0",
+			"rdt:elapsedTime": "0.01",
 			"rdt:scriptNum": 1,
 			"rdt:startLine": "NA",
 			"rdt:startCol": "NA",
@@ -332,26 +382,26 @@
 			"rdt:location": ""
 		},
 		"rdt:d11": {
-			"rdt:name": "vector.3",
-			"rdt:value": "21 22 23 24 25 26 27 28 29 30",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
+			"rdt:name": "dev.2",
+			"rdt:value": "",
+			"rdt:valType": "Device",
+			"rdt:type": "Device",
+			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
 			"rdt:hash": "",
 			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
 		"rdt:d12": {
-			"rdt:name": "vector.4",
-			"rdt:value": "41 42 43 44 45 46 47 48 49 50",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
-			"rdt:type": "Data",
-			"rdt:scope": "R_GlobalEnv",
+			"rdt:name": "dev.off.12.pdf",
+			"rdt:value": "data/12-dev.off.12.pdf",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
 			"rdt:fromEnv": false,
-			"rdt:hash": "",
-			"rdt:timestamp": "",
-			"rdt:location": ""
+			"rdt:hash": "5623ec43e846d8e1e69fd000a60a9034",
+			"rdt:timestamp": "2020-05-31T10.07.20EDT",
+			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/dev.off.12.pdf"
 		},
 		"rdt:d13": {
 			"rdt:name": "dev.2",
@@ -365,6 +415,61 @@
 			"rdt:location": ""
 		},
 		"rdt:d14": {
+			"rdt:name": "vector.3",
+			"rdt:value": "21 22 23 24 25 26 27 28 29 30",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d15": {
+			"rdt:name": "vector.4",
+			"rdt:value": "41 42 43 44 45 46 47 48 49 50",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[10], \"type\":[\"integer\"]}",
+			"rdt:type": "Data",
+			"rdt:scope": "R_GlobalEnv",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d16": {
+			"rdt:name": "dev.2",
+			"rdt:value": "",
+			"rdt:valType": "Device",
+			"rdt:type": "Device",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d17": {
+			"rdt:name": "dev.2",
+			"rdt:value": "",
+			"rdt:valType": "Device",
+			"rdt:type": "Device",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "",
+			"rdt:timestamp": "",
+			"rdt:location": ""
+		},
+		"rdt:d18": {
+			"rdt:name": "plot.pdf",
+			"rdt:value": "data/18-plot.pdf",
+			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
+			"rdt:type": "File",
+			"rdt:scope": "undefined",
+			"rdt:fromEnv": false,
+			"rdt:hash": "5dbe416bffd99d33867515ceae856594",
+			"rdt:timestamp": "2020-05-31T10.07.21EDT",
+			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/plot.pdf"
+		},
+		"rdt:d19": {
 			"rdt:name": "b",
 			"rdt:value": "5",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
@@ -375,7 +480,7 @@
 			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
-		"rdt:d15": {
+		"rdt:d20": {
 			"rdt:name": "g",
 			"rdt:value": "55",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"numeric\"]}",
@@ -386,7 +491,7 @@
 			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
-		"rdt:d16": {
+		"rdt:d21": {
 			"rdt:name": "output",
 			"rdt:value": "55",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
@@ -397,7 +502,7 @@
 			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
-		"rdt:d17": {
+		"rdt:d22": {
 			"rdt:name": "output",
 			"rdt:value": "\"End of script!\"",
 			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
@@ -408,17 +513,6 @@
 			"rdt:timestamp": "",
 			"rdt:location": ""
 		},
-		"rdt:d18": {
-			"rdt:name": "Rplots.pdf",
-			"rdt:value": "data/18-Rplots.pdf",
-			"rdt:valType": "{\"container\":\"vector\", \"dimension\":[1], \"type\":[\"character\"]}",
-			"rdt:type": "File",
-			"rdt:scope": "undefined",
-			"rdt:fromEnv": false,
-			"rdt:hash": "11811f24e28f0db46b363b0d97eaf13c",
-			"rdt:timestamp": "2020-05-30T18.19.27EDT",
-			"rdt:location": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/Rplots.pdf"
-		},
 
 		"rdt:environment": {
 			"rdt:name": "environment",
@@ -428,12 +522,12 @@
 			"rdt:langVersion": "R version 3.6.3 (2020-02-29)",
 			"rdt:script": "",
 			"rdt:scriptTimeStamp": "",
-			"rdt:totalElapsedTime": "2.34",
+			"rdt:totalElapsedTime": "3.72",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
 			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_console",
-			"rdt:provTimestamp": "2020-05-30T18.19.24EDT",
+			"rdt:provTimestamp": "2020-05-31T10.07.17EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -511,10 +605,19 @@
 		},
 
 		"rdt:f1": {
-			"name": "plot"
+			"name": "X11"
 		},
 		"rdt:f2": {
+			"name": "plot"
+		},
+		"rdt:f3": {
 			"name": "title"
+		},
+		"rdt:f4": {
+			"name": "dev.off"
+		},
+		"rdt:f5": {
+			"name": "pdf"
 		}
 	},
 
@@ -590,6 +693,26 @@
 		"rdt:pp18": {
 			"prov:informant": "rdt:p18",
 			"prov:informed": "rdt:p19"
+		},
+		"rdt:pp19": {
+			"prov:informant": "rdt:p19",
+			"prov:informed": "rdt:p20"
+		},
+		"rdt:pp20": {
+			"prov:informant": "rdt:p20",
+			"prov:informed": "rdt:p21"
+		},
+		"rdt:pp21": {
+			"prov:informant": "rdt:p21",
+			"prov:informed": "rdt:p22"
+		},
+		"rdt:pp22": {
+			"prov:informant": "rdt:p22",
+			"prov:informed": "rdt:p23"
+		},
+		"rdt:pp23": {
+			"prov:informant": "rdt:p23",
+			"prov:informed": "rdt:p24"
 		}
 	},
 
@@ -644,19 +767,35 @@
 		},
 		"rdt:pd13": {
 			"prov:activity": "rdt:p15",
-			"prov:entity": "rdt:d15"
+			"prov:entity": "rdt:d14"
 		},
 		"rdt:pd14": {
 			"prov:activity": "rdt:p16",
-			"prov:entity": "rdt:d16"
+			"prov:entity": "rdt:d15"
 		},
 		"rdt:pd15": {
 			"prov:activity": "rdt:p17",
-			"prov:entity": "rdt:d17"
+			"prov:entity": "rdt:d16"
 		},
 		"rdt:pd16": {
+			"prov:activity": "rdt:p18",
+			"prov:entity": "rdt:d17"
+		},
+		"rdt:pd17": {
 			"prov:activity": "rdt:p19",
 			"prov:entity": "rdt:d18"
+		},
+		"rdt:pd18": {
+			"prov:activity": "rdt:p20",
+			"prov:entity": "rdt:d20"
+		},
+		"rdt:pd19": {
+			"prov:activity": "rdt:p21",
+			"prov:entity": "rdt:d21"
+		},
+		"rdt:pd20": {
+			"prov:activity": "rdt:p22",
+			"prov:entity": "rdt:d22"
 		}
 	},
 
@@ -695,47 +834,59 @@
 		},
 		"rdt:dp9": {
 			"prov:entity": "rdt:d3",
-			"prov:activity": "rdt:p10"
+			"prov:activity": "rdt:p11"
 		},
 		"rdt:dp10": {
 			"prov:entity": "rdt:d7",
-			"prov:activity": "rdt:p10"
+			"prov:activity": "rdt:p11"
 		},
 		"rdt:dp11": {
 			"prov:entity": "rdt:d9",
 			"prov:activity": "rdt:p11"
 		},
 		"rdt:dp12": {
-			"prov:entity": "rdt:d3",
+			"prov:entity": "rdt:d10",
 			"prov:activity": "rdt:p12"
 		},
 		"rdt:dp13": {
-			"prov:entity": "rdt:d7",
+			"prov:entity": "rdt:d11",
 			"prov:activity": "rdt:p13"
 		},
 		"rdt:dp14": {
-			"prov:entity": "rdt:d11",
-			"prov:activity": "rdt:p14"
-		},
-		"rdt:dp15": {
-			"prov:entity": "rdt:d12",
-			"prov:activity": "rdt:p14"
-		},
-		"rdt:dp16": {
-			"prov:entity": "rdt:d10",
-			"prov:activity": "rdt:p14"
-		},
-		"rdt:dp17": {
-			"prov:entity": "rdt:d14",
+			"prov:entity": "rdt:d3",
 			"prov:activity": "rdt:p15"
 		},
-		"rdt:dp18": {
-			"prov:entity": "rdt:d15",
+		"rdt:dp15": {
+			"prov:entity": "rdt:d7",
 			"prov:activity": "rdt:p16"
 		},
-		"rdt:dp19": {
+		"rdt:dp16": {
+			"prov:entity": "rdt:d14",
+			"prov:activity": "rdt:p17"
+		},
+		"rdt:dp17": {
+			"prov:entity": "rdt:d15",
+			"prov:activity": "rdt:p17"
+		},
+		"rdt:dp18": {
 			"prov:entity": "rdt:d13",
+			"prov:activity": "rdt:p17"
+		},
+		"rdt:dp19": {
+			"prov:entity": "rdt:d16",
+			"prov:activity": "rdt:p18"
+		},
+		"rdt:dp20": {
+			"prov:entity": "rdt:d17",
 			"prov:activity": "rdt:p19"
+		},
+		"rdt:dp21": {
+			"prov:entity": "rdt:d19",
+			"prov:activity": "rdt:p20"
+		},
+		"rdt:dp22": {
+			"prov:entity": "rdt:d20",
+			"prov:activity": "rdt:p21"
 		},
 
 		"rdt:fp1": {
@@ -747,19 +898,51 @@
 			"prov:activity": "rdt:p11"
 		},
 		"rdt:fp3": {
-			"prov:entity": "rdt:f1",
+			"prov:entity": "rdt:f3",
+			"prov:activity": "rdt:p12"
+		},
+		"rdt:fp4": {
+			"prov:entity": "rdt:f4",
+			"prov:activity": "rdt:p13"
+		},
+		"rdt:fp5": {
+			"prov:entity": "rdt:f5",
 			"prov:activity": "rdt:p14"
+		},
+		"rdt:fp6": {
+			"prov:entity": "rdt:f2",
+			"prov:activity": "rdt:p17"
+		},
+		"rdt:fp7": {
+			"prov:entity": "rdt:f3",
+			"prov:activity": "rdt:p18"
+		},
+		"rdt:fp8": {
+			"prov:entity": "rdt:f4",
+			"prov:activity": "rdt:p19"
 		}
 	},
 
 	"hadMember" : {
 		"rdt:m1": {
 			"prov:collection": "rdt:l4",
-			"prov:entity": "rdt:f1"
+			"prov:entity": "rdt:f2"
 		},
 		"rdt:m2": {
 			"prov:collection": "rdt:l4",
-			"prov:entity": "rdt:f2"
+			"prov:entity": "rdt:f3"
+		},
+		"rdt:m3": {
+			"prov:collection": "rdt:l5",
+			"prov:entity": "rdt:f1"
+		},
+		"rdt:m4": {
+			"prov:collection": "rdt:l5",
+			"prov:entity": "rdt:f4"
+		},
+		"rdt:m5": {
+			"prov:collection": "rdt:l5",
+			"prov:entity": "rdt:f5"
 		}
 	}
 }
