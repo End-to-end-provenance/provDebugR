@@ -1,2 +1,2 @@
-"","X2.scriptNum","X2.startLine","X2.code"
-"1",2,6,"warning(""another warning thrown"")"
+"","X2.scriptNum","X2.scriptName","X2.startLine","X2.code"
+"1",2,"source_warning.r",6,"warning(""another warning thrown"")"

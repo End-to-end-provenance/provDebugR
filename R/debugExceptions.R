@@ -27,9 +27,10 @@
 #' Each data frame returned by debug.error and debug.warning contains the 
 #' following columns:
 #' \itemize{
-#'		\item scriptNum: The script number the data node is associated with.
-#'		\item startLine: The line number the data node is associated with.
-#'		\item code: The line of code which used/produced the data node.
+#'		\item scriptNum: The script number the exception is associated with.
+#'  	\item scriptName: The name of the script the exception is associated with.
+#'		\item startLine: The line number the exception is associated with.
+#'		\item code: The line of code which threw the exception.
 #' }
 #'
 #' debug.error and debug.warning belong to provDebugR, a debugger which utilises 

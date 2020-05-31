@@ -2,9 +2,10 @@
 (the steps leading up to) each warning queried.
 
 Each data frame contains the following columns:
-* scriptNum: The script number the data node is associated with.
-* startLine: The line number the data node is associated with.
-* code: The line of code which used/produced the data node.
+* `scriptNum` The script number the exception is associated with.
+* `scriptName` The name of the script the exception is associated with.
+* `startLine` The line number the exception is associated with.
+* `code` The line of code which threw the exception.
 
 ## Usage
 
@@ -51,11 +52,11 @@ Warning messages:
 Calling `debug.warning(2)` will give the backwards lineage of the second warning:
 ```
 $`2`
-  scriptNum startLine                  code
-1         1         3                x <- 1
-2         1         4                y <- 2
-3         1         5                z <- 3
-4         1         6 cor(c(x, x), c(y, z))
+  scriptNum scriptName startLine                  code
+1         1 myScript.R        3                x <- 1
+2         1 myScript.R         4                y <- 2
+3         1 myScript.R         5                z <- 3
+4         1 myScript.R         6 cor(c(x, x), c(y, z))
 ```
 
 ### 2. Obtaining the lineage for multiple warnings
@@ -64,15 +65,15 @@ Multiple warnings may be queried at once to get the lineages of multiple warning
 For example, the result for `debug.warning(1,2)` is:
 ```
 $`1`
-  scriptNum startLine                      code
-1         1         1 warning("This is a test")
+  scriptNum scriptName startLine                      code
+1         1 myScript.R         1 warning("This is a test")
 
 $`2`
-  scriptNum startLine                  code
-1         1         3                x <- 1
-2         1         4                y <- 2
-3         1         5                z <- 3
-4         1         6 cor(c(x, x), c(y, z))
+  scriptNum scriptName startLine                  code
+1         1 myScript.R         3                x <- 1
+2         1 myScript.R         4                y <- 2
+3         1 myScript.R         5                z <- 3
+4         1 myScript.R         6 cor(c(x, x), c(y, z))
 ```
 
 ### 3. No parameters

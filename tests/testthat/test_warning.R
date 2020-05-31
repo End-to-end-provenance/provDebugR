@@ -142,17 +142,11 @@ test_that("debug.warning - invalid queries",
 	e1 <- system.file("testexpected", "warnings1.csv", package = "provDebugR")
 	e1 <- read.csv(e1, row.names = 1, stringsAsFactors = FALSE)
 	
-	# queries
-	q1 <- "invalid"
-	q2 <- 50
-	q3 <- c(3:5)
-	q4 <- c(3,1,5)   # with a valid query
-	
 	# test cases
-	c2 <- utils::capture.output(c1 <- debug.warning(q1))
-	c4 <- utils::capture.output(c3 <- debug.warning(q2))
-	c6 <- utils::capture.output(c5 <- debug.warning(q3))
-	c8 <- utils::capture.output(c7 <- debug.warning(q4))
+	c2 <- utils::capture.output(c1 <- debug.warning("invalid"))
+	c4 <- utils::capture.output(c3 <- debug.warning(50))
+	c6 <- utils::capture.output(c5 <- debug.warning(c(3:5)))
+	c8 <- utils::capture.output(c7 <- debug.warning(c(3,1,5)))   # with a valid query
 	
 	# tests: returned value and user output
 	expect_null(c1)
@@ -180,29 +174,21 @@ test_that(".get.valid.query.warn",
 							value=c("warning 1", "warning 2", "warning 3"), 
 							stringsAsFactors = FALSE)
 	
-	# queries
-	q1 <- "invalid"             # invalid
-	q2 <- 50                    # invalid
-	q3 <- c(1:3)                # all valid
-	q4 <- c("3", "invalid", 2)  # some invalid, some valid
-	q5 <- c(6:8)                # all invalid
-	q6 <- c(1,1,3)              # repeated query
-	
 	# test cases
 	c2 <- utils::capture.output(
-		c1 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes))       # no queries
+		c1 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes))              # no queries
 	c4 <- utils::capture.output(
-		c3 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, q1))   # invalid
+		c3 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, "invalid"))   # invalid
 	c6 <- utils::capture.output(
-		c5 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, q2))   # invalid
+		c5 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, 50))          # invalid
 	c8 <- utils::capture.output(
-		c7 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, q3))   # all valid
+		c7 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, c(1:3)))      # all valid
 	c10 <- utils::capture.output(
-		c9 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, q4))   # some invalid, some valid
+		c9 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, c("3", "invalid", 2)))   # some invalid, some valid
 	c12 <- utils::capture.output(
-		c11 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, q5))  # all invalid
+		c11 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, c(6:8)))     # all invalid
 	c14 <- utils::capture.output(
-		c13 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, q6))  # repeated query
+		c13 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, c(1,1,3)))   # repeated query
 	
 	c16 <- utils::capture.output(
 		c15 <- provDebugR:::.get.valid.query.warn(warning.nodes = pos.nodes, all = TRUE))      # all
