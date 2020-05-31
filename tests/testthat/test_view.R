@@ -5,8 +5,26 @@ context("debug.view")
 
 # === THE TESTS ============================================================== #
 
-# debug.view
-test_that("debug.view",
+# debug.view (no provenance)
+test_that("debug.view - no/empty provenance", 
+{
+	# clean debug environment of provDebugR first to ensure inital state
+	provDebugR:::.clear()
+	
+	# initialisation not run
+	expect_false(provDebugR:::.debug.env$has.graph)
+	expect_error(debug.view())
+	
+	# empty provenance
+	json <- system.file("testdata", "empty.json", package = "provDebugR")
+	expect_error(prov.debug.file(json))
+	expect_false(provDebugR:::.debug.env$has.graph)
+	expect_error(debug.view())
+})
+
+
+# debug.view (general)
+test_that("debug.view - general",
 {
 	json <- system.file("testdata", "view.json", package = "provDebugR")
 	expect_warning(prov.debug.file(json))   # warning due to removed prov folder
