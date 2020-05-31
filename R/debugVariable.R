@@ -227,7 +227,7 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 		
 		# start.line = "all"
 		# get all start lines for the node queried. leave NA if none found
-		if(length(q.lines) == 1 && tolower(q.lines) == "all") 
+		if(!is.na(q.lines) && tolower(q.lines[1]) == "all") 
 		{
 			# get data node ids
 			d.id <- .debug.env$data.nodes$id[.debug.env$data.nodes$name == var]
@@ -237,10 +237,17 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 			}
 			else {
 				# get corresponding proc node ids & start lines
-				q.lines <- unique(sapply(d.id, function(id) {
+				q.lines <- lapply(d.id, function(id) {
 					p.id <- .get.p.id(id)
-					return(.debug.env$proc.nodes$startLine[.debug.env$proc.nodes$id == p.id])
-				}))
+					
+					lines <- sapply(p.id, function(id) {
+						return(.debug.env$proc.nodes$startLine[.debug.env$proc.nodes$id == id])
+					})
+					
+					return(lines)
+				})
+				
+				q.lines <- unique(unlist(q.lines))
 			}
 		}
 		

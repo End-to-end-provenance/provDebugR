@@ -27,6 +27,7 @@
 #' Each data frame contains the following columns:
 #' \itemize{
 #'		\item scriptNum: The script number the data node is associated with.
+#'		\item scriptName: The name of the script the data node is associated with.
 #'		\item startLine: The line number the data node is associated with.
 #'		\item code: The line of code which used/produced the data node.
 #' }
@@ -74,9 +75,9 @@
 #' @examples
 #' \dontrun{
 #' prov.debug.run("test.R")
-#' debug.lineage("x")
+#' debug.lineage(x)
 #' debug.lineage("x", start.line = 5, script.num = 2)
-#' debug.lineage("a", "b", forward = TRUE)
+#' debug.lineage("a", b, forward = TRUE)
 #' debug.lineage(all = TRUE)
 #' }
 #'
@@ -99,13 +100,13 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	}
 	
 	# STEP: get user's query
-	# columns: name, valType (NA), startLine, scriptNum
+	# columns: name, valType ("all"), startLine, scriptNum
 	if(all)
 		query.nodes <- unique(pos.nodes$name)
 	else
 		query.nodes <- .flatten.args(...)
 	
-	query <- .get.query.var(query.nodes, val.type = NA, 
+	query <- .get.query.var(query.nodes, val.type = "all", 
 							start.line = start.line, script.num = script.num)
 	
 	# STEP: get valid queries
@@ -115,7 +116,7 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	# columns: d.id, name, valType, startLine, scriptNum
 	if(is.null(valid.queries)) {
 		cat("No valid queries.\n\n")
-		.print.pos.options(pos.nodes[ , c("name", "startLine", "scriptNum")])
+		.print.pos.options(pos.nodes[ , c("name", "startLine", "scriptNum", "scriptName")])
 		return(invisible(NULL))
 	}
 	

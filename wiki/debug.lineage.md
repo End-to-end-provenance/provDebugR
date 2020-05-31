@@ -2,9 +2,10 @@ For each data node queried, `debug.lineage` returns a data frame representing it
 forwards (how the data is used), or backwards (how the data was generated) lineage. 
 
 Each data frame contains the following columns:
-* scriptNum: The script number the data node is associated with.
-* startLine: The line number the data node is associated with.
-* code: The line of code which used/produced the data node.
+* `scriptNum` The script number the data node is associated with.
+* `scriptName` The name of the script the data node is associated with.
+* `startLine` The line number the data node is associated with.
+* `code` The line of code which used/produced the data node.
 
 
 ## Usage
@@ -23,16 +24,13 @@ Defaults to script number 1 (main script).
 `forward` If TRUE, this function returns the forwards lineage (how the data is used) 
 instead of the backwards lineage (how the data was generated).
 
-Only 1 script number may be queried per function call. Multiple start lines
-may be queried if and only if 1 object name is queried.
-
 This function may be called only after initialising the debugger using either 
 `prov.debug`, `prov.debug.run`, or `prov.debug.file`. For example:
 ```
 prov.debug.run("myScript.R")
-debug.lineage("x")
+debug.lineage(x)
 debug.lineage("x", start.line = 5, script.num = 2)
-debug.lineage("a", "b", forward = TRUE)
+debug.lineage("a", b, forward = TRUE)
 debug.lineage(all = TRUE)
 ```
 
@@ -59,14 +57,14 @@ function is called, showing how it was derived.
 If no start lines are specified, the backwards lineage of the last occurence of that
 object will be returned.
 
-For example, the result for `debug.lineage("v1")` is:
+For example, the result for `debug.lineage(v1)` is:
 ```
 $v1
-  scriptNum startLine             code
-1         1         1           a <- 1
-2         1         2           b <- 2
-3         1         5    v1 <- c(a:10)
-4         1         6 v1 <- rep(v1, b)
+  scriptNum scriptName startLine             code
+1         1 myScript.R         1           a <- 1
+2         1 myScript.R         2           b <- 2
+3         1 myScript.R         5    v1 <- c(a:10)
+4         1 myScript.R         6 v1 <- rep(v1, b)
 ```
 The backwards lineage for the `v1` variable at line 6 is given as it is the last 
 occurence of that variable.
@@ -78,9 +76,9 @@ For example, `debug.lineage("v1", start.line = 5)` will return the backwards
 lineage of `v1` at line 5, resulting in:
 ```
 $v1
-  scriptNum startLine          code
-1         1         1        a <- 1
-2         1         5 v1 <- c(a:10)
+  scriptNum scriptName startLine          code
+1         1 myScript.R         1        a <- 1
+2         1 myScript.R         5 v1 <- c(a:10)
 ```
 
 ### 2. Forwards lineage of a variable
@@ -93,11 +91,11 @@ object will be returned.
 For example, the result for `debug.lineage("v1", forward = TRUE)` is:
 ```
 $v1
-  scriptNum startLine                 code
-1         1         5        v1 <- c(a:10)
-2         1         6     v1 <- rep(v1, b)
-3         1         8 m1 <- matrix(v1, cc)
-4         1         9            print(m1)
+  scriptNum scriptName startLine                 code
+1         1 myScript.R         5        v1 <- c(a:10)
+2         1 myScript.R         6     v1 <- rep(v1, b)
+3         1 myScript.R         8 m1 <- matrix(v1, cc)
+4         1 myScript.R         9            print(m1)
 ```
 The forwards lineage for the `v1` variable at line 5 is given as it is the first
 occurrence of that variable.
@@ -109,10 +107,10 @@ For example, `debug.lineage("v1", start.line = 6, forward = TRUE)` will
 return the forwards lineage of the `v1` variable at line 6, resulting in:
 ```
 $v1
-  scriptNum startLine                 code
-1         1         6     v1 <- rep(v1, b)
-2         1         8 m1 <- matrix(v1, cc)
-3         1         9            print(m1)
+  scriptNum scriptName startLine                 code
+1         1 myScript.R         6     v1 <- rep(v1, b)
+2         1 myScript.R         8 m1 <- matrix(v1, cc)
+3         1 myScript.R         9            print(m1)
 ```
 
 ### 3. Lineage queries for multiple objects
@@ -122,28 +120,28 @@ lineages, but only 1 start line may be specified in this case.
 For example, the result for `debug.lineage("a", "v1")` is:
 ```
 $a
-  scriptNum startLine   code
-1         1         1 a <- 1
+  scriptNum scriptName startLine   code
+1         1 myScript.R         1 a <- 1
 
 $v1
-  scriptNum startLine             code
-1         1         1           a <- 1
-2         1         2           b <- 2
-3         1         5    v1 <- c(a:10)
-4         1         6 v1 <- rep(v1, b)
+  scriptNum scriptName startLine             code
+1         1 myScript.R         1           a <- 1
+2         1 myScript.R         2           b <- 2
+3         1 myScript.R         5    v1 <- c(a:10)
+4         1 myScript.R         6 v1 <- rep(v1, b)
 ```
 
 The result for `debug.lineage("b", "m1", forward = TRUE)` is:
 ```
 $b
-  scriptNum startLine                 code
-1         1         2               b <- 2
-2         1         6     v1 <- rep(v1, b)
-3         1         8 m1 <- matrix(v1, cc)
-4         1         9            print(m1)
+  scriptNum scriptName startLine                 code
+1         1 myScript.R         2               b <- 2
+2         1 myScript.R         6     v1 <- rep(v1, b)
+3         1 myScript.R         8 m1 <- matrix(v1, cc)
+4         1 myScript.R         9            print(m1)
 
 $m1
-  scriptNum startLine                 code
-1         1         8 m1 <- matrix(v1, cc)
-2         1         9            print(m1)
+  scriptNum scriptName startLine                 code
+1         1 myScript.R         8 m1 <- matrix(v1, cc)
+2         1 myScript.R         9            print(m1)
 ```
