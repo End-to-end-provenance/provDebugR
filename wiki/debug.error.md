@@ -2,9 +2,10 @@
 (the steps leading up to) the error in the execution, if any.
 
 Each data frame contains the following columns:
-* scriptNum: The script number the data node is associated with.
-* startLine: The line number the data node is associated with.
-* code: The line of code which used/produced the data node.
+* `scriptNum` The script number the exception is associated with.
+* `scriptName` The name of the script the exception is associated with.
+* `startLine` The line number the exception is associated with.
+* `code` The line of code which threw the exception.
 
 
 ## Usage
@@ -48,9 +49,9 @@ Your Error: Error in eval(annot, environ, NULL): object 'a' not found
 
 Code that led to error message:
 
-  scriptNum startLine       code
-1         1         1     x <- 1
-2         1         2 x <- a + x
+  scriptNum scriptName startLine       code
+1         1 myScript.R         1     x <- 1
+2         1 myScript.R         2 x <- a + x
 ```
 
 ### 2. `stack.overflow` is TRUE
@@ -63,9 +64,9 @@ Your Error: Error in eval(annot, environ, NULL): object 'a' not found
 
 Code that led to error message:
 
-  scriptNum startLine       code
-1         1         1     x <- 1
-2         1         2 x <- a + x
+  scriptNum scriptName startLine       code
+1         1 myScript.R         1     x <- 1
+2         1 myScript.R         2 x <- a + x
 
 
 Results from StackOverflow:
@@ -88,7 +89,7 @@ Once 'q' has been given, the function will return with the error's backwards lin
 ```
 Code that led to error message:
 
-  scriptNum startLine       code
-1         1         1     x <- 1
-2         1         2 x <- a + x
+  scriptNum scriptName startLine       code
+1         1 myScript.R         1     x <- 1
+2         1 myScript.R         2 x <- a + x
 ```
