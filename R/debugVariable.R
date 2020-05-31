@@ -30,7 +30,9 @@
 #'		\item dimension: The size of the container.
 #'		\item type: The data type(s) contained within the container.
 #'		\item scriptNum: The script number the variable is associated with.
+#'  	\item scriptName: The name of the script the variable or file is associated with.
 #'		\item startLine: The line number the variable is associated with.
+#'		\item code: The code this variable is associated with.
 #' }
 #'
 #' debug.variable belongs to provDebugR, a debugger which utilises provenance 
@@ -41,11 +43,10 @@
 #' one its initialisation functions (listed below).
 #'
 #' @param ... The variable names to be queried.
-#' @param val.type Optional. If not NA, this filters the results to contain
+#' @param val.type If not "all", this filters the results to contain
 #'                 only instances where the valType (container or type) has the
 #'                 queried type. Only one type may be queried per function call.
-#' @param script.num The script number of the queried variables.
-#'                   Defaults to script number 1 (main script).
+#' @param script.num The script number of the queried variables. Defaults to "all".
 #' @param all If TRUE, results for all variables of the specified script will be
 #'            returned.
 #'
@@ -77,15 +78,15 @@
 #' @examples
 #' \dontrun{
 #' prov.debug.run("test.R")
-#' debug.variable("x")
+#' debug.variable(x)
 #' debug.variable(all = TRUE)
-#' debug.variable("a", "b", "x", val.type = "logical")
-#' debug.variable("a", "b", "x", script.num = 3)
+#' debug.variable("a", b, "x", val.type = "logical")
+#' debug.variable("a", "b", x, script.num = 3)
 #' }
 #'
 #' @export
 #' @rdname debug.variable
-debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
+debug.variable <- function(..., val.type = "all", script.num = "all", all = FALSE)
 {
 	# CASE: no provenance
 	if(!.debug.env$has.graph)
@@ -117,9 +118,13 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
-		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum")])
+		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum", "scriptName")])
 		return(invisible(NULL))
 	}
+	
+	# STEP: extract name and valType columns
+	valid.queries <- valid.queries[ , c("name", "valType")]
+	valid.queries <- unique(valid.queries)
 	
 	# STEP: for each valid query, form table for user output
 	output <- lapply(c(1:nrow(valid.queries)), function(i) {
@@ -397,20 +402,16 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 #' Get each instance of the queried data node/variable name, bound into a data frame.
 #'
 #' @param query A query. Must be valid.
-#'              columns: name, valType, startLine, scriptNum
+#'              columns: name, valType
 #'
 #' @return A data frame of all instances of the queried data node.
-#'         columns: value, container, dimension, type, scriptNum, startLine, code
+#'         columns: value, container, dimension, type, scriptNum, scriptName, startLine, code
 #'
 #' @noRd
 .get.output.var <- function(query)
-{
+{	
 	pos.data <- .debug.env$data.nodes
 	pos.proc <- .debug.env$proc.nodes
-	
-	# STEP: from query, extract applicable columns
-	# name, valType
-	query <- query[ , c("name", "valType")]
 	
 	# STEP: from all data nodes, 
 	# get nodes with queried name
@@ -418,8 +419,8 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 	data.nodes <- pos.data[pos.data$name == query$name, 
 							 c("id", "value", "valType")]
 	
-	# STEP: extract nodes with queried valType, if not NA
-	if(!is.na(query$valType)) {
+	# STEP: extract nodes with queried valType, if not "all"
+	if(tolower(query$valType) != "all") {
 		query.valType <- paste("*", query$valType, "*", sep="")
 		data.nodes <- data.nodes[grep(query.valType, data.nodes$valType), ]
 	}
@@ -446,7 +447,14 @@ debug.variable <- function(..., val.type = NA, script.num = 1, all = FALSE)
 		row <- lapply(p.id, function(id)
 		{
 			proc.fields <- pos.proc[pos.proc$id == id, c("scriptNum", "startLine", "name")]
-			colnames(proc.fields) <- c("scriptNum", "startLine", "code")
+			
+			# get script name from script number, combine with proc.fields
+			scriptName <- .debug.env$scripts[proc.fields$scriptNum]
+			proc.fields <- cbind(proc.fields, scriptName, stringsAsFactors = FALSE)
+			
+			# reorder and rename proc.fields
+			proc.fields <- proc.fields[ , c("scriptNum","scriptName","startLine","name")]
+			colnames(proc.fields) <- c("scriptNum","scriptName","startLine","code")
 			
 			# cbind with data.fields and valType.fields
 			# remove id (first) column

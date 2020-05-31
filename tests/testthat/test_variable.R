@@ -15,6 +15,7 @@ get.expected <- function()
 					dimension = '1',
 					type = 'integer',
 					scriptNum = 1L,
+					scriptName = "typeChanges.R",
 					startLine = 2L,
 					code = 'a <- 1L',
 					stringsAsFactors = FALSE)
@@ -25,6 +26,7 @@ get.expected <- function()
 					 dimension = as.character(c(1,1)),
 					 type = c('integer','integer'),
 					 scriptNum = as.integer(c(1,1)),
+					 scriptName = rep("typeChanges.R",2),
 					 startLine = as.integer(c(8,9)),
 					 code = c('cc <- 2L','cc <- 3L'),
 					 stringsAsFactors = FALSE)
@@ -35,6 +37,7 @@ get.expected <- function()
 					dimension = as.character(c(1,1)),
 					type = c('numeric',NA),
 					scriptNum = as.integer(c(1,1)),
+					scriptName = rep("typeChanges.R",2),
 					startLine = as.integer(c(12,13)),
 					code = c('d <- 4','d <- as.list(d)'),
 					stringsAsFactors = FALSE)
@@ -45,6 +48,7 @@ get.expected <- function()
 					dimension = c('4,25','5,20'),
 					type = c('integer','integer'),
 					scriptNum = as.integer(c(1,1)),
+					scriptName = rep("typeChanges.R",2),
 					startLine = as.integer(c(16,17)),
 					code = c('e <- matrix(c(1:100), 4)','e <- matrix(c(1:100), 5)'),
 					stringsAsFactors = FALSE)
@@ -55,6 +59,7 @@ get.expected <- function()
 					dimension = as.character(c(1,1)),
 					type = c('numeric','integer'),
 					scriptNum = as.integer(c(1,1)),
+					scriptName = rep("typeChanges.R",2),
 					startLine = as.integer(c(20,21)),
 					code = c('f <- 5','f <- as.integer(f)'),
 					stringsAsFactors = FALSE)
@@ -65,6 +70,7 @@ get.expected <- function()
 					dimension = as.character(c(1,1,1)),
 					type = c('numeric','character','logical'),
 					scriptNum = as.integer(c(1,1,1)),
+					scriptName = rep("typeChanges.R",3),
 					startLine = as.integer(c(24,25,26)),
 					code = c('g <- 6','g <- "six"','g <- TRUE'),
 					stringsAsFactors = FALSE)
@@ -75,12 +81,14 @@ get.expected <- function()
 	dimension <- rep('1', 6)
 	type <- c('logical','logical','character','character','integer','integer')
 	scriptNum <- rep(1L,6)
+	scriptName <- rep("typeChanges.R",6)
 	startLine <- as.integer(c(29:34))
 	code <- c('h <- FALSE', 'h <- TRUE', 'h <- "seven"',
 			  'h <- "eight"', 'h <- 8L', 'h <- 9L')
 	
 	h <- data.frame(value, container, dimension, type,
-					scriptNum, startLine, code, stringsAsFactors = FALSE)
+					scriptNum, scriptName, startLine, code, 
+					stringsAsFactors = FALSE)
 	
 	# special valTypes
 	# null, environment, function, factor, posixct
@@ -89,9 +97,10 @@ get.expected <- function()
 	dimension <- as.character(rep(NA,5))
 	type <- c('null', 'environment', 'function', 'factor', 'POSIXct')
 	scriptNum <- rep(1L,5)
+	scriptName <- rep("typeChanges.R",5)
 	startLine <- as.integer(c(38:42))
 	
-	s <- data.frame(container, dimension, type, scriptNum, startLine,
+	s <- data.frame(container, dimension, type, scriptNum, scriptName, startLine,
 					stringsAsFactors = FALSE)
 	
 	# combine into list
@@ -164,14 +173,14 @@ test_that("debug.variable (all == TRUE)",
 	# no variables, default val.type and script.num
 	c1 <- debug.variable(all = TRUE)
 	c1$e <- c1$e[ ,-1]         # omit columns from test
-	c1$s <- c1$s[ ,c(-1,-7)]
+	c1$s <- c1$s[ ,c(-1,-8)]
 	
 	expect_equivalent(c1, expected)
 	
 	# variables queried, default val.type and script.num
 	c2 <- debug.variable("s", all = TRUE)
 	c2$e <- c2$e[ ,-1]         # omit columns from test
-	c2$s <- c2$s[ ,c(-1,-7)]
+	c2$s <- c2$s[ ,c(-1,-8)]
 	
 	expect_equivalent(c2, expected)
 	
@@ -186,7 +195,7 @@ test_that("debug.variable (all == TRUE)",
 	
 	# special val.type query
 	c4 <- debug.variable(val.type = "environment", all = TRUE)[[1]]
-	c4 <- c4[ ,c(-1,-7)]   # omit columns from test
+	c4 <- c4[ ,c(-1,-8)]   # omit columns from test
 	
 	e4 <- expected$s
 	e4 <- e4[2, ]
@@ -221,7 +230,7 @@ test_that("debug.variable (no variable queries)",
 test_that("debug.variable (variable name queries)",
 {
 	# all valid variable names
-	c1 <- debug.variable("cc", "a")
+	c1 <- debug.variable(cc, "a")
 	e1 <- expected[c(2,1)]
 	
 	expect_equivalent(c1,e1)
@@ -239,13 +248,13 @@ test_that("debug.variable (variable name queries)",
 	expect_true(nchar(paste(c5, collapse='\n')) > 0)
 	
 	# some valid, some invalid variable names
-	c6 <- debug.variable("a", "invalid", "g", "h", "dev.2")
+	c6 <- debug.variable("a", "invalid", g, "h", "dev.2")
 	e6 <- expected[c(1,6,7)]
 	
 	expect_equivalent(c6,e6)
 	
 	# repeated queries
-	c7 <- debug.variable("a", "a", "cc")
+	c7 <- debug.variable("a", a, "cc")
 	e7 <- expected[c(1,2)]
 	
 	expect_equivalent(c7,e7)
@@ -281,7 +290,7 @@ test_that("debug.variable (val.type queries)",
 	
 	# CASE: Special valType
 	c5 <- debug.variable("h","s", val.type = "function")[[1]]
-	c5 <- c5[ , c(-1,-7)]   # omit columns
+	c5 <- c5[ , c(-1,-8)]   # omit columns
 	
 	e5 <- expected$s
 	e5 <- e5[3, ]
@@ -293,40 +302,17 @@ test_that("debug.variable (val.type queries)",
 	
 	expect_null(c6)
 	expect_true(nchar(paste(c7, collapse='\n')) > 0)
-	
-	# CASE: multiple valTypes queried
-	expect_warning(
-		c9 <- utils::capture.output(	
-				c8 <- debug.variable("h", val.type = c("integer", "logical"))))
-	
-	expect_null(c6)
-	expect_true(nchar(paste(c7, collapse='\n')) > 0)
 })
 
 # debug.variable - script queries
 test_that("debug.variable (script.num queries)",
 {
 	# invalid script number
-	c2 <- utils::capture.output(c1 <- debug.variable("a", script.num = 6))
+	c2 <- utils::capture.output(
+		c1 <- debug.variable("a", script.num = 6))
 	
 	expect_null(c1)
 	expect_true(nchar(paste(c2, collapse='\n')) > 0)
-	
-	# multiple script numbers
-	expect_warning(
-		c4 <- utils::capture.output(
-			c3 <- debug.variable("a", script.num = c(7,8))))
-	
-	expect_null(c3)
-	expect_true(nchar(paste(c4, collapse='\n')) > 0)
-	
-	# script number is not an integer
-	expect_warning(
-		c6 <- utils::capture.output(
-			c5 <- debug.variable("a", script.num = 9.5)))
-	
-	expect_null(c5)
-	expect_true(nchar(paste(c6, collapse='\n')) > 0)
 })
 
 # === TESTING SHARED FUNCTIONS =============================================== #

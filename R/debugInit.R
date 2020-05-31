@@ -212,7 +212,13 @@ prov.debug.run <- function(script, ...)
 	
 	# get table of scripts (sourced & main script), save only basename
 	.debug.env$scripts <- provParseR::get.scripts(.debug.env$prov)$script
-	.debug.env$scripts <- unname(sapply(.debug.env$scripts, basename))
+	.debug.env$scripts <- unname(sapply(.debug.env$scripts, function(script)
+	{
+		if(script == "")
+			return("console")
+		
+		return(basename(script))
+	}))
 	
 	# var.env (for loading variables for viewing)
 	.debug.env$var.env <- new.env(parent = .debug.env)

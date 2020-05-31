@@ -4,17 +4,17 @@
 \alias{debug.variable}
 \title{Tracking Changes to a Variable}
 \usage{
-debug.variable(..., val.type = NA, script.num = 1, all = FALSE)
+debug.variable(..., val.type = "all", script.num = "all",
+  all = FALSE)
 }
 \arguments{
 \item{...}{The variable names to be queried.}
 
-\item{val.type}{Optional. If not NA, this filters the results to contain
+\item{val.type}{If not "all", this filters the results to contain
 only instances where the valType (container or type) has the
 queried type. Only one type may be queried per function call.}
 
-\item{script.num}{The script number of the queried variables.
-Defaults to script number 1 (main script).}
+\item{script.num}{The script number of the queried variables. Defaults to "all".}
 
 \item{all}{If TRUE, results for all variables of the specified script will be
 returned.}
@@ -32,7 +32,9 @@ Each data frame contains the following columns:
 	\item dimension: The size of the container.
 	\item type: The data type(s) contained within the container.
 	\item scriptNum: The script number the variable is associated with.
+ 	\item scriptName: The name of the script the variable or file is associated with.
 	\item startLine: The line number the variable is associated with.
+	\item code: The code this variable is associated with.
 }
 }
 \details{
@@ -46,10 +48,10 @@ one its initialisation functions (listed below).
 \examples{
 \dontrun{
 prov.debug.run("test.R")
-debug.variable("x")
+debug.variable(x)
 debug.variable(all = TRUE)
-debug.variable("a", "b", "x", val.type = "logical")
-debug.variable("a", "b", "x", script.num = 3)
+debug.variable("a", b, "x", val.type = "logical")
+debug.variable("a", "b", x, script.num = 3)
 }
 
 }
