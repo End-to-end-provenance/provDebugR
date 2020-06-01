@@ -9,11 +9,11 @@ debug.line(..., script.num = 1, all = FALSE)
 \arguments{
 \item{...}{The line numbers to be queried.}
 
-\item{script.num}{The script number of the queried line numbers.
-Allows for only 1 script number to be queried per function call.
-Defaults to script number 1 (main script).}
+\item{script.num}{The script numbers to be queried.
+Defaults to script number 1 (main script).
+If script.num == "all", all possible script numbers will be queried.}
 
-\item{all}{If TRUE, the inputs and outputs for all lines in the specified script
+\item{all}{If TRUE, the inputs and outputs for all lines in all script numbers
 will be returned.}
 }
 \value{
@@ -45,6 +45,7 @@ prov.debug.run("test.R")
 debug.line(5)
 debug.line(all = TRUE)
 debug.line(5, 10, script.num = 2)
+debug.line(3, script.num = "all")
 }
 
 }

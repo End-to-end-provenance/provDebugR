@@ -39,10 +39,10 @@
 #' one its initialisation functions (listed below).
 #'
 #' @param ... The line numbers to be queried.
-#' @param script.num The script number of the queried line numbers.
-#'                   Allows for only 1 script number to be queried per function call.
+#' @param script.num The script numbers to be queried.
 #'                   Defaults to script number 1 (main script).
-#' @param all If TRUE, the inputs and outputs for all lines in the specified script
+#'                   If script.num == "all", all possible script numbers will be queried.
+#' @param all If TRUE, the inputs and outputs for all lines in all script numbers
 #'            will be returned.
 #'
 #' @return A list of data frames showing the inputs and outputs for the procedure
@@ -77,6 +77,7 @@
 #' debug.line(5)
 #' debug.line(all = TRUE)
 #' debug.line(5, 10, script.num = 2)
+#' debug.line(3, script.num = "all")
 #' }
 #'
 #' @export
@@ -88,41 +89,20 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 		stop("There is no provenance.")
 	
 	# STEP: get all possible options
-	# extract columns: id, startLine, scriptNum
-	pos.nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$type == "Operation", ]
-	pos.nodes <- pos.nodes[ , c("id", "startLine", "scriptNum", "name")]
-	names(pos.nodes) <- c("id", "startLine", "scriptNum", "code")
+	# columns: p.id, startLine, scriptNum, scriptName, code
+	pos.nodes <- .get.pos.line(.debug.env$proc.nodes)
 	
 	# STEP: get user's query
-	# case: more than 1 script number queried
-	if(length(script.num) > 1) {
-		warning("Please query only 1 script number.", call. = FALSE)
-		.print.pos.options(pos.nodes[ , -1])
-		return(invisible(NULL))
-	}
-	
-	if(all)
-		query <- unique(pos.nodes$startLine)
-	else
-		query <- unique(.flatten.args(...))
-	
-	# case: ensure script.num is an integer or can be coerced into an integer
-	script.num.int <- .to.int(script.num)
-	
-	if(is.null(script.num.int)) {
-		warning("Script number must be a single integer.", call. = FALSE)
-		.print.pos.options(pos.nodes[ , -1])
-		return(invisible(NULL))
-	}
-	
-	script.num <- script.num.int
+	# columns: startLine, scriptNum
+	query <- .get.query.line(..., script.num = script.num, all = all)
 	
 	# STEP: get valid queries
-	# columns: id, startLine, scriptNum, code
-	valid.queries <- .get.valid.query.line(pos.nodes, query, script.num)
+	# columns: p.id, startLine, scriptNum, scriptName, code
+	valid.queries <- .get.valid.query.line(pos.nodes, query)
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
+		cat("There are no valid queries.\n\n")
 		.print.pos.options(pos.nodes[ , -1])
 		return(invisible(NULL))
 	}
@@ -135,7 +115,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	output <- lapply(c(1:nrow(valid.queries)), function(i) 
 	{
 		# get user output for the specified proc node id
-		p.id <- valid.queries$id[i] 
+		p.id <- valid.queries$p.id[i] 
 		user.output <- .get.output.line(p.id)
 		
 		# case: no input or output data nodes (keep track of index!)
@@ -178,70 +158,149 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	print(valid.queries[ , -1])
 	cat('\n')
 	
-	names(output) <- row.names(valid.queries)
+	names(output) <- c(1:nrow(valid.queries))
 	return(output)
 }
 
-#' Returns a data frame of valid line number queries. Used in debug.line .
-#' columns: id, startLine, scriptNum, code
+#' Get all possible procedure nodes. 
+#' For each possible procedure node, find its corresponding script name.
+#' columns: p.id, startLine, scriptNum, scriptName, code
 #'
-#' @param pos.nodes Table of all possible options. In this case this
-#'                  refers to the table of procedure nodes.
-#' @param query A list of the user's line number queries.
-#' @param script.num The queried script number. Only 1 may be queried per call.
+#' @param proc.nodes A table of all procedure nodes.
 #'
-#' @return A data frame of valid line number queries
-#'         columns: id, startLine, scriptNum, code
+#' @return The table of all procedure nodes, with their script names recorded.
+#'         columns: p.id, startLine, scriptNum, scriptName, code
 #'
 #' @noRd
-.get.valid.query.line <- function(pos.nodes, query, script.num)
+.get.pos.line <- function(proc.nodes)
+{
+	# CASE: no procedure nodes
+	if(nrow(proc.nodes) == 0)
+		return(NULL)
+	
+	# get Operation nodes
+	pos.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+	pos.nodes <- .remove.na.rows(pos.nodes)
+	
+	# CASE: no operation nodes
+	if(nrow(pos.nodes) == 0)
+		return(NULL)
+	
+	# get p.id, startLine, scriptNum, code
+	pos.nodes <- pos.nodes[ , c("id", "startLine", "scriptNum", "name")]
+	names(pos.nodes) <- c("p.id", "startLine", "scriptNum", "code")
+	
+	# get script names for each script number
+	scriptName <- sapply(pos.nodes$scriptNum, function(i) {
+		return(.debug.env$scripts[i])
+	})
+	
+	# combine with pos.nodes, reorder cols
+	pos.nodes <- cbind(pos.nodes, scriptName, stringsAsFactors = FALSE)
+	pos.nodes <- pos.nodes[ , c("p.id","startLine","scriptNum","scriptName","code")]
+	
+	# rename rows, return
+	rownames(pos.nodes) <- c(1:nrow(pos.nodes))
+	return(pos.nodes)
+}
+
+#' Get the user's queries, bound into a data frame.
+#' columns: startLine, scriptNum
+#'
+#' @param ... The user's line number queries
+#' @param script.num The script number queries. Can be "all".
+#' @param all If TRUE, this ignores other parameters and returns the table of
+#'            all possible line and script number combinations.
+#'
+#' @return A data frame of the user's queries.
+#'         columns: startLine, scriptNum
+#'
+#' @noRd
+.get.query.line <- function(..., script.num = 1, all = FALSE)
+{
+	# Case: all == TRUE
+	# get all possible startline and script number combinations from proc nodes table
+	if(all)
+	{
+		proc.nodes <- .debug.env$proc.nodes
+		proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+		
+		queries <- proc.nodes[ , c("startLine", "scriptNum")]
+		return(unique(queries))
+	}
+	
+	# all == FALSE
+	# flatten user's queries
+	query.lines <- .flatten.args(...)
+	
+	# case: no queried lines
+	if(is.null(query.lines))
+		return(NULL)
+	
+	# Case: script.num == "all"
+	if(tolower(script.num[1]) == "all")
+		script.num <- c(1:nrow(provParseR::get.scripts(.debug.env$prov)))
+	
+	# get all combinations of start lines and script numbers
+	startLine <- rep(query.lines, length(script.num))
+	scriptNum <- rep(script.num, each = length(query.lines))
+	
+	# combine into data frame, return
+	queries <- data.frame(startLine, scriptNum, stringsAsFactors = FALSE)
+	return(unique(queries))
+}
+
+#' Returns a data frame of valid queries. .
+#' columns: p.id, startLine, scriptNum, scriptName, code
+#'
+#' @param pos.nodes Table of all possible options.
+#' @param query A list of the user's queries.
+#'
+#' @return A data frame of valid line number queries
+#'         columns: p.id, startLine, scriptNum, scriptName, code
+#'
+#' @noRd
+.get.valid.query.line <- function(pos.nodes, query)
 {
 	# CASE: no queries
 	if(is.null(query))
-		return(invisible(NULL))
-	
-	# QUERY: subset by script number
-	# since there can only be 1 script number queried by call,
-	# check for its validity first.
-	pos.nodes <- pos.nodes[pos.nodes$scriptNum == script.num, ]
-	pos.nodes <- .remove.na.rows(pos.nodes)
-	
-	# CASE: invalid script number
-	if(nrow(pos.nodes) == 0) {
-		cat(paste("Script number", script.num, "is not a possible input.\n\n"))
-		return(invisible(NULL))
-	}
-	
-	# QUERY: for each query, return TRUE if valid, FALSE otherwise
-	valid.cells <- sapply(query, function(line)
-	{
-		# first, convert into an int
-		line <- .to.int(line)
-		
-		# Case: line is NULL (can't be converted to an int or is invalid)
-		if(is.null(line))
-			return(FALSE)
-		
-		# search for queried line in list of possible start lines
-		return(line %in% pos.nodes$startLine)
-	})
-	
-	# Extract valid queries, return NULL if there are none.
-	valid.lines <- query[valid.cells]
-	
-	if(length(valid.lines) == 0) 
-	{
-		cat("There are no valid queries.\n\n")
 		return(NULL)
-	}
 	
-	# For each valid line, extract appropriate row from pos.nodes
-	# bind into data frame and return.
-	rows <- lapply(valid.lines, function(line) {
-		return(pos.nodes[pos.nodes$startLine == line, ])
+	# Check validity of each query
+	# For every query (row), an index identifying the corresponding
+	# row in pos.nodes will be returned if found (valid query).
+	# NULL will be returned if the query is not valid.
+	valid.indices <- sapply(c(1:nrow(query)), function(i)
+	{
+		# extract startLine and scriptNum
+		query.line <- .to.int(query$startLine[i])
+		query.script <- .to.int(query$scriptNum[i])
+		
+		# CASE: line or script number is not an int
+		if(is.null(query.line) || is.null(query.script))
+			return(NULL)
+		
+		# QUERY: filter by line and script num
+		indices <- c(1:nrow(pos.nodes))[pos.nodes$startLine == query.line &
+										pos.nodes$scriptNum == query.script]
+		
+		# CASE: index not found
+		if(length(indices) == 0)
+			return(NULL)
+		
+		# return indices found (could be multiple)
+		return(indices)
 	})
 	
-	return(unique(.form.df(rows)))
+	# unlist valid.indices into a single vector
+	valid.indices <- unique(unlist(valid.indices))
+	
+	# CASE: no valid indices
+	if(is.null(valid.indices))
+		return(NULL)
+	
+	# extract valid rows from pos.nodes table
+	return(.remove.na.rows(pos.nodes[valid.indices, ]))
 }
 
 #' Returns a list of 2 data frames for the input and output data nodes of the

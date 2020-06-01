@@ -2,11 +2,11 @@ For each line number queried, `debug.line` returns a data frame of the data
 that the procedure in that line inputs and outputs.
 
 Each data frame contains the following columns:
-* name: The name of the data.
-* value: The value of the data.
-* container: The type of the container of the data.
-* dimension: The size of the container.
-* type: The data type(s) contained within the container.
+* `name` The name of the data.
+* `value` The value of the data.
+* `container` The type of the container of the data.
+* `dimension` The size of the container.
+* `type` The data type(s) contained within the container.
 
 
 ## Usage
@@ -18,11 +18,11 @@ debug.line(..., script.num = 1, all = FALSE)
 
 The parameters of this function are:
 * `...` The line numbers to be queried
-* `script.num` The script number of the queried line numbers. 
-Allows for only 1 script number to be queried per function call. 
+* `script.num` The script numbers to be queried.
 Defaults to script number 1 (main script).
-* `all` If TRUE, the inputs and outputs for all lines in the specified 
-script will be returned.
+If `script.num == "all"`, all possible script numbers will be queried.
+* `all` If TRUE, the inputs and outputs for all lines in all script numbers
+will be returned.
 
 In the case of multiple queries, only 1 script number may be queried per
 function call.
@@ -34,6 +34,7 @@ prov.debug.run("myScript.R")
 debug.line(5)
 debug.line(all = TRUE)
 debug.line(5, 10, script.num = 2)
+debug.line(3, script.num = "all")
 ```
 
 
@@ -50,8 +51,8 @@ x
 The result for `debug.line(3)` is:
 ```
 Results for:
-  startLine scriptNum                                             code
-1         3         1 xy <- data.frame(x, y, stringsAsFactors = FALSE)
+  startLine scriptNum scriptName                                             code
+1         3         1 myScript.R xy <- data.frame(x, y, stringsAsFactors = FALSE)
 
 $`1`
 $`1`$input
@@ -68,6 +69,7 @@ Variables `x` and `y` are listed in the 'input' table as they are used in the pr
 Variable `xy` is listed in the 'output' as the result from the 
 procedure is assigned to that variable.
 
+
 ### 2. The line has either inputs or outputs
 If the line has only inputs or outputs, an `NA` will be put in the place of the
 data frame with no data nodes listed.
@@ -75,8 +77,8 @@ data frame with no data nodes listed.
 Line 1 has no inputs, so the result for `debug.line(1)` is:
 ```
 Results for:
-  startLine scriptNum     code
-1         1         1 x <- 1:3
+  startLine scriptNum scriptName      code
+1         1         1 myScript.R x <- 1:3
 
 $`1`
 $`1`$input
@@ -90,8 +92,8 @@ $`1`$output
 Line 4 has no outputs, so the result for `debug.line(4)` is:
 ```
 Results for:
-  startLine scriptNum code
-1         4         1    x
+  startLine scriptNum scriptName code
+1         4         1 myScript.R    x
 
 $`1`
 $`1`$input
@@ -109,10 +111,10 @@ The resulting data structure is a list of lists of 2 data frames.
 For example, the result for `debug.line(1,3,4)` is:
 ```
 Results for:
-  startLine scriptNum                                             code
-1         1         1                                         x <- 1:3
-2         3         1 xy <- data.frame(x, y, stringsAsFactors = FALSE)
-3         4         1                                                x
+  startLine scriptNum scriptName                                             code
+1         1         1 myScript.R                                         x <- 1:3
+2         3         1 myScript.R xy <- data.frame(x, y, stringsAsFactors = FALSE)
+3         4         1 myScript.R                                                x
 
 $`1`
 $`1`$input

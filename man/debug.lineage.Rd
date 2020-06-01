@@ -32,6 +32,7 @@ lineage.
 Each data frame contains the following columns:
 \itemize{
 	\item scriptNum: The script number the data node is associated with.
+	\item scriptName: The name of the script the data node is associated with.
 	\item startLine: The line number the data node is associated with.
 	\item code: The line of code which used/produced the data node.
 }
@@ -46,9 +47,9 @@ one its initialisation functions (listed below).
 \examples{
 \dontrun{
 prov.debug.run("test.R")
-debug.lineage("x")
+debug.lineage(x)
 debug.lineage("x", start.line = 5, script.num = 2)
-debug.lineage("a", "b", forward = TRUE)
+debug.lineage("a", b, forward = TRUE)
 debug.lineage(all = TRUE)
 }
 
