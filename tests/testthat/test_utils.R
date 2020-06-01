@@ -45,33 +45,37 @@ test_that("Utility - .flatten.args",
 	y <- 12
 	
 	# Cases
-	c1 <- provDebugR:::.flatten.args(x)                      # single args
-	c2 <- provDebugR:::.flatten.args(1)
-	c3 <- provDebugR:::.flatten.args(NA)
-	c4 <- provDebugR:::.flatten.args(NULL)
+	c1 <- provDebugR:::.flatten.args()                       # no args
 	
-	c5 <- provDebugR:::.flatten.args(c(1:5), list(x,y))      # multiple args
-	c6 <- provDebugR:::.flatten.args(x, c(1:5))
-	c7 <- provDebugR:::.flatten.args(c(1:5), x, list(x,y))
+	c2 <- provDebugR:::.flatten.args(x)                      # single args
+	c3 <- provDebugR:::.flatten.args(1)
+	c4 <- provDebugR:::.flatten.args(NA)
+	c5 <- provDebugR:::.flatten.args(NULL)
+	
+	c6 <- provDebugR:::.flatten.args(c(1:5), list(x,y))      # multiple args
+	c7 <- provDebugR:::.flatten.args(x, c(1:5))
+	c8 <- provDebugR:::.flatten.args(c(1:5), x, list(x,y))
 	
 	# Expected
-	e1 <- "x"
-	e2 <- 1
-	e3 <- NA
-	e4 <- NULL
+	e2 <- "x"
+	e3 <- 1
+	e4 <- NA
 	
-	e5 <- c(1,2,3,4,5,11,12)
-	e6 <- c("x","1","2","3","4","5")    # type change because unlist is trying to be helpful
-	e7 <- c("1","2","3","4","5","x","11","12")
+	e6 <- c(1,2,3,4,5,11,12)
+	e7 <- c("x","1","2","3","4","5")    # type change because unlist is trying to be helpful
+	e8 <- c("1","2","3","4","5","x","11","12")
 	
 	# Test
-	expect_equivalent(c1, e1)
+	expect_null(c1)
+	
 	expect_equivalent(c2, e2)
 	expect_equivalent(c3, e3)
 	expect_equivalent(c4, e4)
-	expect_equivalent(c5, e5)
+	expect_null(c5)
+	
 	expect_equivalent(c6, e6)
 	expect_equivalent(c7, e7)
+	expect_equivalent(c8, e8)
 })
 
 # .extract.vars

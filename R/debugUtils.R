@@ -22,11 +22,10 @@
 #' Collapses the given parameters into a single list.
 #'
 #' @param ... The parameteres to be collapsed.
-#' @param get.name If TRUE, returns the names of variables in the given parameters
 #'
 #' @return The given parameters, collapsed into a single list.
 #' @noRd
-.flatten.args <- function(..., get.name = FALSE)
+.flatten.args <- function(...)
 {
 	# call substitute to obtain parse trees for every argument, bound into a list
 	args <- substitute(...())
