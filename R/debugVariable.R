@@ -118,6 +118,7 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
+		cat("No valid queries.\n\n")
 		.print.pos.options(pos.vars[ , c("name", "startLine", "scriptNum", "scriptName")])
 		return(invisible(NULL))
 	}
@@ -137,12 +138,12 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 
 #' For each possible data node find its corresponding procedure node.
 #' Function shared with debug.lineage
-#' columns: d.id, p.id, name, valType, startLine, scriptNum
+#' columns: d.id, p.id, name, valType, startLine, scriptNum, scriptName
 #'
 #' @param data.nodes A table of all possible data nodes
 #'
 #' @return The table of all possible data nodes, with the necessary fields found.
-#'         columns: d.id, p.id, name, value, valType, startLine, scriptNum
+#'         columns: d.id, p.id, name, value, valType, startLine, scriptNum, scriptName
 #'
 #' @noRd
 .get.pos.var <- function(data.nodes)
@@ -217,7 +218,7 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 		return(NULL)
 	
 	# script.num == "all"
-	if(length(script.num) == 1 && tolower(script.num) == "all")
+	if(tolower(script.num[1]) == "all")
 		script.num <- c(1:nrow(provParseR::get.scripts(.debug.env$prov)))
 	
 	# get all queries for each queried node & combine
@@ -296,7 +297,7 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 {
 	# CASE: no queries
 	if(is.null(query))
-		return(invisible(NULL))
+		return(NULL)
 	
 	# STEP: check validity of each query (row)
 	query.indices <- c(1:nrow(query))
@@ -315,11 +316,11 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 		# extract individual components of the query
 		query.var <- query$name[i]
 		query.valType <- query$valType[i]
-		query.line <- query$startLine[i]
+		query.line <- .to.int(query$startLine[i])
 		query.script <- .to.int(query$scriptNum[i])
 		
-		# CASE: script number is not an int
-		if(is.null(query.script))
+		# CASE: line or script number is not an int
+		if(is.null(query.line) || is.null(query.script))
 			return(FALSE)
 		
 		# QUERY: filter by node name and script num
@@ -394,10 +395,8 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 	valid.queries <- .remove.na.rows(valid.queries)
 	
 	# CASE: no valid queries
-	if(nrow(valid.queries) == 0) {
-		cat("No valid queries.\n\n")
-		return(invisible(NULL))
-	}
+	if(nrow(valid.queries) == 0)
+		return(NULL)
 	
 	# STEP: bind valid data node id column to valid queries
 	valid.queries <- cbind("d.id" = valid.d.id,

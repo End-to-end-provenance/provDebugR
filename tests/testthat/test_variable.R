@@ -680,73 +680,45 @@ test_that(".get.valid.query.var (all invalid queries)",
 					 stringsAsFactors = FALSE)
 	
 	# CASES
-	c1 <- provDebugR:::.get.valid.query.var(p.full, q1)         # no query
+	c1 <- provDebugR:::.get.valid.query.var(p.full, q1)    # no query
 	c2 <- provDebugR:::.get.valid.query.var(p.vars, q1)
-	
-	c4 <- utils::capture.output(                          # data node with name does not exist
-		c3 <- provDebugR:::.get.valid.query.var(p.full, q2))
-	c6 <- utils::capture.output(
-		c5 <- provDebugR:::.get.valid.query.var(p.vars, q2))
-	
-	c8 <- utils::capture.output(                          # is data node, but not variable
-		c7 <- provDebugR:::.get.valid.query.var(p.vars, q3))
-	
-	c10 <- utils::capture.output(                         # invalid valType
-		c9 <- provDebugR:::.get.valid.query.var(p.full, q4))
-	c12 <- utils::capture.output(
-		c11 <- provDebugR:::.get.valid.query.var(p.vars, q4))
-	
-	c14 <- utils::capture.output(                         # invalid start lines
-		c13 <- provDebugR:::.get.valid.query.var(p.full, q5))
-	c16 <- utils::capture.output(
-		c15 <- provDebugR:::.get.valid.query.var(p.vars, q5))
-	
-	c18 <- utils::capture.output(                         # invalid script num
-		c17 <- provDebugR:::.get.valid.query.var(p.full, q6))
-	c20 <- utils::capture.output(
-		c19 <- provDebugR:::.get.valid.query.var(p.vars, q6))
-	
-	c22 <- utils::capture.output(                         # start line is not an integer
-		c21 <- provDebugR:::.get.valid.query.var(p.full, q7))
-	c24 <- utils::capture.output(
-		c23 <- provDebugR:::.get.valid.query.var(p.vars, q7))
-	
-	c26 <- utils::capture.output(                                      # script num is not an integer
-		c25 <- provDebugR:::.get.valid.query.var(p.full, q8))
-	c28 <- utils::capture.output(
-		c27 <- provDebugR:::.get.valid.query.var(p.vars, q8))
+	                      
+	c3 <- provDebugR:::.get.valid.query.var(p.full, q2)    # data node with name does not exist
+	c4 <- provDebugR:::.get.valid.query.var(p.vars, q2)
+	                   
+	c5 <- provDebugR:::.get.valid.query.var(p.vars, q3)    # is data node, but not variable
+	                   
+	c6 <- provDebugR:::.get.valid.query.var(p.full, q4)    # invalid valType
+	c7 <- provDebugR:::.get.valid.query.var(p.vars, q4)
+	                     
+	c8 <- provDebugR:::.get.valid.query.var(p.full, q5)    # invalid start lines
+	c9 <- provDebugR:::.get.valid.query.var(p.vars, q5)
+	                     
+	c10 <- provDebugR:::.get.valid.query.var(p.full, q6)   # invalid script num
+	c11 <- provDebugR:::.get.valid.query.var(p.vars, q6)
+	                  
+	c12 <- provDebugR:::.get.valid.query.var(p.full, q7)   # start line is not an integer
+	c13 <- provDebugR:::.get.valid.query.var(p.vars, q7)
+	                                 
+	c14 <- provDebugR:::.get.valid.query.var(p.full, q8)   # script num is not an integer
+	c15 <- provDebugR:::.get.valid.query.var(p.vars, q8)
 	
 	# TEST: returned values
 	expect_null(c1)
 	expect_null(c2)
 	expect_null(c3)
+	expect_null(c4)
 	expect_null(c5)
+	expect_null(c6)
 	expect_null(c7)
+	expect_null(c8)
 	expect_null(c9)
+	expect_null(c10)
 	expect_null(c11)
+	expect_null(c12)
 	expect_null(c13)
+	expect_null(c14)
 	expect_null(c15)
-	expect_null(c17)
-	expect_null(c19)
-	expect_null(c21)
-	expect_null(c23)
-	expect_null(c25)
-	expect_null(c27)
-	
-	# TEST: output messages
-	expect_true(nchar(paste(c4, collapse='\n')) > 0)
-	expect_true(nchar(paste(c6, collapse='\n')) > 0)
-	expect_true(nchar(paste(c8, collapse='\n')) > 0)
-	expect_true(nchar(paste(c10, collapse='\n')) > 0)
-	expect_true(nchar(paste(c12, collapse='\n')) > 0)
-	expect_true(nchar(paste(c14, collapse='\n')) > 0)
-	expect_true(nchar(paste(c16, collapse='\n')) > 0)
-	expect_true(nchar(paste(c18, collapse='\n')) > 0)
-	expect_true(nchar(paste(c20, collapse='\n')) > 0)
-	expect_true(nchar(paste(c22, collapse='\n')) > 0)
-	expect_true(nchar(paste(c24, collapse='\n')) > 0)
-	expect_true(nchar(paste(c26, collapse='\n')) > 0)
-	expect_true(nchar(paste(c28, collapse='\n')) > 0)
 })
 
 # .get.valid.query.var - some valid, some invalid queries
