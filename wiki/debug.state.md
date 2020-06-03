@@ -2,13 +2,14 @@ For each queried line, `debug.state` returns a data frame showing the state at t
 line, after it has been executed.
 
 Each data frame contains the following columns:
-* name: The names of variables in the state.
-* value: The value of each variable.
-* container: The type of the container of each variable.
-* dimension: The size of the container.
-* type: The data type(s) contained within the container.
-* scriptNum: The script number associated with each variable.
-* startLine: The line number associated with each variable.
+* `name` The names of variables in the state.
+* `value` The value of each variable.
+* `container` The type of the container of each variable.
+* `dimension` The size of the container.
+* `type` The data type(s) contained within the container.
+* `scriptNum` The script number associated with each variable.
+* `scriptName` The name of the script the variable is associated with.
+* `startLine` The line number associated with each variable.
 
 If no paramters are given, `debug.state` will return the state at the end of execution.
 
@@ -21,10 +22,10 @@ debug.state(..., script.num = 1)
 
 The parameters of this function are:
 * `...` The line numbers to be queried.
-* `script.num` The script number of the queried line numbers. 
+* `script.num` The script number of the queried line numbers.
 This is ignored if no line numbers are given.
-
-Only 1 script number may be queried per function call.
+If `script.num == "all"`, all possible script numbers will be queried.
+Defaults to script number 1 (main script).
 
 This function may be called only after initialising the debugger using either 
 `prov.debug`, `prov.debug.run`, or `prov.debug.file`. For example:
@@ -33,6 +34,7 @@ prov.debug.run("myScript.R")
 debug.state()
 debug.state(5)
 debug.state(10, 20, script.num = 2)
+debug.state(5, script.num = "all")
 ```
 
 
@@ -55,9 +57,9 @@ Therefore, the result for `debug.state()` is:
 ```
 State at the end of execution:
 $`1`
-  name  value container dimension      type scriptNum startLine
-1    a      2    vector         1   integer         1         2
-2    b "four"    vector         1 character         1         5
+  name  value container dimension      type scriptNum scriptName startLine
+1    a      2    vector         1   integer         1 myScript.R         2
+2    b "four"    vector         1 character         1 myScript.R         5
 ```
 
 ### 2. State at a line
@@ -71,8 +73,8 @@ Results for:
 1         1         1
 
 $`1`
-  name value container dimension      type scriptNum startLine
-1    a "one"    vector         1 character         1         1
+  name value container dimension      type scriptNum scriptName startLine
+1    a "one"    vector         1 character         1 myScript.R         1
 ```
 
 Similarly, the result for `debug.state(4)` is:
@@ -82,9 +84,9 @@ Results for:
 1         4         1
 
 $`1`
-  name value container dimension    type scriptNum startLine
-1    a     2    vector         1 integer         1         2
-2    b     3    vector         1 integer         1         4
+  name value container dimension    type scriptNum scriptName startLine
+1    a     2    vector         1 integer         1 myScript.R         2
+2    b     3    vector         1 integer         1 myScript.R         4
 ```
 
 ### 3. State at multiple lines
@@ -99,11 +101,11 @@ Results for:
 2         4         1
 
 $`1`
-  name value container dimension    type scriptNum startLine
-1    a     2    vector         1 integer         1         2
+  name value container dimension    type scriptNum scriptName startLine
+1    a     2    vector         1 integer         1 myScript.R         2
 
 $`2`
-  name value container dimension    type scriptNum startLine
-1    a     2    vector         1 integer         1         2
-2    b     3    vector         1 integer         1         4
+  name value container dimension    type scriptNum scriptName startLine
+1    a     2    vector         1 integer         1 myScript.R         2
+2    b     3    vector         1 integer         1 myScript.R         4
 ```

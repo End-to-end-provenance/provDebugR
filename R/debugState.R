@@ -31,6 +31,7 @@
 #'		\item dimension: The size of the container.
 #'		\item type: The data type(s) contained within the container.
 #'		\item scriptNum: The script number associated with each variable.
+#'  	\item scriptName: The name of the script the variable is associated with.
 #'		\item startLine: The line number associated with each variable.
 #' }
 #' If no paramters are given, debug.state will return the state at the end of
@@ -45,7 +46,7 @@
 #' @param ... The line numbers to be queried.
 #' @param script.num The script number of the queried line numbers. This is ignored
 #'                   if no line numbers are given.
-#'                   Allows for only 1 script number to be queried per function call.
+#'                   If script.num == "all", all possible script numbers will be queried.
 #'                   Defaults to script number 1 (main script).
 #'
 #' @return A list of data frames of states for each queried line number, or the state
@@ -79,6 +80,7 @@
 #' debug.state()
 #' debug.state(5)
 #' debug.state(10, 20, script.num = 2)
+#' debug.state(5, script.num = "all")
 #' }
 #'
 #' @export
@@ -89,22 +91,35 @@ debug.state <- function(..., script.num = 1)
 	if(!.debug.env$has.graph)
 		stop("There is no provenance.")
 	
-	# STEP: Get valid query
-	# This checks that all queries are integers, 
-	# and there is only 1 (integer) script number specified.
-	query <- .get.valid.query.state(..., script.num = script.num)
+	# STEP: get all possible options
+	# columns: p.id, startLine, scriptNum, scriptName, code
+	pos.nodes <- .get.pos.line(.debug.env$proc.nodes)
 	
-	# If query is null, that means there are no valid queries or the query itself is empty.
-	# In this case, we want to show the state at the end of execution.
-	# We want to keep a variable to track that the end of execution is automatically shown.
+	if(is.null(pos.nodes)) {
+		cat("There are no lines.\n")
+		return(invisible(NULL))
+	}
+	
+	# STEP: get user's query
+	# columns: startLine, scriptNum
+	query <- .get.query.line(..., script.num = script.num, all = FALSE)
+	
+	# STEP: get valid queries
+	# columns: p.id, startLine, scriptNum, scriptName, code
+	valid.queries <- .get.valid.query.state(pos.nodes, query)
+	
+	valid.queries <<- valid.queries
+	
+	# If valid.queries is null, that means there are no valid queries or the 
+	# query itself is empty. In this case, we want to show the state at the 
+	# end of execution. We want to keep a variable to track that the end of 
+	# execution is automatically shown.
 	end.of.execution <- FALSE
 	
-	if(is.null(query)) {
+	if(is.null(valid.queries)) {
 		end.of.execution <- TRUE
-		cat("State at the end of execution:\n")
-		
-		proc.nodes <- .debug.env$proc.nodes[.debug.env$proc.nodes$type == "Operation", ]
-		query <- proc.nodes[nrow(proc.nodes), c("startLine", "scriptNum")]
+		cat("No valid queries.\nState at the end of execution:\n")
+		valid.queries <- pos.nodes[nrow(pos.nodes), c("startLine","scriptNum")]
 	}
 	
 	# STEP: Get state for each query
@@ -112,18 +127,18 @@ debug.state <- function(..., script.num = 1)
 	# There should be much fewer cases of no state than those with state.
 	no.state <- c()
 	
-	states <- lapply(c(1:nrow(query)), function(i)
+	states <- lapply(c(1:nrow(valid.queries)), function(i)
 	{
 		# Get the closest procedure node with line number <= queried line number
 		# this could be the procedure from a previous script,
 		# or 'p0' indicating the beginning of the execution.
-		query.line <- query[i,1]
-		query.script <- query[i,2]
+		query.line <- .to.int(valid.queries$startLine[i])
+		query.script <- .to.int(valid.queries$scriptNum[i])
 		
-		p.id <- .get.closest.proc(query.line, query.script)
+		p.id <- .get.closest.proc(pos.nodes, query.line, query.script)
 		
 		# loop up proc until get one with output node that is a variable
-		d.id <- .get.last.var(p.id)
+		d.id <- .get.last.var(pos.nodes, p.id)
 		
 		# get state
 		d.list <- .get.state(d.id)
@@ -138,12 +153,12 @@ debug.state <- function(..., script.num = 1)
 		}
 		
 		# get output for all variables in the state
-		return(.get.output.state(d.list))
+		return(.get.output.state(pos.nodes, d.list))
 	})
 	
 	# Remove, if any, elements with no state.
 	if(length(no.state) > 0) {
-		query <- query[-no.state, ]
+		valid.queries <- valid.queries[-no.state, ]
 		states <- states[-no.state]
 	}
 	
@@ -152,93 +167,77 @@ debug.state <- function(..., script.num = 1)
 		return(invisible(NULL))
 	
 	# re-number rows of the table of queries
-	row.names(query) <- c(1:nrow(query))
+	row.names(valid.queries) <- c(1:nrow(valid.queries))
 	
 	# If not directly showing the end of execution, print table of queries with state.
 	if(!end.of.execution) {
 		cat("Results for:\n")
-		print(query)
+		print(valid.queries)
 		cat('\n')
 	}
 	
 	# Label output with indices of queries, return.
-	names(states) <- row.names(query)
+	names(states) <- row.names(valid.queries)
 	return(states)
 }
 
 #' Returns a table of valid queries.
+#' Unlike .get.valid.query.line, all integer line queries are considered valid.
 #' columns: startLine, scriptNum
 #'
-#' @param ... The user's line queries.
-#' @param script.num The script number to be queried.
-#' 
-#' @return The table of valid queries.
+#' @param pos.nodes The table of possible nodes
+#' @param query The table of the user's queries.
+#'
+#' @return The table of valid queries
 #'         columns: startLine, scriptNum
 #'
 #' @noRd
-.get.valid.query.state <- function(..., script.num = 1)
+.get.valid.query.state <- function(pos.nodes, query)
 {
-	# Get user's query
-	query <- .flatten.args(...)
-	
+	# Case: no queries
 	if(is.null(query))
-		return(invisible(NULL))
+		return(NULL)
 	
-	# Check if script number is valid
-	if(length(script.num) > 1) {
-		warning("Please query only 1 script number.", call. = FALSE)
-		return(invisible(NULL))
-	}
-	
-	script.num <- .to.int(script.num)
-	
-	if(is.null(script.num) || is.na(script.num)) {
-		warning("Script number must be a single integer.", call. = FALSE)
-		return(invisible(NULL))
-	}
-	
-	# check if there are proc nodes in that script
-	pos.proc <- .debug.env$proc.nodes
-	pos.proc <- pos.proc[pos.proc$scriptNum == script.num, ]
-	pos.proc <- .remove.na.rows(pos.proc)
-	
-	if(nrow(pos.proc) == 0) {
-		cat(paste("Script number", script.num, "is not a possible input.\n"))
-		return(invisible(NULL))
-	}
-	
-	# For each query, ensure that it is an integer
-	query <- lapply(query, function(line) 
+	# for each query, return TRUE if valid, FALSE otherwise
+	valid.indices <- sapply(c(1:nrow(query)), function(i)
 	{
-		line <- .to.int(line)
+		# Step: check that both start line and script number are integers
+		query.line <- .to.int(query$startLine[i])
+		query.script <- .to.int(query$scriptNum[i])
 		
-		if(is.null(line) || is.na(line))
-			return(NULL)
+		# Case: line number is NA or not an int, or script number is not an int
+		if(is.null(query.line) || is.na(query.line))
+			return(FALSE)
+		if(is.null(query.script))
+			return(FALSE)
 		
-		return(line)
+		# Step: check if there are proc nodes in that script
+		script.nodes <- pos.nodes[pos.nodes$scriptNum == query.script, ]
+		script.nodes <- .remove.na.rows(script.nodes)
+		
+		# Case: invalid script number
+		if(nrow(script.nodes) == 0)
+			return(FALSE)
+		
+		# script number is valid, line number is an int
+		return(TRUE)
 	})
 	
-	# remove invalid queries
-	query <- .remove.null(query)
+	# extract valid queries, ensure unique entries
+	valid.queries <- .remove.na.rows(unique(query[valid.indices, ]))
 	
-	if(length(query) == 0) {
-		cat("No valid queries.\n")
-		return(invisible(NULL))
-	}
+	if(nrow(valid.queries) == 0)
+		return(NULL)
 	
-	# get unique queries
-	query <- unique(as.vector(unlist(query)))
-	
-	# Bind valid queries to script num
-	queries <- data.frame(query, rep(script.num, length(query)),
-						  stringsAsFactors = FALSE)
-	colnames(queries) <- c("startLine", "scriptNum")
-	return(queries)
+	# rename columns, return
+	rownames(valid.queries) <- c(1:nrow(valid.queries))
+	return(valid.queries)
 }
 
 #' Get closest procedure node id with line number <= queried line number
 #' Returns NULL if a procedure node is not found.
 #'
+#' @param pos.nodes The table of all possible nodes.
 #' @param line The queried line number.
 #' @param script.num The queried script number. Guarenteed to have associated procedure nodes.
 #'
@@ -246,13 +245,14 @@ debug.state <- function(..., script.num = 1)
 #'		   than or equal to the given line number, or NULL if none are found.
 #'
 #' @noRd
-.get.closest.proc <- function(line, script.num)
+.get.closest.proc <- function(pos.nodes, line, script.num)
 {
 	# Get list of all possible lines for the specified script
-	proc.nodes <- .debug.env$proc.nodes
-	proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
+	script.proc <- pos.nodes[pos.nodes$scriptNum == script.num, ]
+	script.proc <- .remove.na.rows(script.proc)
 	
-	script.proc <- proc.nodes[proc.nodes$scriptNum == script.num, ]
+	if(nrow(script.proc) == 0)
+		return(NULL)
 	
 	# Find the index of where the queried line falls right after in the list of
 	# line numbers of the script, or 0 if the queried line falls before them. 
@@ -263,28 +263,29 @@ debug.state <- function(..., script.num = 1)
 	# or NULL if the top of the procedure nodes table has been reached.
 	if(script.index == 0)
 	{
-		proc.index <- c(1:nrow(proc.nodes))[proc.nodes$id == script.proc$id[1]]
+		proc.index <- c(1:nrow(pos.nodes))[pos.nodes$p.id == script.proc$p.id[1]]
 		proc.index <- proc.index - 1
 		
 		if(proc.index == 0)
 			return(NULL)
 		
-		return(proc.nodes$id[proc.index])
+		return(pos.nodes$p.id[proc.index])
 	}
 	
 	# Case: line falls somewhere in the list or after it.
-	return(script.proc$id[script.index])
+	return(script.proc$p.id[script.index])
 }
 
 #' From the given procedure node id, loop up the table of procedure nodes until
 #' an output variable is found. Returns the data node id of the last variable,
 #' or NULL if none are found. Also returns NULL if the procedure node id given is NULL.
 #'
+#' @param pos.nodes The table of all possible nodes.
 #' @param The procedure node id where the search for an variable begins.
 #'
 #' @return The data node id of the variable found, or NULL if none are found.
 #' @noRd
-.get.last.var <- function(p.id)
+.get.last.var <- function(pos.nodes, p.id)
 {
 	# Case: p.is is NULL
 	if(is.null(p.id))
@@ -292,15 +293,13 @@ debug.state <- function(..., script.num = 1)
 	
 	# Starting from the given procedure node, loop up the table of
 	# operations until an output edge to a variable is found.
-	proc.nodes <- .debug.env$proc.nodes
-	proc.nodes <- proc.nodes[proc.nodes$type == "Operation", ]
 	
-	start.index <- c(1:nrow(proc.nodes))[proc.nodes$id == p.id]
+	start.index <- c(1:nrow(pos.nodes))[pos.nodes$p.id == p.id]
 	
 	for(i in c(start.index:1))
 	{
 		# check if there are output data nodes.
-		p.id <- proc.nodes$id[i]
+		p.id <- pos.nodes$p.id[i]
 		d.nodes <- .debug.env$proc.data$entity[.debug.env$proc.data$activity == p.id]
 		
 		# case: no output edges found. check next procedure node
@@ -341,6 +340,10 @@ debug.state <- function(..., script.num = 1)
 	# Extract variables from data nodes table.
 	data.nodes <- .debug.env$data.nodes
 	data.nodes <- data.nodes[(data.nodes$type == "Data" | data.nodes$type == "Snapshot"), ]
+	data.nodes <- .remove.na.rows(data.nodes)
+	
+	if(nrow(data.nodes) == 0)
+		return(NULL)
 	
 	# Get the id and name of data nodes where fromEnv is TRUE, if any.
 	# These are guarenteed to be variables.
@@ -350,6 +353,7 @@ debug.state <- function(..., script.num = 1)
 	# This is appended to the table of fromEnv nodes before
 	# obtaining the last occurnce of each unique variable.
 	# fromEnv nodes will always have unique variable names.
+	# If d.id is NULL, just the fromEnv variables are returned.
 	if(!is.null(d.id))
 	{
 		# Get all data nodes up to specified d.id
@@ -392,13 +396,15 @@ debug.state <- function(..., script.num = 1)
 #' From the given list of data node id, form user output.
 #' columns: name, value, container, dimension, type, scriptNum, startLine
 #'
+#' @param pos.proc The table of all possible procedure nodes.
 #' @param id.list A vector of data node id which forms the state.
 #' 
 #' @return The state. A data frame.
-#'         columns: name, value, container, dimension, type, scriptNum, startLine
+#'         columns: name, value, container, dimension, type, 
+#'                  scriptNum, scriptName, startLine
 #'
 #' @noRd
-.get.output.state <- function(id.list)
+.get.output.state <- function(pos.proc, id.list)
 {
 	# For each variable in the state, obtain fields:
 	# var name, value, valType, scriptNum, startLine
@@ -418,7 +424,10 @@ debug.state <- function(..., script.num = 1)
 		# For fromEnv variables, these are NA.
 		if(d.node$fromEnv)
 		{
-			p.fields <- data.frame(scriptNum = NA, startLine = NA, stringsAsFactors = FALSE)
+			p.fields <- data.frame(scriptNum = NA, 
+								   scriptName = NA,
+								   startLine = NA, 
+								   stringsAsFactors = FALSE)
 		}
 		else
 		{
@@ -429,8 +438,8 @@ debug.state <- function(..., script.num = 1)
 			p.id <-  .get.p.id(d.id)
 			
 			# Get fields from procedure node (scriptNum, startLine)
-			p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes == p.id, ]
-			p.fields <- p.fields[ , c("scriptNum", "startLine")]
+			p.fields <- pos.proc[pos.proc == p.id, ]
+			p.fields <- p.fields[ , c("scriptNum", "scriptName", "startLine")]
 			p.fields <- .remove.na.rows(p.fields)
 		}
 		

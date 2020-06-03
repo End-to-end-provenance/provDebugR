@@ -92,6 +92,11 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	# columns: p.id, startLine, scriptNum, scriptName, code
 	pos.nodes <- .get.pos.line(.debug.env$proc.nodes)
 	
+	if(is.null(pos.nodes)) {
+		cat("There are no lines.\n")
+		return(invisible(NULL))
+	}
+	
 	# STEP: get user's query
 	# columns: startLine, scriptNum
 	query <- .get.query.line(..., script.num = script.num, all = all)
