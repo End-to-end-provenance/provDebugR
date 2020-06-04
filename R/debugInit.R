@@ -33,9 +33,6 @@
 .debug.env$data.proc <- NULL
 .debug.env$proc.data <- NULL
 
-# script names
-.debug.env$scripts <- NULL
-
 # environment for loaded variables
 .debug.env$var.env <- NULL
 
@@ -210,23 +207,12 @@ prov.debug.run <- function(script, ...)
 	.debug.env$data.proc <- provParseR::get.data.proc(.debug.env$prov)
 	.debug.env$proc.data <- provParseR::get.proc.data(.debug.env$prov)
 	
-	# get table of scripts (sourced & main script), save only basename
-	.debug.env$scripts <- provParseR::get.scripts(.debug.env$prov)$script
-	.debug.env$scripts <- unname(sapply(.debug.env$scripts, function(script)
-	{
-		if(script == "")
-			return("console")
-		
-		return(basename(script))
-	}))
-	
 	# var.env (for loading variables for viewing)
 	.debug.env$var.env <- new.env(parent = .debug.env)
 	
 	# path to provenance directory
 	environment <- provParseR::get.environment(.debug.env$prov)
 	.debug.env$prov.dir <- environment$value[environment$label == "provDirectory"]
-	
 	
 	# empty case
 	if(is.null(.debug.env$graph)) {
@@ -238,6 +224,18 @@ prov.debug.run <- function(script, ...)
 	
 	# get full code for each procedure node
 	.debug.env$proc.nodes$name <- .get.full.code()
+	
+	# get columns of script names for each procedure node,
+	# cbind to proc.nodes
+	scripts <- .get.scripts()
+	scriptName <- .get.script.names(.debug.env$proc.nodes$scriptNum, scripts)
+	
+	.debug.env$proc.nodes <- cbind(.debug.env$proc.nodes, scriptName, 
+								   stringsAsFactors = FALSE)
+	.debug.env$proc.nodes <- .debug.env$proc.nodes[ , c("name", "type", "elapsedTime",
+														"scriptNum", "scriptName",
+														"startLine", "startCol",
+														"endLine", "endCol")]
 }
 
 #' .get.tool determines whether to use rdt or rdtLite to get the provenance.
@@ -365,6 +363,47 @@ prov.debug.run <- function(script, ...)
 	return(unname(codes))
 }
 
+#' Get the list of script names, returning only basenames.
+#' If the script is "", return "console"
+#'
+#' @return A list of script basenames.
+#' @noRd
+.get.scripts <- function()
+{
+	# get table of scripts (sourced & main script), save only basename
+	scripts <- provParseR::get.scripts(.debug.env$prov)$script
+	scripts <- unname(sapply(scripts, function(script)
+	{
+		if(script == "")
+			return("console")
+		
+		return(basename(script))
+	}))
+	
+	return(scripts)
+}
+
+#' For each of the given script numbers, return its corresponding script names.
+#'
+#' @param script.nums The list of script numbers
+#' @param scripts The list of script names
+#'
+#' @return A list of script names corresponding to the given script numbers
+#' @noRd
+.get.script.names <- function(script.nums, scripts)
+{
+	# for each script number, return appropriate script name
+	scriptName <- unname(sapply(script.nums, function(i)
+	{
+		if(is.na(script.nums[i]))
+			return(scripts[1])
+		
+		return(scripts[i])
+	}))
+	
+	return(scriptName)
+}
+
 # === FOR TESTING ONLY ======================================================= #
 
 # This function returns provDebugR's debug environment to its initial state. 
@@ -384,9 +423,6 @@ prov.debug.run <- function(script, ...)
 	# data-to-procedure edges, procedure-to-data edges
 	.debug.env$data.proc <- NULL
 	.debug.env$proc.data <- NULL
-	
-	# script names
-	.debug.env$scripts <- NULL
 	
 	# environment for loaded variables
 	.debug.env$var.env <- NULL

@@ -11,7 +11,7 @@ debug.state(..., script.num = 1)
 
 \item{script.num}{The script number of the queried line numbers. This is ignored
 if no line numbers are given.
-Allows for only 1 script number to be queried per function call.
+If script.num == "all", all possible script numbers will be queried.
 Defaults to script number 1 (main script).}
 }
 \value{
@@ -29,6 +29,7 @@ Each data frame contains the following columns:
 	\item dimension: The size of the container.
 	\item type: The data type(s) contained within the container.
 	\item scriptNum: The script number associated with each variable.
+ 	\item scriptName: The name of the script the variable is associated with.
 	\item startLine: The line number associated with each variable.
 }
 If no paramters are given, debug.state will return the state at the end of
@@ -47,6 +48,7 @@ prov.debug.run("test.R")
 debug.state()
 debug.state(5)
 debug.state(10, 20, script.num = 2)
+debug.state(5, script.num = "all")
 }
 
 }

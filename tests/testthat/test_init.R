@@ -54,3 +54,52 @@ test_that("Initialization - .get.full.code",
 	expect_equal(c2, e2)
 	expect_equal(c3, e3)
 })
+
+# .get.scripts
+test_that("Initialization - .get.scripts",
+{
+	# multiple scripts
+	provDebugR:::.clear()
+	json <- system.file("testdata", "exceptions.json", package = "provDebugR")
+	expect_warning(provDebugR::prov.debug.file(json))
+	
+	c1 <- provDebugR:::.get.scripts()
+	e1 <- c("exceptions.R", "source_warning.r", "source_error.r")
+	
+	expect_equivalent(c1, e1)
+	
+	
+	# single script
+	provDebugR:::.clear()
+	json <- system.file("testdata", "typeChanges.json", package = "provDebugR")
+	expect_warning(provDebugR::prov.debug.file(json))
+	
+	c2 <- provDebugR:::.get.scripts()
+	e2 <- c("typeChanges.R")
+	
+	expect_equivalent(c2, e2)
+	
+	
+	# console mode
+	provDebugR:::.clear()
+	json <- system.file("testdata", "fromEnv.json", package = "provDebugR")
+	expect_warning(provDebugR::prov.debug.file(json))
+	
+	c3 <- provDebugR:::.get.scripts()
+	e3 <- c("console")
+	
+	expect_equivalent(c3, e3)
+})
+
+# .get.script.names
+test_that("Initialization - .get.script.names",
+{
+	scripts <- c("exceptions.R", "source_warning.r", "source_error.r")
+	script.nums <- as.integer(c(1,2,3,1,3,2))
+	
+	c1 <- provDebugR:::.get.script.names(script.nums, scripts)
+	e1 <- c("exceptions.R", "source_warning.r", "source_error.r",
+			"exceptions.R", "source_error.r", "source_warning.r")
+	
+	expect_equivalent(c1, e1)
+})
