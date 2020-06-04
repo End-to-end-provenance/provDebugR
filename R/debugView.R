@@ -130,10 +130,8 @@ debug.view <- function(..., start.line = "all", script.num = "all")
 	{
 		query <- valid.queries[i, ]
 		
-		# get row from pos.nodes table & cbind scriptName informatiion
+		# get row from pos.nodes table
 		node <- pos.nodes[pos.nodes$d.id == query$d.id, ]
-		node <- cbind(node, scriptName = .debug.env$scripts[node$scriptNum],
-					  stringsAsFactors = FALSE)
 		
 		# since there could be multiple of the same var names, lines, script num,
 		# form a new var name the data is loaded into

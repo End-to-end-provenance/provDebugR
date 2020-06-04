@@ -191,18 +191,9 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	if(nrow(pos.nodes) == 0)
 		return(NULL)
 	
-	# get p.id, startLine, scriptNum, code
-	pos.nodes <- pos.nodes[ , c("id", "startLine", "scriptNum", "name")]
-	names(pos.nodes) <- c("p.id", "startLine", "scriptNum", "code")
-	
-	# get script names for each script number
-	scriptName <- sapply(pos.nodes$scriptNum, function(i) {
-		return(.debug.env$scripts[i])
-	})
-	
-	# combine with pos.nodes, reorder cols
-	pos.nodes <- cbind(pos.nodes, scriptName, stringsAsFactors = FALSE)
-	pos.nodes <- pos.nodes[ , c("p.id","startLine","scriptNum","scriptName","code")]
+	# get p.id, startLine, scriptNum, scriptName, code
+	pos.nodes <- pos.nodes[ , c("id", "startLine", "scriptNum", "scriptName", "name")]
+	names(pos.nodes) <- c("p.id", "startLine", "scriptNum", "scriptName", "code")
 	
 	# rename rows, return
 	rownames(pos.nodes) <- c(1:nrow(pos.nodes))

@@ -168,15 +168,14 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 		# try to get the procedure node that produced/used the data node (could be multiple)
 		p.id <- .get.p.id(d.id)
 		
-		# get startLine and scriptNum from proc nodes table, scriptName
+		# get id, startLine, scriptNum, scriptName from proc nodes table
 		# cbind with row from data nodes table
 		row <- lapply(p.id, function(id) {
 			p.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == id,
-											  c("id", "startLine", "scriptNum")]
+											  c("id", "startLine", "scriptNum", "scriptName")]
 			scriptName <- .debug.env$scripts[p.fields$scriptNum]
 			
-			return(cbind(d.fields, p.fields, scriptName = scriptName, 
-						 stringsAsFactors = FALSE))
+			return(cbind(d.fields, p.fields, stringsAsFactors = FALSE))
 		})
 		
 		# if there are multiple rows, combine into data frame
@@ -448,18 +447,13 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 		p.id <- .get.p.id(data.fields$id)
 		
 		# STEP: get fields from proc nodes
-		# columns: scriptNum, startLine, code
+		# columns: scriptNum, scriptName, startLine, code
 		# cbind with data.fields and valType.fields
 		row <- lapply(p.id, function(id)
 		{
-			proc.fields <- pos.proc[pos.proc$id == id, c("scriptNum", "startLine", "name")]
-			
-			# get script name from script number, combine with proc.fields
-			scriptName <- .debug.env$scripts[proc.fields$scriptNum]
-			proc.fields <- cbind(proc.fields, scriptName, stringsAsFactors = FALSE)
-			
-			# reorder and rename proc.fields
-			proc.fields <- proc.fields[ , c("scriptNum","scriptName","startLine","name")]
+			# get and rename proc.fields
+			proc.fields <- pos.proc[pos.proc$id == id, c("scriptNum", "scriptName",
+														 "startLine", "name")]
 			colnames(proc.fields) <- c("scriptNum","scriptName","startLine","code")
 			
 			# cbind with data.fields and valType.fields

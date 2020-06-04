@@ -210,16 +210,10 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	# get output for user
 	rows <- lapply(id.list, function(id)
 	{
-		fields <- proc.nodes[proc.nodes$id == id, c("scriptNum", "startLine", "name")]
+		fields <- proc.nodes[proc.nodes$id == id, c("scriptNum", "scriptName",
+													"startLine", "name")]
 		
-		# get script name, cbind with fields
-		scriptName <- .debug.env$scripts[fields$scriptNum]
-		fields <- cbind(fields, scriptName, stringsAsFactors = FALSE)
-		
-		# reorder and rename fields
-		fields <- fields[ , c("scriptNum", "scriptName", "startLine", "name")]
 		names(fields) <- c("scriptNum", "scriptName", "startLine", "code")
-		
 		return(fields)
 	})
 	

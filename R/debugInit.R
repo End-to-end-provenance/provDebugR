@@ -232,7 +232,8 @@ prov.debug.run <- function(script, ...)
 	
 	.debug.env$proc.nodes <- cbind(.debug.env$proc.nodes, scriptName, 
 								   stringsAsFactors = FALSE)
-	.debug.env$proc.nodes <- .debug.env$proc.nodes[ , c("name", "type", "elapsedTime",
+	.debug.env$proc.nodes <- .debug.env$proc.nodes[ , c("id", "name", "type", 
+														"elapsedTime",
 														"scriptNum", "scriptName",
 														"startLine", "startCol",
 														"endLine", "endCol")]

@@ -108,8 +108,6 @@ debug.state <- function(..., script.num = 1)
 	# columns: p.id, startLine, scriptNum, scriptName, code
 	valid.queries <- .get.valid.query.state(pos.nodes, query)
 	
-	valid.queries <<- valid.queries
-	
 	# If valid.queries is null, that means there are no valid queries or the 
 	# query itself is empty. In this case, we want to show the state at the 
 	# end of execution. We want to keep a variable to track that the end of 
