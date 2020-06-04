@@ -15,6 +15,7 @@ get.expected <- function()
 					type = c("numeric", NA),
 					code = c('d <- 4', 'd <- as.list(d)'),
 					scriptNum = c(1,1),
+					scriptName = rep("typeChanges.R", 2),
 					startLine = c(12,13),
 					stringsAsFactors = FALSE)
 	
@@ -25,6 +26,7 @@ get.expected <- function()
 					type = c("integer", "integer"),
 					code = c('e <- matrix(c(1:100), 4)', 'e <- matrix(c(1:100), 5)'),
 					scriptNum = c(1,1),
+					scriptName = rep("typeChanges.R", 2),
 					startLine = c(16,17),
 					stringsAsFactors = FALSE)
 	
@@ -35,6 +37,7 @@ get.expected <- function()
 					type = c("numeric", "integer"),
 					code = c('f <- 5', 'f <- as.integer(f)'),
 					scriptNum = c(1,1),
+					scriptName = rep("typeChanges.R", 2),
 					startLine = c(20,21),
 					stringsAsFactors = FALSE)
 	
@@ -45,6 +48,7 @@ get.expected <- function()
 					type = c("numeric", "character", "logical"),
 					code = c('g <- 6', 'g <- "six"', 'g <- TRUE'),
 					scriptNum = c(1,1,1),
+					scriptName = rep("typeChanges.R", 3),
 					startLine = c(24,25,26),
 					stringsAsFactors = FALSE)
 	
@@ -55,6 +59,7 @@ get.expected <- function()
 					type = c("logical", "character", "character", "integer"),
 					code = c('h <- TRUE', 'h <- "seven"', 'h <- "eight"', 'h <- 8L'),
 					scriptNum = c(1,1,1,1),
+					scriptName = rep("typeChanges.R", 4),
 					startLine = c(30,31,32,33),
 					stringsAsFactors = FALSE)
 	
@@ -64,6 +69,7 @@ get.expected <- function()
 					dimension = as.character(c(NA,NA,NA,NA,NA)),
 					type = c('null', 'environment', 'function', 'factor', 'POSIXct'),
 					scriptNum = c(1,1,1,1,1),
+					scriptName = rep("typeChanges.R", 5),
 					startLine = c(38,39,40,41,42),
 					stringsAsFactors = FALSE)
 	
@@ -134,31 +140,31 @@ expected <- get.expected()
 # debug.type.changes - no paramters
 test_that("debug.type.changes - no parameters", 
 {
+	# no parameters
 	c1 <- debug.type.changes()
 	c1$e <- c1$e[ ,-1]          # omit value column
 	c1$s <- c1$s[ , c(-1,-5)]   # omit value and code column
 	
 	expect_equivalent(c1, expected)
+	
+	# null parameter
+	c2 <- debug.type.changes(NULL)
+	c2$e <- c2$e[ ,-1]          # omit value column
+	c2$s <- c2$s[ , c(-1,-5)]   # omit value and code column
+	
+	expect_equivalent(c2, expected)
 })
 
 # debug.type.changes - all valid variables queried (single)
 test_that("debug.type.changes - all valid variables queried (single)",
 {
-	# queries
-	q1 <- "d"
-	q2 <- "e"
-	q3 <- "f"
-	q4 <- "g"
-	q5 <- "h"
-	q6 <- "s"
-	
 	# test cases
-	c1 <- debug.type.changes(var = q1)[[1]]
-	c2 <- debug.type.changes(var = q2)[[1]][ ,-1]          # omit value column
-	c3 <- debug.type.changes(var = q3)[[1]]
-	c4 <- debug.type.changes(var = q4)[[1]]
-	c5 <- debug.type.changes(var = q5)[[1]]
-	c6 <- debug.type.changes(var = q6)[[1]][ , c(-1,-5)]   # omit value and code column
+	c1 <- debug.type.changes("d")[[1]]
+	c2 <- debug.type.changes(e)[[1]][ ,-1]          # omit value column
+	c3 <- debug.type.changes("f")[[1]]
+	c4 <- debug.type.changes(g)[[1]]
+	c5 <- debug.type.changes("h")[[1]]
+	c6 <- debug.type.changes(s)[[1]][ , c(-1,-5)]   # omit value and code column
 	
 	# test
 	expect_equivalent(c1, expected$d)
@@ -172,20 +178,15 @@ test_that("debug.type.changes - all valid variables queried (single)",
 # debug.type.changes - all valid variables queried (multiple)
 test_that("debug.type.changes - all valid variables queried (multiple)",
 {
-	# queries
-	q1 <- c("d", "f", "g")   # multiple variables
-	q2 <- c("f", "h", "d")   # multiple variables (in different order)
-	q3 <- c("d", "d", "f")   # repeated query
-	
 	# test cases
-	c1 <- debug.type.changes(var = q1)
-	c2 <- debug.type.changes(var = q2)
-	c3 <- debug.type.changes(var = q3)
+	c1 <- debug.type.changes("d",f,"g")   # multiple variables
+	c2 <- debug.type.changes(f,h,d)       # multiple variables (in different order)
+	c3 <- debug.type.changes(d,"d","f")   # repeated query
 	
 	# expected
-	e1 <- expected[q1]
-	e2 <- expected[q2]
-	e3 <- expected[c("d", "f")]
+	e1 <- expected[c("d","f","g")]
+	e2 <- expected[c("f","h","d")]
+	e3 <- expected[c("d","f")]
 	
 	# test
 	expect_equivalent(c1, e1)
@@ -196,17 +197,15 @@ test_that("debug.type.changes - all valid variables queried (multiple)",
 # debug.type.changes - all invalid variables queried
 test_that("debug.type.changes - all invalid variables queried",
 {
-	# queries
-	q1 <- "invalid"      # variable does not exist
-	q2 <- "Rplots.pdf"   # data node with name exists, but is not a variable
-	q3 <- "a"            # no type change (just single assignment)
-	q4 <- "cc"           # no type change (value does change)
-	
 	# test cases (both returned value and message output)
-	c2 <- utils::capture.output(c1 <- debug.type.changes(var = q1))
-	c4 <- utils::capture.output(c3 <- debug.type.changes(var = q2))
-	c6 <- utils::capture.output(c5 <- debug.type.changes(var = q3))
-	c8 <- utils::capture.output(c7 <- debug.type.changes(var = q4))
+	c2 <- utils::capture.output(                # variable does not exist
+		c1 <- debug.type.changes("invalid"))
+	c4 <- utils::capture.output(                # data node with name exists, but is not a variable
+		c3 <- debug.type.changes(Rplots.pdf))
+	c6 <- utils::capture.output(                # no type change (just single assignment)
+		c5 <- debug.type.changes("a"))
+	c8 <- utils::capture.output(                # no type change (value does change)
+		c7 <- debug.type.changes(cc))
 	
 	# test returned values
 	expect_null(c1)
@@ -229,13 +228,8 @@ test_that("debug.type.changes - all invalid variables queried",
 # debug.type.changes - some valid, some invalid variables queried
 test_that("debug.type.changes - some valid, some invalid vars",
 {
-	# queries
-	q1 <- c("invalid", "h", "a", "g")
+	c1 <- debug.type.changes("invalid",h,a,"g")
+	e1 <- expected[c("h","g")]
 	
-	# test cases
-	c1 <- debug.type.changes(var = q1)
-	
-	# test expected return values
-	e1 <- expected[c("h", "g")]
 	expect_equivalent(c1, e1)
 })

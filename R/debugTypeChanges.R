@@ -31,6 +31,7 @@
 #'		\item type: The data type(s) contained within the container.
 #'		\item code: The line of code associated with the variable.
 #'		\item scriptNum: The script number associated with the variable.
+#'		\item scriptName: The name of the script associated with the variable.
 #'		\item startLine: The line number associated with the variable.
 #' }
 #'
@@ -41,8 +42,8 @@
 #' This function may be used only after the debugger has been initialised using
 #' one its initialisation functions (listed below).
 #'
-#' @param var Optional. Variable name(s) to be queried. If not NA, the results will
-#'            be filtered to show only those with the given variable name.
+#' @param ... Optional. Variable name(s) to be queried. If variables are given (not NULL),
+#'            the results will be filtered to show only those with the given variable name.
 #'
 #' @return A list of data frames for each variable with at least 1 data type change.
 #'
@@ -73,13 +74,13 @@
 #' \dontrun{
 #' prov.debug.run("test.R")
 #' debug.type.changes()
-#' debug.type.changes(var = "x")
-#' debug.type.changes(var = c("a", "b"))
+#' debug.type.changes(x)
+#' debug.type.changes("a", "b")
 #' }
 #'
 #' @export
 #' @rdname debug.type.changes
-debug.type.changes <- function(var = NA)
+debug.type.changes <- function(...)
 {
 	# case: no provenance
 	if(!.debug.env$has.graph)
@@ -143,10 +144,10 @@ debug.type.changes <- function(var = NA)
 	
 	# if the user has specified variable(s) to be queried, get the valid ones
 	# for this function, this process is much simpler than get.valid.var
-	# first, remove repeated user queries
-	var <- unique(var)
+	# first, collect user queries and remove repeated ones
+	var <- unique(.flatten.args(...))
 	
-	if(!(is.na(var[1]) && length(var) == 1)) 
+	if(!is.null(var))
 	{
 		valid.queries <- var[var %in% vars.names]
 		
@@ -161,7 +162,7 @@ debug.type.changes <- function(var = NA)
 		vars <- lapply(valid.queries, function(query) {
 			return(vars[[grep(query, vars.names)]])
 		})
-		
+	
 		names(vars) <- valid.queries
 	}
 	
@@ -169,12 +170,12 @@ debug.type.changes <- function(var = NA)
 }
 
 #' Forms user output.
-#' columns: value, container, dimension, type, code, scriptNum, startLine
+#' columns: value, container, dimension, type, code, scriptNum, scriptName, startLine
 #'
 #' @param data.nodes The data nodes to be displayed to the user.
 #'
 #' @return The data frame of type changes to be returned to the user.
-#'         columns: value, container, dimension, type, code, scriptNum, startLine
+#'         columns: value, container, dimension, type, code, scriptNum, scriptName, startLine
 #' @noRd
 .get.output.type.changes <- function(data.nodes)
 {
@@ -193,15 +194,15 @@ debug.type.changes <- function(var = NA)
 		# get proc node which either set or first used the data node
 		proc.id <- .get.p.id(data.id)[1]
 		
-		# extract script num, line num, code from proc nodes
+		# extract code, scriptNum, scriptName, startLine from proc nodes
 		proc.fields <- .debug.env$proc.nodes[.debug.env$proc.nodes$id == proc.id, 
-											 c("name", "scriptNum", "startLine")]
+											 c("name", "scriptNum", "scriptName", "startLine")]
 		
 		# combine fields
 		fields <- cbind(data.value, val.type, proc.fields, stringsAsFactors = FALSE)
 		names(fields) <- c("value", 
 						   "container", "dimension", "type", 
-						   "code", "scriptNum", "startLine")
+						   "code", "scriptNum", "scriptName", "startLine")
 		return(fields)
 	})
 	

@@ -4,11 +4,11 @@
 \alias{debug.type.changes}
 \title{Tracking Type Changes}
 \usage{
-debug.type.changes(var = NA)
+debug.type.changes(...)
 }
 \arguments{
-\item{var}{Optional. Variable name(s) to be queried. If not NA, the results will
-be filtered to show only those with the given variable name.}
+\item{...}{Optional. Variable name(s) to be queried. If variables are given (not NULL),
+the results will be filtered to show only those with the given variable name.}
 }
 \value{
 A list of data frames for each variable with at least 1 data type change.
@@ -24,6 +24,7 @@ Each data frame contains the following columns:
 	\item type: The data type(s) contained within the container.
 	\item code: The line of code associated with the variable.
 	\item scriptNum: The script number associated with the variable.
+	\item scriptName: The name of the script associated with the variable.
 	\item startLine: The line number associated with the variable.
 }
 }
@@ -39,8 +40,8 @@ one its initialisation functions (listed below).
 \dontrun{
 prov.debug.run("test.R")
 debug.type.changes()
-debug.type.changes(var = "x")
-debug.type.changes(var = c("a", "b"))
+debug.type.changes(x)
+debug.type.changes("a", "b")
 }
 
 }
