@@ -219,7 +219,7 @@ debug.view <- function(..., start.line = "all", script.num = "all")
 				status <- "File not found."
 			}
 			
-			View(get(var.name, envir = var.env), title = var.name)
+			utils::View(get(var.name, envir = var.env), title = var.name)
 		}
 		else  # everything else (not .RObject, .txt, or .csv)
 		{
@@ -232,7 +232,7 @@ debug.view <- function(..., start.line = "all", script.num = "all")
 			}
 			else {
 				assign(var.name, var.value, envir = var.env)
-				View(get(var.name, envir = var.env), title = var.name)
+				utils::View(get(var.name, envir = var.env), title = var.name)
 				status <- "File not found."
 			}
 		}
@@ -243,7 +243,7 @@ debug.view <- function(..., start.line = "all", script.num = "all")
 		# don't try to change its type as it will not work for anything
 		# but simple values.
 		assign(var.name, var.value, envir = var.env)
-		View(get(var.name, envir = var.env), title = var.name)
+		utils::View(get(var.name, envir = var.env), title = var.name)
 		
 		if(!dir.exists(data.dir))
 			status <- "Provenance directory not found."
