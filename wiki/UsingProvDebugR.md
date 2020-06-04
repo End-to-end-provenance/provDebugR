@@ -30,7 +30,7 @@ of its suite of functions becomes available.
 * prov.debug
 * prov.debug.file
 
-### `prov.debug.run(script)`
+### `prov.debug.run(script, ...)`
 `prov.debug.run` takes in the path to an R or Rmd script and executes the script 
 using [rdtLite](https://cran.r-project.org/web/packages/rdtLite/index.html) to 
 collect provenance before initialising the debugger.
