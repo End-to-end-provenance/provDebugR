@@ -227,7 +227,7 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 		
 		# start.line = "all"
 		# get all start lines for the node queried. leave NA if none found
-		if(!is.na(q.lines) && tolower(q.lines[1]) == "all") 
+		if(!is.na(q.lines[1]) && tolower(q.lines[1]) == "all") 
 		{
 			# get data node ids
 			d.id <- .debug.env$data.nodes$id[.debug.env$data.nodes$name == var]
