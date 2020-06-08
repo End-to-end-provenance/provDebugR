@@ -4,8 +4,7 @@
 \alias{debug.variable}
 \title{Tracking Changes to a Variable}
 \usage{
-debug.variable(..., val.type = "all", script.num = "all",
-  all = FALSE)
+debug.variable(..., val.type = "all", script.num = "all", all = FALSE)
 }
 \arguments{
 \item{...}{The variable names to be queried.}

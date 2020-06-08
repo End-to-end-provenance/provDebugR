@@ -26,6 +26,8 @@ test_that("debug.view - no/empty provenance",
 # debug.view (general)
 test_that("debug.view - general",
 {
+	skip("test calls View")
+	
 	json <- system.file("testdata", "view.json", package = "provDebugR")
 	expect_warning(prov.debug.file(json))   # warning due to removed prov folder
 	
@@ -82,6 +84,8 @@ test_that("debug.view - general",
 # .view.var
 test_that("debug.view - .view.var",
 {
+	skip("test calls View")
+	
 	# CASES
 	# var.env, data.dir
 	var.env <- new.env()
