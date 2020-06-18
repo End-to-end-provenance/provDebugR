@@ -24,28 +24,30 @@ debug.warning returns a list of data frames of lineages for the queried
         warnings.
 }
 \description{
-debug.error returns a data frame representing the backwards lineage of (the 
-steps leading up to) the error in the execution, if any.
+debug.error displays the backwards lineage of (the 
+statements leading up to) an error that occurred when R code was executed.
 
-debug.warning returns a data frame representing the backwards lineage for 
-each warning queried.
+debug.warning displays the backwards lineage of (the 
+statements leading up to) one or more warnings that occurred when R code was executed.
 }
 \details{
-Each data frame returned by debug.error and debug.warning contains the 
-following columns:
+These functions are part of the provDebugR package.  To use them, you must
+first initialise the debugger using
+one its initialisation functions: \code{\link{prov.debug}}, 
+\code{\link{prov.debug.file}}, or \code{\link{prov.debug.run}}.
+
+The lineage is represented with a data frame that shows the R statements
+whose execution led to the error or warning.  More specifically, 
+each row of the data frame corresponds to one line of code.
+The columns of the data frame are:
 \itemize{
-	\item scriptNum: The script number the exception is associated with.
- 	\item scriptName: The name of the script the exception is associated with.
-	\item startLine: The line number the exception is associated with.
-	\item code: The line of code which threw the exception.
+	\item scriptNum: The script number the statement is from.
+ 	\item scriptName: The name of the script the statement is from.
+	\item startLine: The line number for the statement  If the statement spans multiple
+	  lines, this will be the first line.
+	\item code: The statement itself.  If the statement is long, this
+	  will just be the start of the statement.
 }
-
-debug.error and debug.warning belong to provDebugR, a debugger which utilises 
-provenance collected post-execution to facilitate understanding of the
-execution and aid in debugging.
-
-These functions may be used only after the debugger has been initialised using
-one its initialisation functions (listed below).
 }
 \examples{
 \dontrun{

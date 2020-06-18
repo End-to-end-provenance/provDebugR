@@ -5,3 +5,5 @@ build.xml
 .*\.tar\.gz
 .gitignore
 .travis.yml
+.*\.tar
+wiki

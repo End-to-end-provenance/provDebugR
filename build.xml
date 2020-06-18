@@ -15,7 +15,7 @@
 	
 	<target name="build" depends="roxygenize">
 		<exec executable="R" >
-			<arg line="CMD build --no-build-vignettes ."/>
+			<arg line="CMD build ."/>
 		</exec>
 	</target>
 
@@ -145,13 +145,13 @@
 
 	<target name="check" depends="build">
 		<exec executable="R" >
-			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
+			<arg line="CMD check ${tarfile}"/>
 		</exec>
 	</target>
 	
 	<target name="cran-check" depends="build">
 		<exec executable="R" >
-			<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>
+			<arg line="CMD check --as-cran ${tarfile}"/>
 		</exec>
 	</target>
 

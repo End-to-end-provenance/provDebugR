@@ -19,7 +19,10 @@
 
 # === VARIABLE =============================================================== #
 
-#' Tracking Changes to a Variable
+#' debug.variable
+#' 
+#' debug.variable shows all values that a particular variable has during 
+#' execution of a script.
 #' 
 #' For each variable queried, debug.variable returns a data frame of all
 #' instances (data nodes) of that variable.
@@ -35,13 +38,6 @@
 #'		\item code: The code this variable is associated with.
 #' }
 #'
-#' debug.variable belongs to provDebugR, a debugger which utilises provenance 
-#' collected post-execution to facilitate understanding of the execution and aid 
-#' in debugging.
-#'
-#' This function may be used only after the debugger has been initialised using
-#' one its initialisation functions (listed below).
-#'
 #' @param ... The variable names to be queried.
 #' @param val.type If not "all", this filters the results to contain
 #'                 only instances where the valType (container or type) has the
@@ -50,30 +46,7 @@
 #' @param all If TRUE, results for all variables of the specified script will be
 #'            returned.
 #'
-#' @return A list of data frames showing all instances of each variable queried.
-#'
-#' @seealso provDebugR Initialisation Functions: 
-#' @seealso \code{\link{prov.debug}}
-#' @seealso \code{\link{prov.debug.file}} 
-#' @seealso \code{\link{prov.debug.run}}
-#'
-#' @seealso Other provDebugR Functions (non-initialisation):
-#' @seealso \code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
-#'              The error may be queried on StackOverflow.
-#' @seealso \code{\link{debug.line}}: Returns all immediate inputs and outputs
-#'              for the line(s) queried.
-#' @seealso \code{\link{debug.lineage}}: Returns the forwards or backwards lineage
-#'              of the data object(s) queried. The forwards lineage shows how the
-#'              data object was used, and the backwards lineage shows how it was produced. 
-#' @seealso \code{\link{debug.state}}: Returns the state at the line(s) queried,
-#'              after the line had been executed. The state is the list of all 
-#'              variables and their values in the environment at the queried line.
-#' @seealso \code{\link{debug.type.changes}}: Returns a data frame for each variable in
-#'              the execution containing the instances where the data type changed.
-#' @seealso \code{\link{debug.view}}: Opens and displays the contents of each file or variable
-#'              or variable queried.
-#' @seealso \code{\link{debug.warning}}: Returns the backwards lineage of the queried
-#'              warning(s), if any.
+#' @return debug.variable returns a list of data frames showing all instances of each variable queried.
 #'
 #' @examples
 #' \dontrun{
@@ -85,7 +58,7 @@
 #' }
 #'
 #' @export
-#' @rdname debug.variable
+#' @rdname debug.line
 debug.variable <- function(..., val.type = "all", script.num = "all", all = FALSE)
 {
 	# CASE: no provenance

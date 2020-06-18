@@ -19,7 +19,15 @@
 
 # === LINE =================================================================== #
 
-#' Tracking the Inputs and Outputs at a Line
+#' Displaying variable values
+#' 
+#' debug.line displays the values of variables that are either used or set
+#' on a particular line.
+#' 
+#' These functions are part of the provDebugR package.  To use them, you must
+#' first initialise the debugger using
+#' one its initialisation functions: \code{\link{prov.debug}}, 
+#' \code{\link{prov.debug.file}}, or \code{\link{prov.debug.run}}.
 #' 
 #' For each line number queried, debug.line returns a data frame of the data 
 #' that the procedure in that line inputs and outputs.
@@ -27,25 +35,25 @@
 #' \itemize{
 #'		\item name: The name of the data.
 #'		\item value: The value of the data.
-#'		\item container: The type of the container of the data.
+#'		\item container: The type of the container of the data, such as vector or data frame.
 #'		\item dimension: The size of the container.
 #'		\item type: The data type(s) contained within the container.
 #' }
 #'
-#' debug.line belongs to provDebugR, a debugger which utilises provenance collected
-#' post-execution to facilitate understanding of the execution and aid in debugging.
-#'
-#' This function may be used only after the debugger has been initialised using
-#' one its initialisation functions (listed below).
-#'
-#' @param ... The line numbers to be queried.
+#' @param ... The value being queried.  For debug.line and debug.state, these are line
+#'            numbers.  For debug.variable, these are variable names.  For
+#'            debug.view, these are variable names and/or file names. 
 #' @param script.num The script numbers to be queried.
-#'                   Defaults to script number 1 (main script).
+#'                   The main script is script 1.  If any scripts are included
+#'                   using the `source` function, they will be assigned a unique
+#'                   script number.
 #'                   If script.num == "all", all possible script numbers will be queried.
-#' @param all If TRUE, the inputs and outputs for all lines in all script numbers
-#'            will be returned.
+#' @param all If TRUE, it is as if the ... parameter listed all possible values.
+#'            For debug.line, it will display input and output information for
+#'            all lines.  For debug.variable, it will display values for all
+#'            variables.
 #'
-#' @return A list of data frames showing the inputs and outputs for the procedure
+#' @return debug.line returns a list of data frames showing the inputs and outputs for the procedure
 #'         in each line queried.
 #'
 #' @seealso provDebugR Initialisation Functions: 
@@ -59,15 +67,8 @@
 #' @seealso \code{\link{debug.lineage}}: Returns the forwards or backwards lineage
 #'              of the data object(s) queried. The forwards lineage shows how the
 #'              data object was used, and the backwards lineage shows how it was produced. 
-#' @seealso \code{\link{debug.state}}: Returns the state at the line(s) queried,
-#'              after the line had been executed. The state is the list of all 
-#'              variables and their values in the environment at the queried line.
 #' @seealso \code{\link{debug.type.changes}}: Returns a data frame for each variable in
 #'              the execution containing the instances where the data type changed.
-#' @seealso \code{\link{debug.variable}}: Returns a data frame showing all instances
-#'              of the variable(s) queried.
-#' @seealso \code{\link{debug.view}}: Opens and displays the contents of each file or variable
-#'              or variable queried.
 #' @seealso \code{\link{debug.warning}}: Returns the backwards lineage of the queried
 #'              warning(s), if any.
 #'

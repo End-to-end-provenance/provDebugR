@@ -90,7 +90,7 @@
 #'          \url{https://github.com/End-to-end-provenance}
 #'
 #' @references rdtLite (Provenance Collection Tool): 
-#'             \url{https://cran.r-project.org/web/packages/rdtLite/index.html}
+#'             \url{https://CRAN.R-project.org/package=rdtLite}
 #' @references PROV-JSON output produced by rdtLite: 
 #'             \url{https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md}
 #' @references PROV-JSON standard: 
