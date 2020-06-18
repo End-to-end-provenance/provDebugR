@@ -1,32 +1,33 @@
 Package: provDebugR
-Title: An R Post-Mortem Debugger
-Version: 0.1.2.9000
+Title: A Time-Travelling Debugger for R
+Version: 1.0
+Date: 06-18-20
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
+    person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
+    person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "aut"),
     person("Joseph", "Wonsil", email = "jwonsil@carthage.edu", role = "aut"),
-    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre") 
+    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre")
     )
-Description: provDebugR is a debugger that works post script execution. Users can query 
-    variables to discover what their types and values were throughout the exectuion of the script.
-    The lineage of variable (the lines of the script that contributed to that variable's creation)
-    can also be revealed. 
+Description: Uses provenance post-execution to help the user understand
+    and debug their script by providing functions to look at intermediate steps and
+    data values, their forwards and backwards lineage, and to understand the
+    steps leading up to warning and error messages. provDebugR uses
+    provenance produced by rdtLite (available on CRAN), stored in PROV-JSON format.
 Depends: R (>= 3.5.0)
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
   httr, 
-  igraph, 
   jsonlite, 
-  methods, 
-  miniUI, 
   provGraphR,
   provParseR,
-  rstudioapi, 
-  shiny, 
-  stats
+  textutils,
 Suggests:
+  knitr,
   rdtLite, 
   rdt,
   testthat
-RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+RoxygenNote: 7.1.0

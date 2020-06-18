@@ -30,6 +30,49 @@
 		}
 	},
 
+	"activity" : {
+		"rdt:p1": {
+			"rdt:name": "noDataNodes.R",
+			"rdt:type": "Start",
+			"rdt:elapsedTime": "1.38",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		},
+		"rdt:p2": {
+			"rdt:name": "library(utils)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.14",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 1,
+			"rdt:startCol": 1,
+			"rdt:endLine": 1,
+			"rdt:endCol": 14
+		},
+		"rdt:p3": {
+			"rdt:name": "library(testthat)",
+			"rdt:type": "Operation",
+			"rdt:elapsedTime": "0.2",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": 2,
+			"rdt:startCol": 1,
+			"rdt:endLine": 2,
+			"rdt:endCol": 17
+		},
+		"rdt:p4": {
+			"rdt:name": "noDataNodes.R",
+			"rdt:type": "Finish",
+			"rdt:elapsedTime": "0.0",
+			"rdt:scriptNum": 1,
+			"rdt:startLine": "NA",
+			"rdt:startCol": "NA",
+			"rdt:endLine": "NA",
+			"rdt:endCol": "NA"
+		}
+	},
+
 	"entity" : {
 		"rdt:environment": {
 			"rdt:name": "environment",
@@ -37,14 +80,14 @@
 			"rdt:operatingSystem": "mingw32",
 			"rdt:language": "R",
 			"rdt:langVersion": "R version 3.6.3 (2020-02-29)",
-			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/empty.R",
-			"rdt:scriptTimeStamp": "2020-01-07T17.10.15EST",
-			"rdt:totalElapsedTime": "0.0",
+			"rdt:script": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst/testscripts/noDataNodes.R",
+			"rdt:scriptTimeStamp": "2020-01-26T22.51.55EST",
+			"rdt:totalElapsedTime": "1.72",
 			"rdt:sourcedScripts": "",
 			"rdt:sourcedScriptTimeStamps": "",
 			"rdt:workingDirectory": "C:/Users/fong22e/Documents/HarvardForest/provDebugR_cran/inst",
-			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_empty",
-			"rdt:provTimestamp": "2020-05-31T10.07.10EDT",
+			"rdt:provDirectory": "C:\\Users\\fong22e\\Documents\\HarvardForest\\provDebugR_cran\\inst\\testdata/prov_noDataNodes",
+			"rdt:provTimestamp": "2020-05-31T10.07.23EDT",
 			"rdt:hashAlgorithm": "md5"
 		},
 
@@ -105,12 +148,35 @@
 			}
 		},
 		"rdt:l8": {
+			"name": "testthat",
+			"version": "2.2.1",
+			"prov:type": {
+				"$": "prov:Collection",
+				"type": "xsd:QName"
+			}
+		},
+		"rdt:l9": {
 			"name": "utils",
 			"version": "3.6.3",
 			"prov:type": {
 				"$": "prov:Collection",
 				"type": "xsd:QName"
 			}
+		}
+	},
+
+	"wasInformedBy" : {
+		"rdt:pp1": {
+			"prov:informant": "rdt:p1",
+			"prov:informed": "rdt:p2"
+		},
+		"rdt:pp2": {
+			"prov:informant": "rdt:p2",
+			"prov:informed": "rdt:p3"
+		},
+		"rdt:pp3": {
+			"prov:informant": "rdt:p3",
+			"prov:informed": "rdt:p4"
 		}
 	}
 }

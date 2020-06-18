@@ -1,8 +1,10 @@
 # provDebugR
 
-A debugging tool that leverages provenance to provide handy information about R scripts to assist in writing them.
+A debugging tool that leverages provenance to provide handy information 
+about R scripts to assist in writing them.
 
-For a more in-depth description of the functions available in this package [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+For a more in-depth description of the functions available in this package 
+please [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
 
 # Installation
 
@@ -14,51 +16,49 @@ install.packages("devtools")
 ```
 Installation of all required packages (can be copied and pasted):
 ```{r}
-devtools::install_github("End-to-end-provenance/provParseR")
-devtools::install_github("End-to-end-provenance/provGraphR")
-devtools::install_github("End-to-end-provenance/rdtLite")
+install.packages("provParseR")
+install.packages("provGraphR")
+install.packages("rdtLite")
 devtools::install_github("End-to-end-provenance/provDebugR")
 ```
-This package also imports:
-* jsonlite
+provDebugR also imports:
+* httr
 * igraph 
-* httr 
+* jsonlite
 * methods
-* stats
 * testthat
+* textutils
 
-and if your environment is RStudio:
-* rstudioapi
-* shiny
-* miniUI
-
-
-Once installed, load the package:
+Once installed, load provDebugR by calling:
 ```{r}
 library("provDebugR")
 ```
 
 # Usage
-While writing a script, run the script by calling:
+
+To initialise the debugger with a script, call:
 ```{r}
-debug.init("yourScriptNameHere.R")
+prov.debug.run("scriptName.R", snapshot.size = 100)
 ```
-If you already have provenance stored as prov.json, you can also 
-use that file as an argument.
+Alternatively, if you just called [`rdtLite`](https://CRAN.R-project.org/package=rdtLite)'s
+`prov.run` function, you can call:
 ```{r}
-debug.init("prov.json")
+prov.debug()
+```
+Lastly, if you have the PROV-JSON provenance file, you can also call:
+```{r}
+prov.debug.file("provJsonFileName.json")
 ```
 
-Once either debug.prov or debug.init is run the rest of the functions can be used. 
-To find out more about what each function does, [refer to the Wiki!](https://github.com/ProvTools/provDebugR/wiki)
-```{r}
-debug.init(input.data)
-debug.variable.type(..., just.logical = F)
-debug.from.type(variable, type) -- ***GOING TO BE REMOVED***
-debug.from.line(..., state = F) 
-debug.lineage(..., forward = F) 
-debug.error.trace(stack.overflow = F)
-debug.warning.trace(...) 
-debug.browser()
-debug.gadget()
-```
+Once the debugger has been initialised, the rest of the functions the package
+provides can be used.
+
+To find out more about what each function does, please 
+[refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+* [debug.error](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.error)
+* [debug.line](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.line)
+* [debug.lineage](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.lineage)
+* [debug.state](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.state)
+* [debug.type.changes](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.type.changes)
+* [debug.variable](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.variable)
+* [debug.warning](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.warning)

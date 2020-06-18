@@ -1,0 +1,147 @@
+---
+title: "Using provenance to debug errors and warnings"
+date: "June 11, 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using provenance to debug errors and warnings}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+Errors and warnings are a clear sign that a script is not working
+correctly.  While sometimes just seeing the error message is enough 
+to know how to fix the problem, that is not always the case.  
+`debug.error`, `debug.warning`, and `debug.type.changes` are three
+functions to help a user understand an error and what portions of 
+the script led to the error.
+
+## debug.error and debug.warning
+
+`debug.error` and `debug.warning` both provide information on the 
+backwards lineage of an error or warning message produced by R.
+The backward lineage contains the lines of code that led either
+directly or indirectly to computing a value that is used on the
+line that produced the error.
+
+## Example
+
+Let `myScript.R` be the following:
+```
+x <- 1
+y <- 2
+x <- a + x
+```
+
+Running this script will result in the following error since no
+value has been assigned to a:
+```
+Error in eval(annot, environ, NULL) : object 'a' not found
+```
+
+The result of `debug.error()` is:
+```
+Your Error: Error in eval(annot, environ, NULL): object 'a' not found
+
+Code that led to error message:
+
+  scriptNum scriptName startLine       code
+1         1 myScript.R         1     x <- 1
+2         1 myScript.R         3 x <- a + x
+```
+This shows that lines 1 and 3 may have contributed to the error.
+Notice that line 2 is not shown.  It is not part of the lineage of the statement that resulted in the error, since statement 3 neither uses `y`
+nor any other variable that itself depends on `y`.
+
+The data frame returned by `debug.error` contains the following columns:
+
+* `scriptNum` The script number the error is associated with.
+* `scriptName` The name of the script the error is associated with.
+* `startLine` The line number the error is reported on
+* `code` The line of code which resulted in the error.
+
+`debug.warning` similarly displays the lineage of a warning message,
+although it does not currently support the connection with Stack Overflow, which is discussed below.
+
+## Usage
+
+The function signature for `debug.error` is:
+```
+debug.error(stack.overflow = FALSE)
+```
+
+The parameter for this function is:
+
+* `stack.overflow` If TRUE, the error message will be searched for on Stack Overflow.
+
+This function may be called only after initialising the debugger using either 
+`prov.debug`, `prov.debug.run`, or `prov.debug.file`. For example:
+```
+prov.debug.run("myScript.R")
+debug.error()
+debug.error(stack.overflow = TRUE)
+```
+
+## Stack Overflow
+
+When TRUE is passed in for the stack.overflow parameter, in addition to
+returning the backwards lineage of the error, the error will also
+be searched on Stack Overflow.  The user will be presented with
+the titles of the top 6 matching search results.  The user can then
+select one or more of these and a browser window will open displaying
+the corresponding Stack Overflow page.
+
+The result of `debug.error(stack.overflow = TRUE)` is:
+```
+Your Error: Error in eval(annot, environ, NULL): object 'a' not found
+
+Code that led to error message:
+
+  scriptNum scriptName startLine       code
+1         1 myScript.R         1     x <- 1
+2         1 myScript.R         3 x <- a + x
+
+
+Results from StackOverflow:
+1. "Object not found error with ddply inside a function"                  
+2. "ggplot object not found error when adding layer with different data"  
+3. "Error in eval(expr, envir, enclos) : object not found"                
+4. "data.table throws \"object not found\" error"                         
+5. "Object not found error when passing model formula to another function"
+6. "Object not found error with ggplot2"                                  
+
+Choose a numeric value that matches your error the best or q to quit: 
+```
+
+
+## debug.type.changes
+
+`debug.type.changes` is also intended to help users resolve errors.  
+In this case, it is intended to help with a specific error in which
+a variable is bound to a new value and that new value has a different
+type.  Since R is not a type-checked language, these errors can 
+easily creep into a program and can be hard to debug.  For example,
+this can occur if a variable name gets reused for a different purpose,
+or if a vectorizing operation changes a variable from a single 
+scalar value to a long vector unexpectedly.
+
+Consider this simple example:
+```
+a <- 1
+<code omitted>
+a <- a + b
+```
+If the programmer thought that b was an integer and instead it was a 
+longer vector, they might
+have expected that they were simply adding two integers together.
+However, now the type of `a` has changed from a vector of length 1 to
+a vector as long as the vector referenced by b.
+
+Calling `debug.type.changes()` will show all variables whose type has 
+changed, what those values were, and where the changes occurred, as 
+shown here:
+
+```
+$a
+                          value container dimension    type       code  scriptNum    scriptName startLine
+1                             1    vector         1 numeric     a <- 1  1         1 typechanges.R         1
+2  2  3  4  5  6  7  8  9 10 11    vector        10 numeric a <- a + b  2         1 typechanges.R         3
+```

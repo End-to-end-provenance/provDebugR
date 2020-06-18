@@ -1,94 +1,158 @@
 <project
 	xmlns:if="ant:if"
-    xmlns:unless="ant:unless">
-    
+	xmlns:unless="ant:unless">
+
 	<loadproperties srcFile="DESCRIPTION" />
 	<property name="tarfile" value="provDebugR_${Version}.tar.gz" />
 
+	<!-- === BUILD ========================================================= -->
+
  	<target name="roxygenize">
-    	<exec executable="Rscript" >
-    		<arg line="-e roxygen2::roxygenise()"/>
-    	</exec>
+		<exec executable="Rscript" >
+			<arg line="-e roxygen2::roxygenise()"/>
+		</exec>
 	</target>
- 		
-    <target name="build" depends="roxygenize">
-    	<exec executable="R" >
-    		<arg line="CMD build --no-build-vignettes ."/>
-    	</exec>
-    </target>
 	
+	<target name="build" depends="roxygenize">
+		<exec executable="R" >
+			<arg line="CMD build ."/>
+		</exec>
+	</target>
+
+	<!-- === INSTALL ======================================================= -->
+
+	<target name="install" depends="check">
+		<exec executable="R" >
+			<arg line="CMD INSTALL ${tarfile}"/>
+		</exec>
+	</target>
+    
+	<target name="install-no-check" depends="build">
+		<exec executable="R" >
+			<arg line="CMD INSTALL ${tarfile}"/>
+		</exec>
+	</target>
+	
+	<!-- === CLEAN ========================================================= -->
+	
+	<target name="clean">
+		<delete dir="provDebugR.Rcheck" verbose="false"/>
+		<delete file="${tarfile}" verbose="false"/>
+	</target>
+	
+	<!-- === CREATE JSON =================================================== -->
+	
+	<!-- 
+		Creates up-to-date json files for testing.
+		Does not include sourced files.
+	-->
 	<target name="create-json">
-		<!-- Note that test3.R, source1.r, source2.r, source3.r 
-			 do not need to be here. They are sourced by
-		     other scripts but never run independently. 
-		 -->
+		
+		<!-- empty -->
 		<antcall target="json">
 			<param name="theFile" value="empty.R"/>
 		</antcall>
+		
+		<!-- errors, warnings -->
 		<antcall target="json">
-			<param name="theFile" value="specialChar.R"/>
+			<param name="theFile" value="exceptions.R"/>
 		</antcall>
+		
+		<!-- fromEnv -->
 		<antcall target="json">
-			<param name="theFile" value="test_exercise.R"/>
+			<param name="theFile" value="fromEnv.R"/>
+			<param name="console.mode" value="true"/>
 		</antcall>
+		<delete file="inst/plot.pdf"/>
+		
+		<!-- no data nodes -->
 		<antcall target="json">
-			<param name="theFile" value="test.R"/>
+			<param name="theFile" value="noDataNodes.R"/>
 		</antcall>
+		
+		<!-- no variables -->
 		<antcall target="json">
-			<param name="theFile" value="testErrors.R"/>
+			<param name="theFile" value="noVars.R"/>
 		</antcall>
+		
+		<!-- type changes -->
 		<antcall target="json">
-			<param name="theFile" value="testErrors2.R"/>
+			<param name="theFile" value="typeChanges.R"/>
 		</antcall>
+		<delete file="inst/Rplots.pdf"/>
+		
+		<!-- view -->
 		<antcall target="json">
-			<param name="theFile" value="stepin0.R"/>
+			<param name="theFile" value="view.R"/>
 		</antcall>
-		<antcall target="json">
-			<param name="theFile" value="stepin1.R"/>
-		</antcall>
-		<antcall target="json">
-			<param name="theFile" value="stepin3.R"/>
-		</antcall>
+		<delete file="inst/plot.pdf"/>
+		
 	</target>
 	
+	
 	<target name="json">
+		<!-- default: values of parameters to prov.run -->
+		<condition property="snapshot.size" value='0'>
+			<not><isset property="snapshot.size"/></not>
+		</condition>
+		
+		<!-- default: delete prov folder after it is created -->
+		<condition property="delete.dir" value="true">
+			<not><isset property="delete.dir"/></not>
+		</condition>
+		
+		<!-- default: console mode is false -->
+		<condition property="console.mode" value="false">
+			<not><isset property="console.mode"/></not>
+		</condition>
+		
+		<!-- run script -->
 		<echo message="${theFile}"/>
-		<exec executable="Rscript" dir="inst/testscripts">
-			<arg line="-e &quot;rdtLite::prov.run('${theFile}', prov.dir='.')&quot;"/>
+		<exec if:true="${console.mode}" executable="Rscript" dir="inst">
+			<arg line="testscripts/${theFile}"/>
 		</exec>
+		<exec unless:true="${console.mode}" executable="Rscript" dir="inst">
+			<arg line="-e &quot;rdtLite::prov.run('testscripts/${theFile}', prov.dir='testdata', snapshot.size=${snapshot.size})&quot;"/>
+		</exec>
+		
 		<basename property="scriptname" file="${theFile}" suffix="R" />
-		<move file="inst/testscripts/prov_${scriptname}/prov.json" tofile="inst/testdata/${scriptname}.json" />
-		<delete dir="inst/testscripts/prov_${scriptname}" />
+		
+		<!-- move prov.json file to testdata folder -->
+		<move if:true="${console.mode}" 
+			  file="inst/testdata/prov_console/prov.json" 
+			  tofile="inst/testdata/${scriptname}.json" 
+		/>
+		<move unless:true="${console.mode}"
+			  file="inst/testdata/prov_${scriptname}/prov.json" 
+			  tofile="inst/testdata/${scriptname}.json" 
+		/>
+		
+		<!-- delete prov directory if it is not needed anymore -->
+		<antcall if:true="${delete.dir}" target="delete.prov.dir"/>
 	</target>
+	
+	<!-- delete prov directory -->
+	<target name="delete.prov.dir">
+		<delete if:true="${console.mode}" 
+				dir="inst/testdata/prov_console"
+		/>
+		<delete unless:true="${console.mode}" 
+				dir="inst/testdata/prov_${scriptname}"
+		/>
+	</target>
+	
+	<!-- === CHECK ========================================================= -->
 
 	<target name="check" depends="build">
 		<exec executable="R" >
-  			<arg line="CMD check --no-vignettes --no-build-vignettes ${tarfile}"/>
-	   	</exec>
-    </target>
-
-    <target name="install" depends="check">
-        <exec executable="R" >
-  			<arg line="CMD INSTALL ${tarfile}"/>
+			<arg line="CMD check ${tarfile}"/>
 		</exec>
-    </target>
-    
-    <target name="install-no-check" depends="build">
-        <exec executable="R" >
-  			<arg line="CMD INSTALL ${tarfile}"/>
-		</exec>
-    </target>
-    
-    <target name="cran-check" depends="build,create-json">
-    	<exec executable="R" >
-    		<arg line="CMD check --as-cran --no-vignettes --no-build-vignettes ${tarfile}"/>
-    	</exec>
-    </target>
-
-    <target name="clean">
-        <delete dir="provDebugR.Rcheck" verbose="false"/>
-        <delete file="${tarfile}" verbose="false"/>
-    </target>
-
+	</target>
 	
+	<target name="cran-check" depends="build">
+		<exec executable="R" >
+			<arg line="CMD check --as-cran ${tarfile}"/>
+		</exec>
+	</target>
+
 </project>

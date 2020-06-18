@@ -1,9 +1,0 @@
-Name: Run w/ Debugging
-Description: Runs the active script with debugging options 
-Binding: run.script.addin
-Interactive: false
-
-Name: Debugging Gadget
-Description: Runs the active script with debugging gadget
-Binding: debug.gadget
-Interactive: true

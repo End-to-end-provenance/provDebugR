@@ -1,0 +1,5 @@
+"","X1.scriptNum","X1.scriptName","X1.startLine","X1.code"
+"1",1,"exceptions.R",3,"col1 <- c(1:11)"
+"2",2,"source_warning.r",1,"if(length(col1) > 10) {
+	col1 <- c(1:10)
+	warning(""length wa"

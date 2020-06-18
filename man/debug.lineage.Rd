@@ -2,32 +2,93 @@
 % Please edit documentation in R/debugLineage.R
 \name{debug.lineage}
 \alias{debug.lineage}
-\title{Lineage of variables}
+\title{The Lineage of a Variable/Data Node.}
 \usage{
-debug.lineage(..., forward = F)
+debug.lineage(
+  ...,
+  start.line = NA,
+  script.num = 1,
+  all = FALSE,
+  forward = FALSE
+)
 }
 \arguments{
-\item{...}{Variables to find the lineage for. Can be single elements or vectors/lists.}
+\item{...}{The names of data nodes to be queried.}
 
-\item{forward}{Determines whether to look for lineage forward in the script or backward}
+\item{start.line}{The line number of the queried data nodes. Optional.}
+
+\item{script.num}{The script number of the queried data nodes. 
+Defaults to script number 1 (main script).}
+
+\item{all}{If TRUE, this function returns the linages of all data node names.}
+
+\item{forward}{If TRUE, this function returns the forwards lineage 
+(how the data is used) instead of the backwards lineage
+(how the data was generated).}
 }
 \value{
-Returns one of two things. If no parameters were passed to the function,
-or the arguments passed in do not match variables, 
-then a vector of possible variables will be returned. If variables were passed to the
-function then a list of data frames is returned. Each data frame corresponds to one
-of the variables. The names of the list will correspond to the variable passed
+A list of data frames showing the forwards or backwards lineage of all
+        queried data nodes.
 }
 \description{
-This function will return either the lines that led up to a variable's creation
-or the other variables that the chosen variable was used to create
+For each data node queried, debug.lineage returns a data frame representing
+its forwards (how the data is used), or backwards (how the data was generated)
+lineage.
+Each data frame contains the following columns:
+\itemize{
+	\item scriptNum: The script number the data node is associated with.
+	\item scriptName: The name of the script the data node is associated with.
+	\item startLine: The line number the data node is associated with.
+	\item code: The line of code which used/produced the data node.
+}
+}
+\details{
+debug.lineage belongs to provDebugR, a debugger which utilises provenance collected
+post-execution to facilitate understanding of the execution and aid in debugging.
+
+This function may be used only after the debugger has been initialised using
+one its initialisation functions (listed below).
 }
 \examples{
 \dontrun{
-debug.init("example.R")
-debug.lineage("x")
-l <- c("x", "y", "foo", "bar")
-debug.lineage(l)
-debug.lineage(l, "z")
+prov.debug.run("test.R")
+debug.lineage(x)
+debug.lineage("x", start.line = 5, script.num = 2)
+debug.lineage("a", b, forward = TRUE)
+debug.lineage(all = TRUE)
 }
+
+}
+\seealso{
+provDebugR Initialisation Functions:
+
+\code{\link{prov.debug}}
+
+\code{\link{prov.debug.file}}
+
+\code{\link{prov.debug.run}}
+
+Other provDebugR Functions (non-initialisation):
+
+\code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
+             The error may be queried on StackOverflow.
+
+\code{\link{debug.line}}: Returns all immediate inputs and outputs
+             for the line(s) queried.
+
+\code{\link{debug.state}}: Returns the state at the line(s) queried,
+             after the line had been executed. The state is the list of all 
+             variables and their values in the environment at the queried line.
+
+\code{\link{debug.type.changes}}: Returns a data frame for each variable in
+             the execution containing the instances where the data type changed.
+
+\code{\link{debug.variable}}: Returns a data frame showing all instances
+             of the variable(s) queried.
+
+\code{\link{debug.view}}: Opens and displays the contents of each file or variable
+             or variable queried.
+
+\code{\link{debug.warning}}: Returns the backwards lineage of the queried
+             warning(s), if any.
 }
