@@ -251,3 +251,48 @@
 	
 	print(pos.args)
 }
+
+#' Prints a piece of data based on its type. Shortens long pieces of data.
+#'
+#' @param data The piece of data, such as a vector or data frame.
+#' 
+#' @return N/A
+#' @noRd
+.print.data.sparse <- function(data) {
+  # vector
+  if (data$container == "vector") {
+    cat(paste("vector, length", data$dimension))
+    
+    # only print first 20 characters
+    if(as.integer(data$dimension) > 20) {
+      cat(paste(substring(data$value, 1, 16), "..."))
+    }
+    else {
+      cat(data)
+    }
+  }
+}
+
+
+#' Print the number associated with each script.
+#'
+#' @return number of scripts present
+#' @noRd
+.print.script.nums <- function() {
+  # get scripts
+  scripts <- provParseR::get.scripts(.debug.env$prov)
+  num.scripts <- nrow(scripts)
+  
+  # if there are multiple scripts, print their associated script numbers
+  if (num.scripts > 1) {
+    cat("Script Numbers:\n")
+    lapply(c(1:num.scripts), function(i) {
+      cat(paste(i, "\t", scripts$script[i], "\n", sep=""))
+    })
+    
+    cat("\n")
+  }
+  
+  return(num.scripts)
+}
+

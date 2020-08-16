@@ -156,6 +156,9 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	}
 	
 	names(lineages) <- valid.queries$name
+	
+	.get.display.lineage(lineages)
+	
 	return(lineages)
 }
 
@@ -224,4 +227,45 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	# (this occurs for plots if dev.off is not called)
 	df <- df[!is.na(df$scriptNum), ]
 	return(df)
+}
+
+
+#' Prints user output.
+#'
+#' @param lineages TODO
+#'         
+#' @noRd
+.get.display.lineage <- function(lineages) {
+  # print script numbers, if multiple scripts
+  num.scripts <- .print.script.nums()
+
+  # print details for each query
+  lapply(c(1:length(lineages)), function(i) {
+    
+    # print variable name
+    cat(paste("Var:", names(lineages[i]), "\n"))
+    
+    # print lineage
+    lapply(c(1:nrow(lineages[[i]])), function(j) {
+      # print line of code up to first \n
+      # split code based on \n -- inefficient, ideal to just split on first \n **
+      tempCode <- strsplit(lineages[[i]]$code[j], "\n")
+      
+      # if only one script, print just line number
+      if (num.scripts == 1) {
+        cat(paste("\t", lineages[[i]]$startLine[j], ": ", sep=""))
+      }
+      else {
+        cat(paste("\t", lineages[[i]]$scriptNum[j], ", ",
+                  lineages[[i]]$startLine[j], ": ", sep=""))
+      }
+      
+      # print line of code, shortening if over 50 chars
+      if (nchar(tempCode[[1]][1]) > 50)
+        cat(paste("\t", substring(tempCode[[1]][1], 1, 47), "...\n"))
+      else
+        cat(paste("\t", tempCode[[1]][1], "\n"))
+
+    })
+  })
 }

@@ -105,6 +105,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	# STEP: get valid queries
 	# columns: p.id, startLine, scriptNum, scriptName, code
 	valid.queries <- .get.valid.query.line(pos.nodes, query)
+	# invalid.queries <- 
 	
 	# CASE: no valid queries
 	if(is.null(valid.queries)) {
@@ -140,6 +141,8 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 		# print out table of queries with no output
 		no.output <- valid.queries[remove.indices, -1]
 		
+		# TODO clean this up!!!!
+		
 		cat("No input or output data nodes associated with:\n")
 		print(no.output)
 		
@@ -159,13 +162,12 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 		output <- .remove.null(output)
 	}
 	
-	# STEP: Print out valid queries before returning output
-	cat('Results for:\n')
-	print(valid.queries[ , -1])
-	cat('\n')
-	
 	names(output) <- c(1:nrow(valid.queries))
-	return(output)
+	
+	# print results
+	.get.display.line(output, valid.queries)
+	
+	return(invisible(output))
 }
 
 #' Get all possible procedure nodes. 
@@ -361,4 +363,73 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	
 	# form data frame, return
 	return(.form.df(rows))
+}
+
+#' Prints user output.
+#'
+#' @param output TODO
+#' @param valid.queries TODO
+#'         
+#' @noRd
+.get.display.line <- function(output, valid.queries) {
+  # loop through and print all valid queries before any details
+  cat('Results for line(s): ')
+  lapply(c(1:nrow(valid.queries)), function(i) {
+    if (i == nrow(valid.queries)) {
+      # on last loop, no comma
+      cat(paste(valid.queries$startLine[i], "\n"))
+    } 
+    else {
+      cat(paste(valid.queries$startLine[i], ", ", sep=""))
+    }
+  })
+  
+  
+  # print details for each query
+  lapply(c(1:nrow(valid.queries)), function(i) {
+    # line information
+    cat(paste("\nLine ", valid.queries$startLine[i], " in ", 
+              valid.queries$scriptName[i], ": ", sep=""))
+    
+    # print line of code up to first \n
+    # split code based on \n -- inefficient, ideal to just split on first \n **
+    tempCode <- strsplit(valid.queries$code[i], "\n")
+
+    # print line of code, shortening if over 50 chars
+    if (nchar(tempCode[[1]][1]) > 75)
+      cat(paste(substring(tempCode[[1]][1], 1, 75), "...\n"))
+    else
+      cat(paste(tempCode[[1]][1], "\n", sep = ""))
+    
+    
+    # inputs
+    cat(paste("\t", "Inputs:", "\n"))
+    if ((length(output[[i]]$input) == 1) && is.na(output[[i]]$input)) {
+      cat("\t\tNone\n")
+    }
+    else {
+      lapply(c(1:nrow(output[[i]]$input)), function(j) {
+        # print each output line by line
+        cat(paste("\t\t", j, ". ", output[[i]]$input$name[j], "   ", 
+                  output[[i]]$input$value[j], "\n", sep=""))
+        print(paste("\t\t", j, ". ", output[[i]]$input$name[j], "   ", 
+                  output[[i]]$input$value[j], "\n", sep=""))
+      })
+    }
+    
+    # outputs
+    cat(paste("\t", "Outputs:", "\n"))
+    if ((length(output[[i]]$output) == 1) &&is.na(output[[i]]$output)) {
+      cat("\t\tNone\n")
+    }
+    else {
+      lapply(c(1:nrow(output[[i]]$output)), function(j) {
+        # print each output line by line
+        cat(paste("\t\t", j, ". ", output[[i]]$output$name[j], "   ", 
+                  output[[i]]$output$value[j], "\n", sep=""))
+      })
+    }
+  })
+  
+  
 }

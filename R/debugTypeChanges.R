@@ -115,16 +115,31 @@ debug.type.changes <- function(...)
 		
 		# number of nodes > 1 (can compare valTypes)
 		# keep indices of nodes with type change
-		type.changes <- c()
+		type.changes <- 1 # start with just the first node
 		
-		lapply(c(2:nrow(nodes)), function(i) {
-			if(nodes$valType[i] != nodes$valType[i-1])
-				type.changes <<- append(type.changes, c(i-1, i))
+		val.type.changes <- lapply(c(2:nrow(nodes)), function(i) {
+		  # if(nodes$valType[i] != nodes$valType[i-1])
+		  # 	type.changes <<- append(type.changes, c(i-1, i))
+		  
+		  # check if the type changed in any way
+		  if (nodes$valType[i] != nodes$valType[i-1]) {
+		    type.changes <<- append(type.changes, i)
+		    
+		    val.type.changes <- .get.val.type.changes(nodes, i)
+		    
+		    return(val.type.changes)
+		  }
 		})
 		
+		# make one-dimensional list
+		val.type.changes <- unlist(val.type.changes)
+		changes <- "NA" # first value is NA - no changes to the type
+		changes <- append(changes, val.type.changes)
+		
+		# remove duplicates
 		type.changes <- unique(type.changes)
 		
-		if(length(type.changes) == 0) {
+		if(length(type.changes) <= 1) {
 			remove.indices <<- append(remove.indices, i)
 			return(NULL)
 		}
@@ -132,9 +147,10 @@ debug.type.changes <- function(...)
 		# extract specified nodes with type changes
 		nodes <- nodes[type.changes, ]
 		
-		return(.get.output.type.changes(nodes))
+		return(.get.fields.type.changes(nodes, changes))
 	})
 	
+	# remove vars without type changes
 	if(length(remove.indices) > 0) {
 		vars.names <- vars.names[-remove.indices]
 		vars <- vars[-remove.indices]
@@ -166,18 +182,21 @@ debug.type.changes <- function(...)
 		names(vars) <- valid.queries
 	}
 	
-	return(vars)
+	.get.display.type.changes(vars)
+	
+	return(invisible(vars))
 }
 
-#' Forms user output.
+#' Generates fields that will be used in user output.
 #' columns: value, container, dimension, type, code, scriptNum, scriptName, startLine
 #'
 #' @param data.nodes The data nodes to be displayed to the user.
+#' @param changes Specifies what part of the type changed.
 #'
 #' @return The data frame of type changes to be returned to the user.
 #'         columns: value, container, dimension, type, code, scriptNum, scriptName, startLine
 #' @noRd
-.get.output.type.changes <- function(data.nodes)
+.get.fields.type.changes <- function(data.nodes, changes)
 {
 	# script num, line num, full code, value, valType
 	# for each data node (row), get required fields for output
@@ -199,12 +218,150 @@ debug.type.changes <- function(...)
 											 c("name", "scriptNum", "scriptName", "startLine")]
 		
 		# combine fields
-		fields <- cbind(data.value, val.type, proc.fields, stringsAsFactors = FALSE)
+		fields <- cbind(data.value, val.type, proc.fields, changes[i],
+		                stringsAsFactors = FALSE)
 		names(fields) <- c("value", 
 						   "container", "dimension", "type", 
-						   "code", "scriptNum", "scriptName", "startLine")
+						   "code", "scriptNum", "scriptName", "startLine", "changes")
 		return(fields)
 	})
 	
 	return(.form.df(rows))
+}
+
+#' Determines the type or types of changes that occurred for a data node at a 
+#' given point in the script execution.
+#'
+#' @param nodes The list of data nodes for a particular variable.
+#' @param i Index determining which node in the list is currently being 
+#' examined.
+#'    
+#' @return A character string containing some combination of c, d, and t for
+#' container, dimension, and type-related changes, respectively.
+#'         
+#' @noRd
+.get.val.type.changes <- function(nodes, i) {
+  # initialize values to false (no changes occurred)
+  val.type.changes <- c()
+  
+  # split the valType into its components
+  val.type.current <- provParseR::get.val.type(.debug.env$prov, node.id = nodes$id[i])
+  val.type.prev <- provParseR::get.val.type(.debug.env$prov, node.id = nodes$id[i - 1]) 
+  # TODO more efficient way to do this?
+  
+  # check if the change was from container
+  if (.get.val.type.changes.helper(val.type.current, val.type.prev, "container"))
+    val.type.changes <- paste(val.type.changes, "c", sep = "")
+  
+  # check if change was from dimension
+  if (.get.val.type.changes.helper(val.type.current, val.type.prev, "dimension"))
+    val.type.changes <- paste(val.type.changes, "d", sep = "")
+  
+  # check if change was from type
+  if (.get.val.type.changes.helper(val.type.current, val.type.prev, "type"))
+    val.type.changes <- paste(val.type.changes, "t", sep = "")
+  
+  # cat("the changes are in: ")
+  # print(val.type.changes)
+  
+  return(val.type.changes)
+}
+
+#' A helper function for .get.val.type.changes that checks if a given type
+#' change occurred.
+#'
+#' @param val.type.current The valType of the node currently being examined. 
+#' @param val.type.prev The valType of the previous node, compared to the 
+#' current one to determine if any changes occurred.
+#' @param component The part of the valType being compared between the two 
+#' nodes. Can be container, dimension, or type.
+#'    
+#' @return TRUE if the component changed and FALSE otherwise.
+#'         
+#' @noRd
+.get.val.type.changes.helper <- function(val.type.current, val.type.prev, component) {
+  changed <- FALSE
+  
+  # print(paste(val.type.current[[component]], val.type.prev[[component]]))
+  
+  if (is.na(val.type.current[[component]]) || is.na(val.type.prev[[component]])) {
+    # if they are not both NA, then a component change occurred
+    if (!(is.na(val.type.current[[component]]) && is.na(val.type.prev[[component]]))) {
+      changed <- TRUE
+    }
+  }
+  else if (val.type.current[[component]] != val.type.prev[[component]]) {
+    # cat("we got inside\n")
+    
+    # a change occurred and neither is NA
+    changed <- TRUE
+  }
+  
+  return(changed)
+}
+
+#' Prints user output.
+#'
+#' @param type.changes The list of all changes that occurred in the script.
+#' @return String that contains all type changes in easy to read format.
+#'         
+#' @noRd
+.get.display.type.changes <- function(type.changes) {
+  # loop through each element, printing relevant information
+  lapply(c(1:length(type.changes)), function(i) {
+    var <- type.changes[[i]]
+    
+    cat(paste("The type of variable ", names(type.changes[i]), " has changed. ",
+              names(type.changes[i]), " was declared on line ", var$startLine[1],
+              " in ", var$scriptName[1], ".\n", sep = ""))
+    
+    lapply(c(2:nrow(var)), function(j) {
+      cat(paste("\t", j-1, ": ", var$scriptName[j], ", line ", 
+                var$startLine[j], "\n", sep = ""))
+      
+      # if there were container changes, print
+      if (.are.changes("c", var$changes[j])) {
+        cat(paste("\t\tcontainer changed to: ", var$container[j],
+                  "\n\t\tfrom:\t\t",  "      ", var$container[j-1], "\n",
+                  sep = ""))
+      }
+      
+      # if there were dimension changes, print
+      if (.are.changes("d", var$changes[j])) {
+        cat(paste("\t\tdimension changed to: ", var$dimension[j],
+                  "\n\t\tfrom:\t\t", "      ", var$dimension[j-1], "\n",
+                  sep = ""))
+      }
+      
+      # if there were type changes, print
+      if (.are.changes("t", var$changes[j])) {
+        cat(paste("\t\telement type changed to: ", var$type[j],
+                  "\n\t\tfrom:\t\t\t", " ", var$type[j-1], "\n",
+                  sep = ""))
+      }
+      
+      if (nchar(var$code[j]) > 50)
+        cat(paste("\t\tcode excerpt:", substring(var$code[j], 1, 47), "...\n"))
+      else
+        cat(paste("\t\tcode excerpt:", var$code[j], "\n"))
+    })
+  })
+}
+
+#' A helper function that tests if a certain type change occurred.
+#'
+#' @param invalid.names The list of any variables in the script with invalid 
+#' names.
+#' 
+#' @return TRUE if change.type occurred, FALSE if not.
+#'         
+#' @noRd
+.are.changes <- function(change.type, changes.value) {
+  are.changes <- FALSE
+  
+  # check if there was this type of change
+  if (!identical(grep(change.type, changes.value), integer(0)))
+    are.changes <- TRUE
+  
+  return(are.changes)
 }
