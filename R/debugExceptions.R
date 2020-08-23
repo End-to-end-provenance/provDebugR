@@ -112,9 +112,7 @@ debug.error <- function(stack.overflow = FALSE)
 	if(stack.overflow)
 	{
 		# display lineage before connecting to StackOverflow
-		cat("Code that led to error message:\n\n")
-		print(lineage)
-		cat("\n")
+	  .print.error(lineage)
 		
 		tryCatch({
 			.search.stackoverflow(message)
@@ -123,10 +121,11 @@ debug.error <- function(stack.overflow = FALSE)
 			stop(e$message, call. = FALSE)
 		})
 	}
-	
-	# return
-	cat("Code that led to error message:\n\n")
-	return(lineage)
+	else {
+	  .print.error(lineage)
+	  
+	}
+	return(invisible(lineage))
 }
 
 #' Searches the error on Stack Overflow.
@@ -316,7 +315,9 @@ debug.warning <- function(..., all = FALSE)
 	})
 	
 	names(output) <- row.names(valid.queries)
-	return(output)
+	
+	.print.lineage(output, warning = TRUE, warning.nodes = warning.nodes)
+	return(invisible(output))
 }
 
 #' Returns a table of valid warning queries.
@@ -381,4 +382,36 @@ debug.warning <- function(..., all = FALSE)
 {
 	.print.pos.options(warning.nodes)
 	cat("\nPass the corresponding numeric value to the function for info on that warning.\n")
+}
+
+#' Prints information to the console about the error that occurred.
+#'
+#' @param lineages list containing lines of code that led up to the error.
+#'         
+#' @noRd
+.print.error <- function(lineages) {
+  # print script numbers, if multiple scripts
+  num.scripts <- .print.script.nums()
+  
+  # print details for each query
+  cat("Code that led to error message:\n")
+  lapply(c(1:nrow(lineages)), function(j) {
+    # if only one script, print just line number
+    if (num.scripts == 1) {
+      cat(paste("\t", lineages$startLine[j], ": ", sep=""))
+    }
+    else {
+      cat(paste("\t", lineages$scriptNum[j], ", ",
+                lineages$startLine[j], ": ", sep=""))
+    }
+    
+    # split line of code by \n
+    tempCode <- strsplit(lineages$code[j], "\n")
+    
+    # print line of code up to first \n, shortening if over 50 chars
+    if (nchar(tempCode[[1]][1]) > 50)
+      cat(paste("\t", substring(tempCode[[1]][1], 1, 47), " ...\n"))
+    else
+      cat(paste("\t", tempCode[[1]][1], "\n"))
+  })
 }

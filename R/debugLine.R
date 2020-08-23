@@ -165,7 +165,7 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	names(output) <- c(1:nrow(valid.queries))
 	
 	# print results
-	.get.display.line(output, valid.queries)
+	.print.line(output, valid.queries)
 	
 	return(invisible(output))
 }
@@ -365,13 +365,16 @@ debug.line <- function(..., script.num = 1, all = FALSE)
 	return(.form.df(rows))
 }
 
-#' Prints user output.
+#' Prints all inputs and outputs for the line queried.
 #'
-#' @param output TODO
-#' @param valid.queries TODO
+#' @param output list of all inputs and outputs for each line.
+#' @param valid.queries list of all queries that corresponded to lines of code.
 #'         
 #' @noRd
-.get.display.line <- function(output, valid.queries) {
+.print.line <- function(output, valid.queries) {
+  # print script numbers, if multiple scripts
+  num.scripts <- .print.script.nums()
+  
   # loop through and print all valid queries before any details
   cat('Results for line(s): ')
   lapply(c(1:nrow(valid.queries)), function(i) {
@@ -388,14 +391,19 @@ debug.line <- function(..., script.num = 1, all = FALSE)
   # print details for each query
   lapply(c(1:nrow(valid.queries)), function(i) {
     # line information
-    cat(paste("\nLine ", valid.queries$startLine[i], " in ", 
-              valid.queries$scriptName[i], ": ", sep=""))
-    
-    # print line of code up to first \n
-    # split code based on \n -- inefficient, ideal to just split on first \n **
+    # if only one script, print just line number
+    if (num.scripts == 1) {
+      cat(paste("\n", valid.queries$startLine[i], ": ", sep=""))
+    }
+    else {
+      cat(paste("\n", valid.queries$scriptNum[i], ", ",
+                valid.queries$startLine[i], ": ", sep=""))
+    }
+
+    # split code based on \n
     tempCode <- strsplit(valid.queries$code[i], "\n")
 
-    # print line of code, shortening if over 50 chars
+    # print line of code up to first \n, shortening if over 50 chars
     if (nchar(tempCode[[1]][1]) > 75)
       cat(paste(substring(tempCode[[1]][1], 1, 75), "...\n"))
     else
@@ -411,8 +419,6 @@ debug.line <- function(..., script.num = 1, all = FALSE)
       lapply(c(1:nrow(output[[i]]$input)), function(j) {
         # print each output line by line
         cat(paste("\t\t", j, ". ", output[[i]]$input$name[j], "   ", 
-                  output[[i]]$input$value[j], "\n", sep=""))
-        print(paste("\t\t", j, ". ", output[[i]]$input$name[j], "   ", 
                   output[[i]]$input$value[j], "\n", sep=""))
       })
     }

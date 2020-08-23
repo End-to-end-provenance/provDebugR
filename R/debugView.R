@@ -56,7 +56,7 @@
 #' }
 #'
 #' @export
-#' @rdname debug.line
+#' @rdname debug.view
 debug.view <- function(..., start.line = "all", script.num = "all")
 {
 	# CASE: no provenance

@@ -45,6 +45,7 @@
 #'                   if no line numbers are given.
 #'                   If script.num == "all", all possible script numbers will be queried.
 #'                   Defaults to script number 1 (main script).
+#' @param showType If TRUE, variable container, dimension, and type are displayed.
 #'
 #' @return debug.state returns a list of data frames of states for each queried line number, or the state
 #'         at the end of execution if no parameters are given to the function. 
@@ -60,7 +61,7 @@
 #'
 #' @export
 #' @rdname debug.line
-debug.state <- function(..., script.num = 1)
+debug.state <- function(..., script.num = 1, showType = FALSE)
 {
   # CASE: no provenance
   if(!.debug.env$has.graph)
@@ -146,13 +147,10 @@ debug.state <- function(..., script.num = 1)
   
   # If not directly showing the end of execution, print table of queries with state.
   if(!end.of.execution) {
-    .get.display.state(states, valid.queries)
-    # cat("Results for:\n")
-    # print(valid.queries)
-    # cat('\n')
+    .print.state(states, valid.queries, showType)
   }
   else {
-    .get.display.state(states)
+    .print.state(states, showType = showType)
   }
   
   # Label output with indices of queries, return.
@@ -430,23 +428,49 @@ debug.state <- function(..., script.num = 1)
 	return(.form.df(rows))
 }
 
-#' Prints user output.
+#' Prints the state of all variables at a particular line or lines.
 #'
-#' @param states TODO
-#' @param valid.queries TODO
+#' @param states the list of variable states for all lines queried.
+#' @param valid.queries the list of all valid lines from the user's query.
+#' @param showType if TRUE, then the container, dimension, and type of variables
+#'                 are also printed.
 #'
 #' @noRd
-.get.display.state <- function(states, valid.queries = NA) {
+.print.state <- function(states, valid.queries = NA, showType) {
   # print script numbers, if multiple scripts
   num.scripts <- .print.script.nums()
   
+  # check if this is the state at the end of execution
   if(length(valid.queries) == 1 && is.na(valid.queries)) {
     cat("No valid queries.\nState at the end of execution:\n")
     
-    print(states[-7])
-    cat("\n")
+    # print state
+    lapply(c(1:nrow(states[[1]])), function(j) {
+      # if only one script, print just line number
+      if (num.scripts == 1) {
+        cat(paste("\t", states[[1]]$startLine[j], ": ", sep=""))
+      }
+      else {
+        cat(paste("\t", states[[1]]$scriptNum[j], ", ",
+                  states[[1]]$startLine[j], ": ", sep=""))
+      }
+      
+      # print variable name and value
+      if (nchar(states[[1]]$value[j]) > 50)
+        cat(paste("\t", states[[1]]$name[j], "\t", 
+                  substring(states[[1]]$value[j], 1, 47), " ...\n", sep = ""))
+      else
+        cat(paste("\t", states[[1]]$name[j], "\t", states[[1]]$value[j], "\n", 
+                  sep = ""))
+      
+      
+      # print valType info, if desired
+      if (showType == TRUE) {
+        print(states[[1]][j, c(3:5)], right = FALSE)
+      }
+      
+    })
     
-    # TODO - case where multiple scripts
   }
   else {
     # loop through and print all valid queries before any details
@@ -462,6 +486,7 @@ debug.state <- function(..., script.num = 1)
       }
     })
     
+    # print variable details
     lapply(c(1:nrow(valid.queries)), function(i) {
       # line information
       # if only one script, print just line number
@@ -472,8 +497,37 @@ debug.state <- function(..., script.num = 1)
         cat(paste("Script ", valid.queries$scriptNum[i], ", line ",
                   valid.queries$startLine[i], "\n", sep=""))
       }
-      print(states[[i]][-7], row.names = FALSE)
-      cat("\n")
+      
+      # print state for each valid line
+      lapply(c(1:nrow(states[[i]])), function(j) {
+        # if only one script, print just line number
+        if (num.scripts == 1) {
+          cat(paste("\t", states[[i]]$startLine[j], ": ", sep=""))
+        }
+        else {
+          cat(paste("\t", states[[i]]$scriptNum[j], ", ",
+                    states[[i]]$startLine[j], ": ", sep=""))
+        }
+        
+        # print variable name and value
+        if (nchar(states[[i]]$value[j]) > 50)
+          cat(paste("\t",states[[i]]$name[j], "\t", 
+                    substring(states[[i]]$value[j], 1, 47), " ...\n", sep = ""))
+        else
+          cat(paste("\t", states[[i]]$name[j], "\t", states[[i]]$value[j], "\n", 
+                    sep = ""))
+        
+        # print valType info, if desired
+        if (showType == TRUE) {
+          print(states[[i]][j, c(3:5)], right = FALSE)
+        }
+        
+      })
+      
+      cat("\n") # add an extra space between iterations
     })
   }
+  if (showType == FALSE)
+    cat("\nRerun with showType = TRUE to see more detailed variable information.
+        \n")
 }

@@ -182,7 +182,7 @@ debug.type.changes <- function(...)
 		names(vars) <- valid.queries
 	}
 	
-	.get.display.type.changes(vars)
+	.print.type.changes(vars)
 	
 	return(invisible(vars))
 }
@@ -306,7 +306,7 @@ debug.type.changes <- function(...)
 #' @return String that contains all type changes in easy to read format.
 #'         
 #' @noRd
-.get.display.type.changes <- function(type.changes) {
+.print.type.changes <- function(type.changes) {
   # loop through each element, printing relevant information
   lapply(c(1:length(type.changes)), function(i) {
     var <- type.changes[[i]]
