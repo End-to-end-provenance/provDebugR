@@ -45,6 +45,7 @@
 #'                   if no line numbers are given.
 #'                   If script.num == "all", all possible script numbers will be queried.
 #'                   Defaults to script number 1 (main script).
+#' @param showType If TRUE, variable container, dimension, and type are displayed.
 #'
 #' @return debug.state returns a list of data frames of states for each queried line number, or the state
 #'         at the end of execution if no parameters are given to the function. 
@@ -60,98 +61,101 @@
 #'
 #' @export
 #' @rdname debug.line
-debug.state <- function(..., script.num = 1)
+debug.state <- function(..., script.num = 1, showType = FALSE)
 {
-	# CASE: no provenance
-	if(!.debug.env$has.graph)
-		stop("There is no provenance.")
-	
-	# STEP: get all possible options
-	# columns: p.id, startLine, scriptNum, scriptName, code
-	pos.nodes <- .get.pos.line(.debug.env$proc.nodes)
-	
-	if(is.null(pos.nodes)) {
-		cat("There are no lines.\n")
-		return(invisible(NULL))
-	}
-	
-	# STEP: get user's query
-	# columns: startLine, scriptNum
-	query <- .get.query.line(..., script.num = script.num, all = FALSE)
-	
-	# STEP: get valid queries
-	# columns: p.id, startLine, scriptNum, scriptName, code
-	valid.queries <- .get.valid.query.state(pos.nodes, query)
-	
-	# If valid.queries is null, that means there are no valid queries or the 
-	# query itself is empty. In this case, we want to show the state at the 
-	# end of execution. We want to keep a variable to track that the end of 
-	# execution is automatically shown.
-	end.of.execution <- FALSE
-	
-	if(is.null(valid.queries)) {
-		end.of.execution <- TRUE
-		cat("No valid queries.\nState at the end of execution:\n")
-		valid.queries <- pos.nodes[nrow(pos.nodes), c("startLine","scriptNum")]
-	}
-	
-	# STEP: Get state for each query
-	# Keep a vector to keep track of indicies where there are queries with no state
-	# There should be much fewer cases of no state than those with state.
-	no.state <- c()
-	
-	states <- lapply(c(1:nrow(valid.queries)), function(i)
-	{
-		# Get the closest procedure node with line number <= queried line number
-		# this could be the procedure from a previous script,
-		# or 'p0' indicating the beginning of the execution.
-		query.line <- .to.int(valid.queries$startLine[i])
-		query.script <- .to.int(valid.queries$scriptNum[i])
-		
-		p.id <- .get.closest.proc(pos.nodes, query.line, query.script)
-		
-		# loop up proc until get one with output node that is a variable
-		d.id <- .get.last.var(pos.nodes, p.id)
-		
-		# get state
-		d.list <- .get.state(d.id)
-		
-		# case: no state
-		if(is.null(d.list)) {
-			no.state <<- append(no.state, i)
-			
-			cat("There is no state for line ", query.line, " in script ", 
-				query.script, ".\n", sep='')
-			return(invisible(NULL))
-		}
-		
-		# get output for all variables in the state
-		return(.get.output.state(pos.nodes, d.list))
-	})
-	
-	# Remove, if any, elements with no state.
-	if(length(no.state) > 0) {
-		valid.queries <- valid.queries[-no.state, ]
-		states <- states[-no.state]
-	}
-	
-	# CASE: no state to display at all
-	if(length(states) == 0)
-		return(invisible(NULL))
-	
-	# re-number rows of the table of queries
-	row.names(valid.queries) <- c(1:nrow(valid.queries))
-	
-	# If not directly showing the end of execution, print table of queries with state.
-	if(!end.of.execution) {
-		cat("Results for:\n")
-		print(valid.queries)
-		cat('\n')
-	}
-	
-	# Label output with indices of queries, return.
-	names(states) <- row.names(valid.queries)
-	return(states)
+  # CASE: no provenance
+  if(!.debug.env$has.graph)
+    stop("There is no provenance.")
+  
+  # STEP: get all possible options
+  # columns: p.id, startLine, scriptNum, scriptName, code
+  pos.nodes <- .get.pos.line(.debug.env$proc.nodes)
+  
+  if(is.null(pos.nodes)) {
+    cat("There are no lines.\n")
+    return(invisible(NULL))
+  }
+  
+  # STEP: get user's query
+  # columns: startLine, scriptNum
+  query <- .get.query.line(..., script.num = script.num, all = FALSE)
+  
+  # STEP: get valid queries
+  # columns: p.id, startLine, scriptNum, scriptName, code
+  valid.queries <- .get.valid.query.state(pos.nodes, query)
+  
+  # If valid.queries is null, that means there are no valid queries or the 
+  # query itself is empty. In this case, we want to show the state at the 
+  # end of execution. We want to keep a variable to track that the end of 
+  # execution is automatically shown.
+  end.of.execution <- FALSE
+  
+  if(is.null(valid.queries)) {
+    end.of.execution <- TRUE
+    #cat("No valid queries.\nState at the end of execution:\n")
+    valid.queries <- pos.nodes[nrow(pos.nodes), c("startLine","scriptNum")]
+  }
+  
+  # STEP: Get state for each query
+  # Keep a vector to keep track of indicies where there are queries with no state
+  # There should be much fewer cases of no state than those with state.
+  no.state <- c()
+  
+  states <- lapply(c(1:nrow(valid.queries)), function(i)
+  {
+    # Get the closest procedure node with line number <= queried line number
+    # this could be the procedure from a previous script,
+    # or 'p0' indicating the beginning of the execution.
+    query.line <- .to.int(valid.queries$startLine[i])
+    query.script <- .to.int(valid.queries$scriptNum[i])
+    
+    p.id <- .get.closest.proc(pos.nodes, query.line, query.script)
+    
+    # loop up proc until get one with output node that is a variable
+    d.id <- .get.last.var(pos.nodes, p.id)
+    
+    # get state
+    d.list <- .get.state(d.id)
+    
+    # case: no state
+    if(is.null(d.list)) {
+      no.state <<- append(no.state, i)
+      
+      cat("There is no state for line ", query.line, " in script ", 
+          query.script, ".\n", sep='')
+      return(invisible(NULL))
+    }
+    
+    # get output for all variables in the state
+    return(.get.output.state(pos.nodes, d.list))
+  })
+  
+  # Remove, if any, elements with no state.
+  if(length(no.state) > 0) {
+    valid.queries <- valid.queries[-no.state, ]
+    states <- states[-no.state]
+  }
+  
+  # CASE: no state to display at all
+  if(length(states) == 0)
+    return(invisible(NULL))
+  
+  # re-number rows of the table of queries
+  row.names(valid.queries) <- c(1:nrow(valid.queries))
+  
+  names(states) <- row.names(valid.queries)
+  
+  # If not directly showing the end of execution, print table of queries with state.
+  if(!end.of.execution) {
+    .print.state(states, valid.queries, showType)
+  }
+  else {
+    .print.state(states, showType = showType)
+  }
+  
+  # Label output with indices of queries, return.
+  
+  return(invisible(states))
 }
 
 #' Returns a table of valid queries.
@@ -422,4 +426,108 @@ debug.state <- function(..., script.num = 1)
 	
 	# Combine rows into a data frame.
 	return(.form.df(rows))
+}
+
+#' Prints the state of all variables at a particular line or lines.
+#'
+#' @param states the list of variable states for all lines queried.
+#' @param valid.queries the list of all valid lines from the user's query.
+#' @param showType if TRUE, then the container, dimension, and type of variables
+#'                 are also printed.
+#'
+#' @noRd
+.print.state <- function(states, valid.queries = NA, showType) {
+  # print script numbers, if multiple scripts
+  num.scripts <- .print.script.nums()
+  
+  # check if this is the state at the end of execution
+  if(length(valid.queries) == 1 && is.na(valid.queries)) {
+    cat("No valid queries.\nState at the end of execution:\n")
+    
+    # print state
+    lapply(c(1:nrow(states[[1]])), function(j) {
+      # if only one script, print just line number
+      if (num.scripts == 1) {
+        cat(paste("\t", states[[1]]$startLine[j], ": ", sep=""))
+      }
+      else {
+        cat(paste("\t", states[[1]]$scriptNum[j], ", ",
+                  states[[1]]$startLine[j], ": ", sep=""))
+      }
+      
+      # print variable name and value
+      if (nchar(states[[1]]$value[j]) > 50)
+        cat(paste("\t", states[[1]]$name[j], "\t", 
+                  substring(states[[1]]$value[j], 1, 47), " ...\n", sep = ""))
+      else
+        cat(paste("\t", states[[1]]$name[j], "\t", states[[1]]$value[j], "\n", 
+                  sep = ""))
+      
+      
+      # print valType info, if desired
+      if (showType == TRUE) {
+        print(states[[1]][j, c(3:5)], right = FALSE)
+      }
+      
+    })
+    
+  }
+  else {
+    # loop through and print all valid queries before any details
+    cat('Results for line(s): ')
+
+    lapply(c(1:nrow(valid.queries)), function(i) {
+      if (i == nrow(valid.queries)) {
+        # on last loop, no comma
+        cat(paste(valid.queries$startLine[i], "\n\n"))
+      }
+      else {
+        cat(paste(valid.queries$startLine[i], ", ", sep=""))
+      }
+    })
+    
+    # print variable details
+    lapply(c(1:nrow(valid.queries)), function(i) {
+      # line information
+      # if only one script, print just line number
+      if (num.scripts == 1) {
+        cat(paste("Line", valid.queries$startLine[i], "\n"))
+      }
+      else {
+        cat(paste("Script ", valid.queries$scriptNum[i], ", line ",
+                  valid.queries$startLine[i], "\n", sep=""))
+      }
+      
+      # print state for each valid line
+      lapply(c(1:nrow(states[[i]])), function(j) {
+        # if only one script, print just line number
+        if (num.scripts == 1) {
+          cat(paste("\t", states[[i]]$startLine[j], ": ", sep=""))
+        }
+        else {
+          cat(paste("\t", states[[i]]$scriptNum[j], ", ",
+                    states[[i]]$startLine[j], ": ", sep=""))
+        }
+        
+        # print variable name and value
+        if (nchar(states[[i]]$value[j]) > 50)
+          cat(paste("\t",states[[i]]$name[j], "\t", 
+                    substring(states[[i]]$value[j], 1, 47), " ...\n", sep = ""))
+        else
+          cat(paste("\t", states[[i]]$name[j], "\t", states[[i]]$value[j], "\n", 
+                    sep = ""))
+        
+        # print valType info, if desired
+        if (showType == TRUE) {
+          print(states[[i]][j, c(3:5)], right = FALSE)
+        }
+        
+      })
+      
+      cat("\n") # add an extra space between iterations
+    })
+  }
+  if (showType == FALSE)
+    cat("\nRerun with showType = TRUE to see more detailed variable information.
+        \n")
 }

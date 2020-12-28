@@ -156,7 +156,10 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	}
 	
 	names(lineages) <- valid.queries$name
-	return(lineages)
+	
+	.print.lineage(lineages)
+	
+	return(invisible(lineages))
 }
 
 #' Get the lineage of the specified data node.
@@ -224,4 +227,52 @@ debug.lineage <- function(..., start.line = NA, script.num = 1, all = FALSE, for
 	# (this occurs for plots if dev.off is not called)
 	df <- df[!is.na(df$scriptNum), ]
 	return(df)
+}
+
+
+#' Prints lineage information to the console.
+#'
+#' @param lineages list containing all code leading up to a variable or warning.
+#' @param warning if TRUE, then information printed is about a warning thrown
+#'                by R.
+#' @param warning.nodes used if warning is TRUE to print the value of the 
+#'                      warning.
+#'         
+#' @noRd
+.print.lineage <- function(lineages, warning = FALSE, warning.nodes = NA) {
+  # print script numbers, if multiple scripts
+  num.scripts <- .print.script.nums()
+  
+  # print details for each query
+  lapply(c(1:length(lineages)), function(i) {
+    
+    # print variable name, or warning number
+    if (warning == TRUE)
+      cat(paste("Warning:", warning.nodes$value[i], "\n"))
+    else
+      cat(paste("Var", names(lineages[i]), "\n"))
+    
+    # print lineage
+    lapply(c(1:nrow(lineages[[i]])), function(j) {
+      # if only one script, print just line number
+      if (num.scripts == 1) {
+        cat(paste("\t", lineages[[i]]$startLine[j], ": ", sep=""))
+      }
+      else {
+        cat(paste("\t", lineages[[i]]$scriptNum[j], ", ",
+                  lineages[[i]]$startLine[j], ": ", sep=""))
+      }
+      
+      # split line of code by \n
+      tempCode <- strsplit(lineages[[i]]$code[j], "\n")
+      
+      # print line of code up to first \n, shortening if over 50 chars
+      if (nchar(tempCode[[1]][1]) > 50)
+        cat(paste("\t", substring(tempCode[[1]][1], 1, 47), "...\n"))
+      else
+        cat(paste("\t", tempCode[[1]][1], "\n"))
+    })
+    
+    cat("\n") # add an extra space between iterations
+  })
 }

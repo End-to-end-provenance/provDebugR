@@ -45,6 +45,8 @@
 #' @param script.num The script number of the queried variables. Defaults to "all".
 #' @param all If TRUE, results for all variables of the specified script will be
 #'            returned.
+#' @param showType If TRUE, variable container, dimension, and type are displayed.
+#' 
 #'
 #' @return debug.variable returns a list of data frames showing all instances of each variable queried.
 #'
@@ -59,7 +61,8 @@
 #'
 #' @export
 #' @rdname debug.line
-debug.variable <- function(..., val.type = "all", script.num = "all", all = FALSE)
+debug.variable <- function(..., val.type = "all", script.num = "all", 
+                           all = FALSE, showType = FALSE)
 {
 	# CASE: no provenance
 	if(!.debug.env$has.graph)
@@ -106,7 +109,10 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 	})
 	
 	names(output) <- valid.queries$name
-	return(output)
+	
+	.print.variable(output, showType)
+	
+	return(invisible(output))
 }
 
 #' For each possible data node find its corresponding procedure node.
@@ -448,4 +454,53 @@ debug.variable <- function(..., val.type = "all", script.num = "all", all = FALS
 	
 	# STEP: bind rows into data frame, return
 	return(.form.df(rows))
+}
+
+
+#' Prints the lineage of each variable queried.
+#'
+#' @param output list of variable lineage for each valid variable queried.
+#' @param showType if TRUE, container, dimension, and type information for each
+#'                 variable is shown.
+#'         
+#' @noRd
+.print.variable <- function(output, showType) {
+  # print script numbers, if multiple scripts
+  num.scripts <- .print.script.nums()
+  
+  # print details for each query
+  lapply(c(1:length(output)), function(i) {
+    
+    # print variable name
+    cat(paste("Var:", names(output[i]), "\n"))
+    
+    # print lineage
+    lapply(c(1:nrow(output[[i]])), function(j) {
+      # if only one script, print just line number
+      if (num.scripts == 1) {
+        cat(paste("\t", output[[i]]$startLine[j], ": ", sep=""))
+      }
+      else {
+        cat(paste("\t", output[[i]]$scriptNum[j], ", ",
+                  output[[i]]$startLine[j], ": ", sep=""))
+      }
+      
+      # split code based on \n
+      tempCode <- strsplit(output[[i]]$code[j], "\n")
+      
+      # print line of code, shortening if over 50 chars
+      if (nchar(tempCode[[1]][1]) > 50)
+        cat(paste("\t", output[[i]]$value[j], "\t", 
+                  substring(tempCode[[1]][1], 1, 47), "...\n"))
+      else
+        cat(paste("\t", output[[i]]$value[j], "\t", tempCode[[1]][1], "\n"))
+      
+      # print valType info, if desired
+      if (showType == TRUE) {
+        print(output[[i]][j, c(2:4)], right = FALSE)
+      }
+    })
+  })
+  if (showType == FALSE)
+    cat("\nRerun with showType = TRUE to see more detailed variable information.\n")
 }

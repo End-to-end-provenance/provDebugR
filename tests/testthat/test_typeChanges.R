@@ -17,6 +17,7 @@ get.expected <- function()
 					scriptNum = c(1,1),
 					scriptName = rep("typeChanges.R", 2),
 					startLine = c(12,13),
+					changes = c("NA", "ct"),
 					stringsAsFactors = FALSE)
 	
 	# dimension change
@@ -28,6 +29,7 @@ get.expected <- function()
 					scriptNum = c(1,1),
 					scriptName = rep("typeChanges.R", 2),
 					startLine = c(16,17),
+					changes = c("NA", "d"),
 					stringsAsFactors = FALSE)
 	
 	# type change
@@ -39,6 +41,7 @@ get.expected <- function()
 					scriptNum = c(1,1),
 					scriptName = rep("typeChanges.R", 2),
 					startLine = c(20,21),
+					changes = c("NA", "t"),
 					stringsAsFactors = FALSE)
 	
 	# multiple valType changes in sequence
@@ -50,17 +53,19 @@ get.expected <- function()
 					scriptNum = c(1,1,1),
 					scriptName = rep("typeChanges.R", 3),
 					startLine = c(24,25,26),
+					changes = c("NA", "t", "t"),
 					stringsAsFactors = FALSE)
 	
 	# multiple valType changes, with no type changes
-	h <- data.frame(value = c('TRUE', '"seven"', '"eight"', '8'),
-					container = c("vector", "vector", "vector", "vector"),
-					dimension = as.character(c(1,1,1,1)),
-					type = c("logical", "character", "character", "integer"),
-					code = c('h <- TRUE', 'h <- "seven"', 'h <- "eight"', 'h <- 8L'),
-					scriptNum = c(1,1,1,1),
-					scriptName = rep("typeChanges.R", 4),
-					startLine = c(30,31,32,33),
+	h <- data.frame(value = c('FALSE', '"seven"', '8'),
+					container = c("vector", "vector", "vector"),
+					dimension = as.character(c(1,1,1)),
+					type = c("logical", "character", "integer"),
+					code = c('h <- FALSE', 'h <- "seven"', 'h <- 8L'),
+					scriptNum = c(1,1,1),
+					scriptName = rep("typeChanges.R", 3),
+					startLine = c(29,31,33),
+					changes = c("NA", "t", "t"),
 					stringsAsFactors = FALSE)
 	
 	# special data types
@@ -71,6 +76,7 @@ get.expected <- function()
 					scriptNum = c(1,1,1,1,1),
 					scriptName = rep("typeChanges.R", 5),
 					startLine = c(38,39,40,41,42),
+					changes = c("NA", "t", "t", "t", "t"),
 					stringsAsFactors = FALSE)
 	
 	# combine

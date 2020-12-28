@@ -251,3 +251,26 @@
 	
 	print(pos.args)
 }
+
+
+#' Print the number associated with each script.
+#'
+#' @return number of scripts present
+#' @noRd
+.print.script.nums <- function() {
+  # get scripts
+  scripts <- provParseR::get.scripts(.debug.env$prov)
+  num.scripts <- nrow(scripts)
+  
+  # if there are multiple scripts, print their associated script numbers
+  if (num.scripts > 1) {
+    cat("Script Numbers:\n")
+    lapply(c(1:num.scripts), function(i) {
+      cat(paste(i, "\t", scripts$script[i], "\n", sep=""))
+    })
+    
+    cat("\n")
+  }
+  
+  return(num.scripts)
+}
