@@ -8,8 +8,12 @@ cache: packages
 
 warnings_are_errors: true
 
+addons:
+  apt:
+    packages:
+      - libgit2-dev
+
 r_packages:
-  - gert
   - devtools
 
 r_github_packages:
