@@ -1,11 +1,12 @@
 Package: provDebugR
 Title: A Time-Travelling Debugger for R
 Version: 1.0
-Date: 06-18-20
+Date: 2020-12-28
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
     person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
     person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "aut"),
+    person("Rose", "Sheehan", email = "sheeh22r@mtholyoke.edu", role = "aut"),
     person("Joseph", "Wonsil", email = "jwonsil@carthage.edu", role = "aut"),
     person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre")
     )
@@ -29,5 +30,6 @@ Suggests:
   rdtLite, 
   rdt,
   testthat
+Additional_repositories: https://end-to-end-provenance.github.io/drat/
 VignetteBuilder: knitr
 RoxygenNote: 7.1.0
