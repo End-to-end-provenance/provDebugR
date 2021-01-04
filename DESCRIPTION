@@ -5,10 +5,10 @@ Date: 2020-12-28
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
     person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
-    person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "aut"),
+    person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "cre"),
     person("Rose", "Sheehan", email = "sheeh22r@mtholyoke.edu", role = "aut"),
     person("Joseph", "Wonsil", email = "jwonsil@carthage.edu", role = "aut"),
-    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre")
+    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "aut")
     )
 Description: Uses provenance post-execution to help the user understand
     and debug their script by providing functions to look at intermediate steps and
