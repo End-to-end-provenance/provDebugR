@@ -4,7 +4,7 @@ A debugging tool that leverages provenance to provide handy information
 about R scripts to assist in writing them.
 
 For a more in-depth description of the functions available in this package 
-please [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+please [refer to the Wiki.](https://github.com/End-to-end-provenance/provDebugR/wiki/)
 
 # Installation
 

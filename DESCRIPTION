@@ -1,5 +1,5 @@
 Package: provDebugR
-Title: A Time-Travelling Debugger for R
+Title: A Time-Travelling Debugger
 Version: 1.0
 Date: 2020-12-28
 Authors@R: c(
@@ -13,8 +13,8 @@ Authors@R: c(
 Description: Uses provenance post-execution to help the user understand
     and debug their script by providing functions to look at intermediate steps and
     data values, their forwards and backwards lineage, and to understand the
-    steps leading up to warning and error messages. provDebugR uses
-    provenance produced by rdtLite (available on CRAN), stored in PROV-JSON format.
+    steps leading up to warning and error messages. 'provDebugR' uses
+    provenance produced by 'rdtLite' (available on CRAN), stored in PROV-JSON format.
 Depends: R (>= 3.5.0)
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
