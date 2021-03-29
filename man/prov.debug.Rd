@@ -20,6 +20,9 @@ prov.debug.run(script, ...)
 \item{...}{extra parameters are passed to the provenance collector.  See rdt's prov.run function
 or rdtLites's prov.run function for details.}
 }
+\value{
+No return value.
+}
 \description{
 prov.debug uses the provenance from the last execution of prov.run to 
 initialise the debugger.
