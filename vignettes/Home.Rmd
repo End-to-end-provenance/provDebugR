@@ -1,0 +1,120 @@
+---
+title: "Introduction to Using Provenance to Debug with provDebugR"
+date: "June 11, 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Using Provenance to Debug with provDebugR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+provDebugR is a time-travelling debugging tool that leverages provenance and is
+created for use on R scripts.
+
+provDebugR uses provenance produced by 
+[rdtLite](https://CRAN.R-project.org/package=rdtLite),
+a provenance collection library. This provenance is stored in 
+[PROV-JSON format](https://github.com/End-to-end-provenance/ExtendedProvJson/blob/master/JSON-format.md),
+which follows the 
+[W3 PROV-JSON standard](https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/).
+
+## What is provenance?
+Provenance is a detailed record of an execution of a script. This includes 
+information about the steps that were excecuted and the intermediate data values 
+that were used and/or created.
+
+provDebugR was created to promote the use of provenance in scientific analysis, to
+make data analysis more reproducible and transparent. 
+
+## Why provDebugR?
+A typical debugger pauses execution at pre-determined points so a user can observe 
+the execution environment. This functionality allows them to step through the program 
+line-by-line and watch how variables change and observe where the flow of control leads.
+
+The main drawback about this is that the user is unable to go back to lines prior to the
+line they are on. If they wanted to observe the execution environment at a previous
+line, they must start the debugger from the beginning of execution. This can be very time-consumint and also makes it
+hard to debug non-deterministic scripts.
+
+By utilising provenance, provDebugR allows the user to observe the execution environment
+at any point in the script's last execution, jumping back and forth between lines, as
+many times as they wish. It also allows for the tracking of variables throughout the 
+script to observe type changes and connections to other variables.
+
+# Initialisation
+
+Version 3.5.0 or later of R is required.
+
+provDebugR must be initialised using one of the following functions before the rest
+of its suite of functions becomes available.
+
+* prov.debug.run
+* prov.debug
+* prov.debug.file
+
+### `prov.debug.run(script, ...)`
+`prov.debug.run` takes in the path to an R or Rmd script and executes the script 
+using [rdtLite](https://CRAN.R-project.org/package=rdtLite) to 
+collect provenance before initialising the debugger.
+```
+library(provDebugR)
+prov.debug.run("myScript.R", snapshot.size = 100)
+```
+
+### `prov.debug()`
+Alternatively, if 
+[rdtLite](https://CRAN.R-project.org/package=rdtLite)'s 
+`prov.run` function was just called, the provenence stored in memory can be used
+directly to initialise the debugger.
+```
+library(rdtLite)
+library(provDebugR)
+prov.run("myScript.R", snapshot.size = 100)
+prov.debug()
+```
+
+### `prov.debug.file`
+Lastly, the debugger may also be initialised using a PROV-JSON provenance file that was created by an earlier execution of rdtLite.
+```
+library(rdtLite)
+prov.debug.file("provJsonFileName.json")
+```
+
+
+# Other provDebugR Functions
+
+After the debugger has been initialised, the rest of provDebugR's suite of functions
+may be used.
+
+## Functions to help debug error and warning messages
+
+### [`debug.error, debug.warning and debug.type.changes`](debug.errors.html)
+These functions provide help in finding the code that led to an error
+or warning message. `debug.error` also helps find advice on Stack Overflow
+for the errors encountered.  `debug.type.changes` looks for 
+situations where the type of a variable changes as that may be an 
+indication of a programming problem, such as when a value that a 
+programmer expects to be a single integer turns out to be a long vector
+of integers.
+
+## Functions to display variable values at different points of execution
+
+### [`debug.line, debug.state, debug.variable, and debug.view`](debug.variables.html)
+These functions allow the user to see the values of variables at 
+different points of execution in the program, without the need to add
+breakpoints or print statements and re-run the program.  The functions
+vary in what they query and the format of the outpu.
+
+## Function to display the lineage of a data object
+
+### [`debug.lineage`](debug.lineage.html)
+This function is used to show how a data object was used, or
+how it was produced.  It shows just the lines of code that actually
+contribute to the value a variable has, or that depend either directly
+or indirectly on the value that a variale has.
+
+## End-to-end Provenance
+provDebugR is one of several tools created in the end-to-end
+provenance group.  You can find out more about our project
+[here](https://end-to-end-provenance.github.io/).
+

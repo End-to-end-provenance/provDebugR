@@ -1,0 +1,22 @@
+"","x"
+"1","exceptions.R"
+"2","library(rdtLite)"
+"3","col1 <- c(1:11)"
+"4","source_warning.r"
+"5","if(length(col1) > 10) {
+	col1 <- c(1:10)
+	warning(""length was greater than 10"")
+}"
+"6","warning(""another warning thrown"")"
+"7","source_warning.r"
+"8","source_error.r"
+"9","get.error.df <- function()
+{
+	col2 <- rep(c(""ll"",12,13,14,15), 2)
+	col3 <- c(21:30)
+	return(data.frame(col2, col3, stringsAsFactors=FALSE))
+}"
+"10","df <- cbind(col1, get.error.df(), stringsAsFactors=FALSE)"
+"11","sum(df, col1)"
+"12","source_error.r"
+"13","exceptions.R"

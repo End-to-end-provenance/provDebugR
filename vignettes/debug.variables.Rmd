@@ -1,0 +1,301 @@
+---
+title: "Using provenance to view variable values"
+date: "June 11, 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using provenance to view variable values}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+During debugging, a programmer commonly wants to know the values of
+variables used in the program.  Typically, the programmer either
+inserts print statements or sets breakpoints in order to view
+the variable values.  When debugging with provenance, the user
+can instead look up the values in the recorded provenance without 
+rerunning the program.
+
+The provDebugR package offers several functions that allow examining
+variables values:
+
+* `debug.line` shows the values of variables used and set on a specific line.
+* `debug.state` shows the values of all variables immediately following execution of a specific line
+* `debug.variable` shows all values that a variable took on during the execution of the script
+* `debug.view` uses the view panel to display variable values, which is more convenient for larger values like data frames.
+
+These functions may be called only after initialising the debugger using either 
+[`prov.debug`, `prov.debug.run`, or `prov.debug.file`](Home.html). 
+
+## debug.line
+
+For each line number queried, `debug.line` returns a data frame containing information about the data 
+that the procedure in that line inputs and outputs.
+
+Each data frame contains the following columns:
+
+* `name` The name of the variable
+* `value` The value of the variable, possibly abbreviated
+* `container` The type of the container of the data, such as list, data frame, etc.
+* `dimension` The size of the container.
+* `type` The data type(s) contained within the container.
+
+
+## Usage
+
+The function signature for `debug.line` is:
+```
+debug.line(..., script.num = 1, all = FALSE)
+```
+
+The parameters of this function are:
+
+* `...` The line numbers to be queried
+* `script.num` The script numbers to be queried.
+Defaults to script number 1 (main script).
+If `script.num == "all"`, the main script and all sourced scripts will be queried.
+* `all` If TRUE, the inputs and outputs for all lines in all scripts 
+will be returned.
+
+In the case of multiple queries, only 1 script number may be queried per
+function call.
+
+For example:
+```
+prov.debug.run("myScript.R")
+debug.line(5)
+debug.line(all = TRUE)
+debug.line(5, 10, script.num = 2)
+debug.line(3, script.num = "all")
+```
+
+
+## Example
+Let `myScript.R` be the following:
+```
+x <- 1:3
+y <- c("a", "b", "c")
+xy <- data.frame(x, y, stringsAsFactors = FALSE)
+x
+```
+
+The result for `debug.line(3)` is:
+```
+Results for:
+  startLine scriptNum scriptName                                             code
+1         3         1 myScript.R xy <- data.frame(x, y, stringsAsFactors = FALSE)
+
+$`1`
+$`1`$input
+  name       value container dimension      type
+1    x       1 2 3    vector         3   integer
+2    y "a" "b" "c"    vector         3 character
+
+$`1`$output
+  name     value  container dimension               type
+1   xy Row 1 1 a data_frame       3,2 integer, character
+```
+Variables `x` and `y` are listed in the 'input' table as they are used in the procedure.
+
+Variable `xy` is listed in the 'output' as the result from the 
+procedure is assigned to that variable.
+
+If the line has only inputs or outputs, an `NA` will be put in the place of the
+data frame with no data nodes listed.
+
+If multiple lines are queried, the results for each line will be bound into a list.
+
+## debug.state
+
+For each queried line, `debug.state` returns a data frame showing the state at that 
+line, after it has been executed.
+
+Each data frame contains the following columns:
+
+* `name` The name of each variable.
+* `value` The value of each variable.
+* `container` The type of the container of each variable.
+* `dimension` The size of the container.
+* `type` The data type(s) contained within the container.
+* `scriptNum` The script number associated where the variable was assigned the value.
+* `scriptName` The name of the script in which the variable was assigned the value.
+* `startLine` The line number in which the variable was assigned the value.
+
+If no paramters are given, `debug.state` will return the state at the end of execution.
+
+
+## Usage
+The function signature for `debug.state` is:
+```
+debug.state(..., script.num = 1)
+```
+
+The parameters of this function are:
+
+* `...` The line numbers to be queried.
+* `script.num` The script number of the queried line numbers.
+This is ignored if no line numbers are given.
+If `script.num == "all"`, the main script and all sourced scripts will be queried.
+Defaults to script number 1 (the main script).
+
+For example:
+```
+prov.debug.run("myScript.R")
+debug.state()
+debug.state(5)
+debug.state(10, 20, script.num = 2)
+debug.state(5, script.num = "all")
+```
+
+
+## Examples
+
+Let `myScript.R` be the following:
+```
+a <- "one"
+a <- 2L
+
+b <- 3L
+b <- "four"
+```
+
+When there are no parameters, `debug.state` returns the state at the end of
+execution.
+
+Therefore, the result for `debug.state()` is:
+```
+State at the end of execution:
+$`1`
+  name  value container dimension      type scriptNum scriptName startLine
+1    a      2    vector         1   integer         1 myScript.R         2
+2    b "four"    vector         1 character         1 myScript.R         5
+```
+
+When a line number is passed in, `debug.state`
+returns the state after the queried line has been
+executed.
+
+For example, the result for `debug.state(4)` is:
+```
+Results for:
+  startLine scriptNum
+1         4         1
+
+$`1`
+  name value container dimension    type scriptNum scriptName startLine
+1    a     2    vector         1 integer         1 myScript.R         2
+2    b     3    vector         1 integer         1 myScript.R         4
+```
+
+When multiple lines are queried, the results for each line
+are bound into a list.
+
+## debug.variable
+
+For each variable queried, `debug.variable` returns a data frame 
+containing a row for each time that the variable is assigned.
+
+The data frame contains the following columns:
+* `value` The value of the variable.
+* `container` The type of the container of the variable.
+* `dimension` The size of the container.
+* `type` The data type(s) contained within the container.
+* `scriptNum` The script number where the assignment occurred
+* `scriptName` The name of the script where the assignment occurred
+* `startLine` The line number where the assignment occurred
+* `code` The line of code that did the assignment
+
+## Usage
+
+The function signature for `debug.variable` is:
+```
+debug.variable(..., val.type = "all", script.num = "all", all = FALSE)
+```
+
+The parameters of this function are:
+
+* `...` The variable names to be queried.
+* `val.type` If not "all", this filters the results to contain 
+only instances where the valType (container or type) has the queried type.
+* `script.num` The script number of the queried variables. Defaults to "all".
+* `all` If TRUE, results for all variables of the specified script will be returned.
+
+Only 1 script number and/or valType may be queried per function call.
+
+For example:
+```
+prov.debug.run("myScript.R")
+debug.variable(x)
+debug.variable(all = TRUE)
+debug.variable("a", b, "x", val.type = "logical")
+debug.variable("a", "b", x, script.num = 3)
+```
+
+
+## Example
+
+Let `myScript.R` be the following:
+```
+a <- "one"
+a <- "two"
+a <- 1L
+a <- 2L
+
+b <- 3L
+b <- 4L
+b <- "five"
+```
+
+The result for `debug.variable("a")` is:
+```
+$a
+  value container dimension      type scriptNum scriptName startLine       code
+1 "one"    vector         1 character         1 myScript.R         1 a <- "one"
+2 "two"    vector         1 character         1 myScript.R         2 a <- "two"
+3     1    vector         1   integer         1 myScript.R         3    a <- 1L
+4     2    vector         1   integer         1 myScript.R         4    a <- 2L
+```
+
+## debug.view
+
+`debug.view` displays the contents of each file or variable queried.
+For snapshots or files with the file extension of .csv or .txt, the data
+will be loaded into the debugger environment before it is viewed. Otherwise,
+the data will be viewed using the system's default program for that type of file.
+
+Additionally, a data frame showing what the function has opened will be returned,
+which contains the following columns:
+
+* `name` The name of the variable or file being viewed.
+* `startLine` The line number where the variable was assigned, or the 
+file was read or written.
+* `scriptNum` The script number where the variable was assigned, or the 
+file was read or written.
+* `scriptName` The name of the script where the variable was assigned, or the 
+file was read or written.
+* `title` The title of the variable or file as it appears in the view panel
+* `notes` Will display PARTIAL if the variable is a snapshot representing 
+a partial value, such as part of a data frame.  See the documentation
+on [rdtLite](https://CRAN.R-project.org/package=rdtLite) to learn more about snapshots.
+It will also indicate if  
+a file is not found.  NA indicates there are no special notes.
+
+
+## Usage
+
+The function signature for `debug.view` is:
+```
+debug.view(..., start.line = "all", script.num = "all")
+```
+
+The parameters of this function are:
+* `...` The variable names or file names to be queried.  If omitted,
+  all variables and files are displayed.
+* `start.line` The line number of the queried variables or files.
+* `script.num` The script number of the queried variables or files.
+
+For example:
+```
+prov.debug.run("myScript.R")
+debug.view()
+debug.view(x)
+debug.view("x", y, start.line = 5, script.num = 2)
+```

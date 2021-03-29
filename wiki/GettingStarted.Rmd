@@ -1,0 +1,108 @@
+---
+title: "Introduction to Using Provenance to Debug"
+date: "June 11, 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Using Provenance to Debug}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Provenance is the history of an item of data from its creation to its present state. It includes details about the steps that were executed and the intermediate values that were created in order to produce the data in its current form. For scientists, provenance can help to facilitate reproduction and validation of scientific results. But in most computer systems today, provenance is an after-thought, implemented as an auxiliary indexing structure that parallels the actual data. Our goal in this project is to design, build, and study an end-to-end system that extends all the way from original data analyses by real scientists to management and analysis of the resulting provenance in a common framework with common tools.
+
+provDebugR is a debugger that uses provenance collected by the rdtLite package to enable debugging.
+Unlike a traditional debugger, provDebugR does not depend on the user setting breakpoints.  Instead,
+provDebugR uses the provenance it has collected to allow the user to examine the state of the variables
+used in the R script at different points in its execution by moving back and forth through the provenance.
+In this way, provDebugR is a "time-traveling" debugger.
+
+
+Installing provDebugR
+--------------
+
+provDebugR currently requires R version 3.6.3 (or later).  rdtLite is available from CRAN:
+```
+install.packages("provDebugR")
+```
+
+Once installed, use the R library command to load provDebugR:
+```
+library(provDebugR)
+```
+
+Using provDebugR
+--------------
+To run the debugger on a script, use the prov.debug.run function, passing in the name of the file
+containing the script:
+```
+prov.debug.run("myScript.R")
+```
+This will run the script, collecting provenance and initializing the debugger.
+Once the debugger is initialized in this way, there are a variety of ways to 
+examine the execution that just completed.
+
+To see the values of all the variables on a particular line in your script,
+use the debug.state function:
+```
+debug.state(5)
+```
+This will show you the values that your variables had just after line 5
+was executed.
+
+To see all the values that a variable was assigned over the entire course of
+execution, use the debug.variable function:
+```
+debug.variable("x")
+```
+This will show you each time that x was modified, what value it had, and on
+what line the assignment was done.
+
+If the script ends with an error, you can get find out what statements
+in the script contributed to the error with debug.error:
+```
+debug.error()
+```
+This will list just those statements on the lineage leading up to the 
+error, skipping statements whose behavior is irrelevant to the error.
+If you do not understand the error message, you can get help from 
+stackoverflow, by calling debug.error in this way:
+```
+debug.error(stack.overflow = TRUE)
+```
+
+A common error in R programming is for a variable to be bound to a 
+value with a different type than it previously had.  For example,
+a variable that held a single integer might turn into a vector of 
+integers unexpectedly.  To help debug these problems, you can use the
+debug.type.changes function:
+```
+debug.type.changes()
+```
+This will display all variables where either the container (vector, list, etc.)
+changed, the dimensions changed, or the type of the values inside the
+container changed.  It will also show the values and the line number
+where those values were set. 
+
+
+
+Additional tools that use provenance
+--------------
+Having collected provenance, you may wonder what you can do with it.  We have some tools that use provenance and are available at <https://github.com/End-to-end-provenance>:
+
+* provSummarizeR provides a textual summary of the provenance identifying input and output files, libraries used, the version of R, the computing platform, error and warning messages, and other useful information.
+
+* provViz provides a visualization of the provenance that allows you to move through the history of your script to see how values were computed and what the intermediate values are.  provViz requires Java to be installed.
+
+* provExplainR compares provenance from two executions of a script to see what has changed.  This can be helpful if a script mysteriously stops working, or if you share a script with a colleague and it does not work for them.  Script results may differ, for example, if you are using different library versions, the input data has changed, or the script itself has changed.
+
+Problems, questions and suggestions
+---------------
+
+If you have any problems, questions, or suggestions, please let us know at <https://github.com/End-to-end-provenance/provDebugR/issues>.

@@ -1,0 +1,5 @@
+"","d.id","p.id","name","value","valType","startLine","scriptNum","scriptName"
+"1","d1","p3","col1"," 1  2  3  4  5  6  7  8  9 10 11","{""container"":""vector"", ""dimension"":[11], ""type"":[""integer""]}",3,1,"exceptions.R"
+"2","d3","p5","col1"," 1  2  3  4  5  6  7  8  9 10","{""container"":""vector"", ""dimension"":[10], ""type"":[""integer""]}",1,2,"source_warning.r"
+"3","d5","p9","get.error.df","function()...","function",1,3,"source_error.r"
+"4","d6","p10","df","Row 1	1   ll   21","{""container"":""data_frame"", ""dimension"":[10,3], ""type"":[""integer"",""character"",""integer""]}",8,3,"source_error.r"
