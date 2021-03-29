@@ -4,7 +4,7 @@ A debugging tool that leverages provenance to provide handy information
 about R scripts to assist in writing them.
 
 For a more in-depth description of the functions available in this package 
-please [refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+please [refer to the Wiki.](https://github.com/End-to-end-provenance/provDebugR/wiki/)
 
 # Installation
 
@@ -54,7 +54,7 @@ Once the debugger has been initialised, the rest of the functions the package
 provides can be used.
 
 To find out more about what each function does, please 
-[refer to the Wiki.](https://github.com/ProvTools/provDebugR/wiki)
+[refer to the Wiki.](https://github.com/End-to-end-provenance/provDebugR/wiki/)
 * [debug.error](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.error)
 * [debug.line](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.line)
 * [debug.lineage](https://github.com/End-to-end-provenance/provDebugR/wiki/debug.lineage)

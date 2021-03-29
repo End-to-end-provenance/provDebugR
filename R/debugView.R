@@ -1,5 +1,5 @@
 # Copyright (C) President and Fellows of Harvard College and 
-# Trustees of Mount Holyoke College, 2020.
+# Trustees of Mount Holyoke College, 2020, 2021.
 
 # This program is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -29,7 +29,8 @@
 #' For snapshots or files with the file extension of .csv or .txt, the data
 #' will be loaded into the debugger environment before it is viewed. Otherwise,
 #' the data will be viewed using the system's default program for that type of file.
-#' Additionally, a data frame showing what the function has opened will be returned,
+#'
+#' @return debug.view returns a data frame containing the information that is displayed,
 #' which contains the following columns:
 #' \itemize{
 #'  	\item name: The name of the variable or file being viewed.
@@ -41,6 +42,8 @@
 #'  	             indicate that the provenance directory or a file is not found.
 #'  	             NA otherwise.
 #' }
+#'
+#' If there is no data to display, NULL is returned.
 #'
 #' @param ... The variable names or file names to be queried.
 #' @param start.line The line number of the queried variables or files.

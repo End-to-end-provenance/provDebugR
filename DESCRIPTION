@@ -1,21 +1,22 @@
 Package: provDebugR
-Title: A Time-Travelling Debugger for R
+Title: A Time-Travelling Debugger
 Version: 1.0
-Date: 06-18-20
+Date: 2021-02-16
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
     person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
-    person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "aut"),
+    person("Barbara", "Lerner", email = "blerner@mtholyoke.edu", role = "cre"),
+    person("Rose", "Sheehan", email = "sheeh22r@mtholyoke.edu", role = "aut"),
     person("Joseph", "Wonsil", email = "jwonsil@carthage.edu", role = "aut"),
-    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "cre")
+    person("Emery", "Boose", email = "boose@fas.harvard.edu", role = "aut")
     )
 Description: Uses provenance post-execution to help the user understand
     and debug their script by providing functions to look at intermediate steps and
     data values, their forwards and backwards lineage, and to understand the
-    steps leading up to warning and error messages. provDebugR uses
-    provenance produced by rdtLite (available on CRAN), stored in PROV-JSON format.
+    steps leading up to warning and error messages. 'provDebugR' uses
+    provenance produced by 'rdtLite' (available on CRAN), stored in PROV-JSON format.
 Depends: R (>= 3.5.0)
-License: GPL-3 | file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -29,5 +30,6 @@ Suggests:
   rdtLite, 
   rdt,
   testthat
+Additional_repositories: https://end-to-end-provenance.github.io/drat/
 VignetteBuilder: knitr
 RoxygenNote: 7.1.0

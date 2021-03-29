@@ -1,5 +1,5 @@
 # Copyright (C) President and Fellows of Harvard College and 
-# Trustees of Mount Holyoke College, 2020.
+# Trustees of Mount Holyoke College, 2020, 2021.
 
 # This program is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -65,6 +65,8 @@
 #'
 #' provDebugR uses provenance produced by rdtLite (a provenance collection package
 #' available on CRAN), stored in PROV-JSON format.
+#'
+#' @return No return value.
 #'
 #' @seealso Other provDebugR Functions (non-initialisation):
 #' @seealso \code{\link{debug.error}}: Returns the backwards lineage of the error, if any.
@@ -261,11 +263,9 @@ prov.debug.run <- function(script, ...)
 	
 	# neither rdtLite nor rdt are loaded,
 	# choose provenance collector from installed libraries
-	libs <- utils::installed.packages()
-	
-	if ("rdtLite" %in% libs)
+	if (requireNamespace ("rdtLite"))
 		return("rdtLite")
-	if ("rdt" %in% libs)
+	if (requireNamespace ("rdt"))
 		return("rdt")
 	
 	# nether rdt nor rdt are available: stop

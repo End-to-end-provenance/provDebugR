@@ -13,17 +13,8 @@ debug.view(..., start.line = "all", script.num = "all")
 
 \item{script.num}{The script number of the queried variables or files.}
 }
-\description{
-debug.view displays the contents of a file or variable at a particular
-line of code in a separate view panel.  This is best for large values
-like data frames and matrices.
-}
-\details{
-debug.view displays the contents of each file or variable queried.
-For snapshots or files with the file extension of .csv or .txt, the data
-will be loaded into the debugger environment before it is viewed. Otherwise,
-the data will be viewed using the system's default program for that type of file.
-Additionally, a data frame showing what the function has opened will be returned,
+\value{
+debug.view returns a data frame containing the information that is displayed,
 which contains the following columns:
 \itemize{
  	\item name: The name of the variable or file being viewed.
@@ -35,6 +26,19 @@ which contains the following columns:
  	             indicate that the provenance directory or a file is not found.
  	             NA otherwise.
 }
+
+If there is no data to display, NULL is returned.
+}
+\description{
+debug.view displays the contents of a file or variable at a particular
+line of code in a separate view panel.  This is best for large values
+like data frames and matrices.
+}
+\details{
+debug.view displays the contents of each file or variable queried.
+For snapshots or files with the file extension of .csv or .txt, the data
+will be loaded into the debugger environment before it is viewed. Otherwise,
+the data will be viewed using the system's default program for that type of file.
 }
 \examples{
 \dontrun{
