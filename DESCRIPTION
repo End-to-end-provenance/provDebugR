@@ -1,7 +1,7 @@
 Package: provDebugR
 Title: A Time-Travelling Debugger
-Version: 1.0
-Date: 2021-02-16
+Version: 1.0.1
+Date: 2021-04-20
 Authors@R: c(
     person("Orenna", "Brand", email = "o.brand@columbia.edu", role = "aut"),
     person("Elizabeth", "Fong", email = "fong22e@mtholyoke.edu", role = "aut"),
@@ -27,6 +27,7 @@ Imports:
   textutils,
 Suggests:
   knitr,
+  markdown,
   rdtLite, 
   rdt,
   testthat
