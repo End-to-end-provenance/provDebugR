@@ -246,7 +246,7 @@ debug.error <- function(stack.overflow = FALSE)
 	# typically have an unneeded prefix followed
 	# by a colon ":"
 	if(length(split) > 1) {
-		error.message <- split[-1]
+		error.message <- split[2]
 	}
 
 	# This complicated mess of regex i=actually checks for 4 things (all inclusive):
