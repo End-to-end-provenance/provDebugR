@@ -212,8 +212,8 @@ debug.error <- function(stack.overflow = FALSE)
 	# user is choosing
 	path <- paste("/2.2/search?order=", order,
 				  "&sort=", sort,
-				  "&tagged=", tagged, "
-				  &intitle=", search.query,
+				  "&tagged=", tagged, 
+				  "&intitle=", search.query,
 				  "&site=stackoverflow",
 				  sep ="")
 
