@@ -243,7 +243,7 @@ debug.error <- function(stack.overflow = FALSE)
 	split <- strsplit(error.message, ":")[[1]]
 
 	# Error messages from the prov.json will
-	# typically have an uneeded prefix followed
+	# typically have an unneeded prefix followed
 	# by a colon ":"
 	if(length(split) > 1) {
 		error.message <- split[-1]
