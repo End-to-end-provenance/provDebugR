@@ -242,9 +242,10 @@ debug.error <- function(stack.overflow = FALSE)
 {
 	split <- strsplit(error.message, ":")[[1]]
 
-	# Error messages from the prov.json will
-	# typically have an unneeded prefix followed
-	# by a colon ":"
+	# Error messages from the prov.json will typically have
+	# an unneeded prefix followed by a colon ":".
+	# e.g. "Error in data.frame(cylinders, mpg) :
+	#         arguments imply differing number of rows: 4, 3"
 	if(length(split) > 1) {
 		error.message <- split[2]
 	}
