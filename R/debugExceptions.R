@@ -172,25 +172,27 @@ debug.error <- function(stack.overflow = FALSE)
 	cat("\nResults from StackOverflow:\n")
 	print(pos.urls[, "title"])
 
-	# They can either choose none or an index that will be matched to a row
-	cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
-	chosen.result <- tolower(trimws(readline()))
-
-	while(chosen.result != "q") 
+	while (TRUE) 
 	{
+		# They can either choose none or an index that will be matched to a row
+		cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
+		chosen.result <- tolower(trimws(readline()))
+
+		if (chosen.result == "q") {
+			break
+		}
+
 		chosen.result <- suppressWarnings(as.integer(chosen.result))
 
 		# The input needs to be an integer so it can be used to
 		# index into the rows of the data frame
-		if(is.na(chosen.result) || (chosen.result > 6 || chosen.result < 1)) {
+		if (is.na(chosen.result) || (chosen.result > 6 || chosen.result < 1)) {
 			cat("Invalid Input. Please choose an option between 1 - 6 or q to quit.\n")
 		}
 		# Open up the requested link in the default web browser
 		else {
 			utils::browseURL(pos.urls[chosen.result ,]$link)
 		}
-		
-		chosen.result <- tolower(trimws(readline()))
 	}
 }
 
@@ -212,8 +214,8 @@ debug.error <- function(stack.overflow = FALSE)
 	# user is choosing
 	path <- paste("/2.2/search?order=", order,
 				  "&sort=", sort,
-				  "&tagged=", tagged, "
-				  &intitle=", search.query,
+				  "&tagged=", tagged, 
+				  "&intitle=", search.query,
 				  "&site=stackoverflow",
 				  sep ="")
 
@@ -242,11 +244,12 @@ debug.error <- function(stack.overflow = FALSE)
 {
 	split <- strsplit(error.message, ":")[[1]]
 
-	# Error messages from the prov.json will
-	# typically have an uneeded prefix followed
-	# by a colon ":"
+	# Error messages from the prov.json will typically have
+	# an unneeded prefix followed by a colon ":".
+	# e.g. "Error in data.frame(cylinders, mpg) :
+	#         arguments imply differing number of rows: 4, 3"
 	if(length(split) > 1) {
-		error.message <- split[-1]
+		error.message <- split[2]
 	}
 
 	# This complicated mess of regex i=actually checks for 4 things (all inclusive):
