@@ -190,8 +190,6 @@ debug.error <- function(stack.overflow = FALSE)
 		else {
 			utils::browseURL(pos.urls[chosen.result ,]$link)
 		}
-		
-		chosen.result <- tolower(trimws(readline()))
 	}
 }
 
