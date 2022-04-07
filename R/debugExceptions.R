@@ -172,12 +172,13 @@ debug.error <- function(stack.overflow = FALSE)
 	cat("\nResults from StackOverflow:\n")
 	print(pos.urls[, "title"])
 
-	# They can either choose none or an index that will be matched to a row
-	cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
-	chosen.result <- tolower(trimws(readline()))
+	chosen.result <- ""
 
 	while(chosen.result != "q") 
 	{
+		# They can either choose none or an index that will be matched to a row
+		cat("\nChoose a numeric value that matches your error the best or q to quit: \n")
+		chosen.result <- tolower(trimws(readline()))
 		chosen.result <- suppressWarnings(as.integer(chosen.result))
 
 		# The input needs to be an integer so it can be used to
