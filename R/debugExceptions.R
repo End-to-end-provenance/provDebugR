@@ -186,7 +186,7 @@ debug.error <- function(stack.overflow = FALSE)
 
 		# The input needs to be an integer so it can be used to
 		# index into the rows of the data frame
-		if(is.na(chosen.result) || chosen.result > 6 || chosen.result < 1) {
+		if (is.na(chosen.result) || (chosen.result > 6 || chosen.result < 1)) {
 			cat("Invalid Input. Please choose an option between 1 - 6 or q to quit.\n")
 		}
 		# Open up the requested link in the default web browser
