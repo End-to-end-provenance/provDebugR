@@ -16,13 +16,5 @@ addons:
 r_packages:
   - devtools
 
-r_github_packages:
-  - End-to-end-provenance/provParseR
-  - End-to-end-provenance/provGraphR
-  - End-to-end-provenance/rdt
-  - End-to-end-provenance/rdtLite
-
 notifications:
   slack: endtoendprovenance:DNYqXZWhV1c3eRhkjGYyjCEv
-
-
