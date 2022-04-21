@@ -1,6 +1,6 @@
 # provDebugR
 
-[![R-CMD-check](https://github.com/nayeonshin/provDebugR/workflows/R-CMD-check/badge.svg)](https://github.com/nayeonshin/provDebugR/actions)
+[![R-CMD-check](https://github.com/End-to-end-provenance/provDebugR/workflows/R-CMD-check/badge.svg)](https://github.com/End-to-end-provenance/provDebugR/actions)
 
 A debugging tool that leverages provenance to provide handy information
 about R scripts to assist in writing them.
