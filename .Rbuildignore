@@ -6,3 +6,4 @@ build.xml
 .gitignore
 .*\.tar
 wiki
+^\.github$
