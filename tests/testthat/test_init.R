@@ -11,9 +11,9 @@ test_that("Initialization - Empty provenance",
 	expect_false(provDebugR:::.debug.env$has.graph)
 })
 
-# .get.full.code
-# tests the helper function of .get.full.code
-# this is to prevent travis from having to run rdt/rdtLite
+# # .get.full.code
+# # tests the helper function of .get.full.code
+# # this is to prevent travis from having to run rdt/rdtLite
 # test_that("Initialization - .get.full.code",
 # {
 # 	# FUNCTION INPUTS
