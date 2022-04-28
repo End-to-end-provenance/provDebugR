@@ -37,6 +37,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
-          extra-packages: rcmdcheck, any::rdt, any::rdtLite
+          extra-packages: rcmdcheck, package=rdt?ignore, package=rdtLite?ignore
 
       - uses: r-lib/actions/check-r-package@v1
