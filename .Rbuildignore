@@ -4,6 +4,6 @@ build.xml
 .project
 .*\.tar\.gz
 .gitignore
-.travis.yml
 .*\.tar
 wiki
+^\.github$
