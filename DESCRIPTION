@@ -32,4 +32,4 @@ Suggests:
   testthat
 Additional_repositories: https://end-to-end-provenance.github.io/drat/
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
